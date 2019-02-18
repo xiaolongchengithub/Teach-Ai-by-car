@@ -94,7 +94,24 @@ class ObjectClass:
             retIds.append(self.classes[classIds[i]])
         return retbox,retIds
 
-    def FindObject(self,frame):
+    def find_object(self,frame):
+        """
+        *function:find_object
+        功能：从图中获取训练的物体RECT
+        ________
+        Parameters
+        * frame: opencv.mat类型
+        输入一张Mat类型图片
+        ————
+        Returns
+        -------
+        * frame
+        返回绘制了画检测物体的图片
+        *names
+        返回检测物体类型
+        *box
+        返回检测物体的RECT
+        """
         self.blob = cv.dnn.blobFromImage(frame, 1 / 255, (self.inpWidth, self.inpHeight), [0, 0, 0], 1, crop=False)
         # Sets the input to the network
         self.net.setInput(self.blob)
@@ -104,13 +121,27 @@ class ObjectClass:
         box,names = self.postprocess(frame)
         return frame,names,box
 
-    def GetRect(self,frame):
+    def get_rect(self,frame):
+        """
+        *function:get_rect
+        功能：从图中获取训练的物体RECT
+        ________
+        Parameters
+        * frame: opencv.mat类型
+        输入一张Mat类型图片
+        ————
+        Returns
+        -------
+        * retbox
+        返回检测物体的范围
+        *retId
+        返回检测物体类型
+        """
         self.blob = cv.dnn.blobFromImage(frame, 1 / 255, (self.inpWidth, self.inpHeight), [0, 0, 0], 1, crop=False)
         # Sets the input to the network
         self.net.setInput(self.blob)
         # Runs the forward pass to get output of the output layers
         self.outs = self.net.forward(self.getOutputsNames())
-
 
         classIds = []
         confidences = []

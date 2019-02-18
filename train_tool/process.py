@@ -5,7 +5,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 
 print(current_dir)
 
-current_dir = 'D://Ai//python//YOLO-Annotation-Tool-master//Images//001'
+current_dir = 'C://python//car//train_tool//Images//001'
 
 # Directory where the data will reside, relative to 'darknet.exe'
 #path_data = './NFPAdataset/'

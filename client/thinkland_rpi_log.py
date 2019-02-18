@@ -85,6 +85,17 @@ def logServer():
     tcpserver.serve_until_stopped()
 
 def startLogServer(ip):
+    """
+    *function:startLogServer
+    功能：启动日志服务
+    ________
+    Parameters
+    * ip: 底层的IP
+    ————
+    Returns
+    -------
+    * None
+    """
     global g_logPort
     g_logPort = ip
     dataThread = threading.Thread(target=logServer)
