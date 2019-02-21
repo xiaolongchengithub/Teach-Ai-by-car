@@ -2,15 +2,10 @@ import time
 import RPi.GPIO as GPIO
 import socket
 import threading
+import random
 
-#自定义全局变量
-value_function            = {}
-global str_addr_port
-global b_auto_run
-global class_log
 
-str_addr_port = ('172.16.10.227',12347)
-b_auto_run    = True
+
 ################################################################
 #  直流电机引脚定义
 PIN_MOTOR_LEFT_FORWARD = 20
@@ -215,7 +210,7 @@ class Car:
         GPIO.output(PIN_LED_G, g)
         GPIO.output(PIN_LED_B, b)
 
-    def open_led(self, led):
+    def turn_on_led(self, led):
         """
          open_led:
          打开灯
@@ -235,7 +230,7 @@ class Car:
             else:
                 GPIO.output(PIN_LED_B, OPEN)
 
-    def close_led(self, led):
+    def turn_off_led(self, led):
         """
          close_led:
          关闭LED灯光
@@ -520,6 +515,43 @@ class Car:
         except KeyboardInterrupt:
             car.stop_completely()
 
+    def demo_cruising(self):
+        """
+        Demonstrates a cruising car that avoids obstacles in a room
+
+        * Use infrared sensors and ultrasonic sensor to gauge obstacles
+        * Use LED lights to indicate running/turning decisions
+        """
+        try:
+            while True:
+                obstacle_status_from_infrared = self.obstacle_status_from_infrared()
+                should_turn = True
+                if obstacle_status_from_infrared == 'clear':
+                    should_turn = False
+                    obstacle_status_from_ultrasound = \
+                        self.obstacle_status_from_ultrasound()
+                    if obstacle_status_from_ultrasound == 'clear':
+                        self.led_light('green')
+                        self.run_forward(speed=10)
+                    elif obstacle_status_from_ultrasound == 'approaching_obstacle':
+                        self.led_light('yellow')
+                        self.run_forward(speed=5)
+                    else:
+                        should_turn = True
+                if should_turn:
+                    self.run_reverse(duration=0.02)
+                    if obstacle_status_from_infrared == 'only_right_blocked':
+                        self.led_light('purple')
+                        self.spin_left(duration=np.random.uniform(0.25, 1.0))
+                    elif obstacle_status_from_infrared == 'only_left_blocked':
+                        self.led_light('cyan')
+                        self.spin_right(duration=random.uniform(0.25, 1.0))
+                    else:
+                        self.led_light('red')
+                        self.spin_right(duration=random.uniform(0.25, 1.0))
+        except KeyboardInterrupt:
+            self.stop_completely()
+
     def obstacle_status_from_infrared(self):
         """
         Return obstacle status obtained by infrared sensors that
@@ -537,8 +569,8 @@ class Car:
             - one of ['only_left_blocked', 'only_right_blocked',
                     'blocked', 'clear']
         """
-        is_left_clear  = GPIO.input(Car.PIN_INFRARED_LEFT)
-        is_right_clear = GPIO.input(Car.PIN_INFRARED_RIGHT)
+        is_left_clear  = GPIO.input(PIN_INFRARED_LEFT)
+        is_right_clear = GPIO.input(PIN_INFRARED_RIGHT)
 
         if is_left_clear and is_right_clear:
             status = 'clear'
@@ -707,8 +739,8 @@ class Car:
         self.Function_List['servo_front_rotate']     = self.servo_front_rotate
 
         #灯的控制函数注册
-        self.Function_List['open_led'] = self.open_led
-        self.Function_List['close_led'] = self.close_led
+        self.Function_List['turn_on_led'] = self.turn_on_led
+        self.Function_List['trun_off_led'] = self.turn_off_led
 
         #运动控制函数注册
         self.Function_List['run_forward'] = self.run_forward
@@ -717,6 +749,8 @@ class Car:
         self.Function_List['turn_right']  = self.turn_right
         self.Function_List['spin_left']   = self.spin_left
         self.Function_List['spin_right']  = self.spin_right
+
+        self.Function_List['demo_cruising']= self.demo_cruising
 
         #超声波检测函数注册
         self.Function_List['check_right_obstacle_with_sensor']  = self.check_right_obstacle_with_sensor
@@ -836,10 +870,13 @@ class Car:
                     break
 
 
-test = Car()
-test.star_server(('172.16.10.227', 12347))
+def main():
+    test = Car()
+    test.demo_cruising()
+    test.star_server(('172.16.10.227', 12347))
 
-
+if __name__ == "__main__":
+    main()
 
 
 

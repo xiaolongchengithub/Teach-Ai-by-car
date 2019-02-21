@@ -2,6 +2,10 @@ from PIL import Image, ImageFilter
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
+"""
+模块功能：识别图片数字，模型的目录为当前目录
+"""
+
 class Figure():
     def __init__(self):
         print('figure init')

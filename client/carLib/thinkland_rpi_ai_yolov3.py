@@ -112,6 +112,50 @@ class AiYolo:
             retIds.append(self.classes[classIds[i]])
         return retbox,retIds
 
+    def read_image(self , path):
+        """
+        *function:read_image
+        功能：读取一张图片
+        ________
+        Parameters
+        * path: string
+        图片的路径
+        ————
+        Return
+        *image:Mat
+        Opencv的Mat图片结构
+        """
+        return (cv2.imread(path))
+
+    def show_image(self ,image , title = 'ai'):
+        """
+        *function:show_image
+        功能：图像显示
+        ________
+        Parameters
+        * path: Mat
+        图像数据
+
+        *title:String
+        显示框的标题
+        """
+        return (cv2.imshow(title,image))
+
+    def wait_key(self , delay = 0):
+        """
+        *function:wait_key
+        功能：图片显示等待时间
+        ________
+        Parameters
+        * path: delay
+        图片延时等待时间。如果为0，就需要
+        ————
+        Return
+        *image:Mat
+        Opencv的Mat图片结构
+        """
+        return (cv2.waitKey(delay))
+
     def find_object(self,frame):
         """
         *function:find_object
@@ -197,6 +241,22 @@ class AiYolo:
             retbox.append([(left+width/2),(top+height/2)])
             retIds.append(self.classes[classIds[i]])
         return retbox,retIds
+
+"""
+@@@@例子：
+#利用库进行简单超声波测距和舵机转动
+"""
+if __name__ == "__main__":
+    test = AiYolo()
+    #加载图片
+    img = test.read_image(".//dog.jpg")
+    #寻找物体
+    ret,id,rec = test.find_object(img)
+    #显示
+    test.show_image(ret)
+    #等待
+    test.wait_key(0)
+
 
 
 

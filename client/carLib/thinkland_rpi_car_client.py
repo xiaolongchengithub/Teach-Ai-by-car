@@ -119,7 +119,7 @@ class carControl:
             self.Dic_Para["mode"]           = THREAD_CALL
             self.__send_order(self.Dic_Para)
 ########################################################################################车灯控制
-    def open_led(self,  led):
+    def turn_on_led(self,  led):
             """
             *function:open_led
             功能：控制LED灯的开关
@@ -133,12 +133,12 @@ class carControl:
             * None
             """
             Func_Para                       = {}
-            Func_Para["open_led"]           = [led]
+            Func_Para["turn_on_led"]           = [led]
             self.Dic_Para["function"]       = Func_Para
             self.Dic_Para["mode"]           = THREAD_CALL
             self.__send_order(self.Dic_Para)
 
-    def close_led(self,  led):
+    def turn_off_led(self,  led):
             """
             *function:close_led
             功能：控制LED灯的开关
@@ -152,7 +152,7 @@ class carControl:
             * None
             """
             Func_Para                       = {}
-            Func_Para["close_led"]          = [led]
+            Func_Para["turn_off_led"]       = [led]
             self.Dic_Para["function"]       = Func_Para
             self.Dic_Para["mode"]           = THREAD_CALL
             self.__send_order(self.Dic_Para)
@@ -395,13 +395,19 @@ class carControl:
         dis = self.__send_order(self.Dic_Para)
         return dis
 ################################################################################
-# test = carControl()
-# test.connect(('172.16.10.227', 12347))
-#
-# while True:
-#     dis = test.check_right_obstacle_with_sensor()
-#     print(dis)
-# test.servo_front_rotate(20)
+
+"""
+@@@@例子：
+#利用库进行简单超声波测距和舵机转动
+"""
+if __name__ == "__main__":
+    test = carControl()
+    test.connect(('172.16.10.227', 12347))
+
+    while True:
+        dis = test.check_right_obstacle_with_sensor()#超声波测距
+        print(dis)
+    test.servo_front_rotate(20)
 
 
 
