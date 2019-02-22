@@ -32,14 +32,21 @@ class Speaker():
         """
         self.speaker.Speak(word)
 
+    def demo_say():
+        """
+        @@@@例子：
+        #利展示
+        """
+        test = Speaker()
+        test.say("hello")
+
 
 """
 @@@@例子：
 #利用windows库实现朗读功能
 """
 if __name__ == "__main__":
-    test =  Speaker()
-    test.say("hello")
+    Speaker.demo_say()
 
 # class Recorder():
 #     def __init__(self, chunk=1024, channels=1, rate=64000):

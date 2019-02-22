@@ -16,7 +16,6 @@ import numpy as np
 模块功能：从树莓派中获取图片
 #利用Mjpg_treamer 服务其，获树莓派中获取数据流，转换为OPENCV格式的图片
 """
-
 class Camera:
     def __init__(self):
         print('init the mjpg_streamer')
@@ -108,7 +107,7 @@ class Camera:
         * None
         """
 
-        self.showThread = threading.Thread(target=self.socket_get_image_thread)
+        self.showThread = threading.Thread(target=self.socket_get_image_thread())
         self.showThread.start()
         time.sleep(1) #等待图像送达
 
@@ -169,16 +168,30 @@ class Camera:
         """
         return self.image
 
+    def demo_connect_rpi_sever():
+        """
+        *function:demo_connect_rpi_sever
+        功能：连接树莓派的服务
+        ________
+        Parameters
+        * None
+        ————
+        Returns
+        -------
+        * None
+        """
+        receiveImg = Camera()
+        receiveImg.connect_http("172.16.10.227")#Ip为树莓派的Ip
+        receiveImg.start_receive_image_server()#启动数据获取线程
+        receiveImg.open_window()#实时图像显示
 
 """
 @@@@例子：
-#利用windows库实现朗读功能
+#获取树莓派的摄像头数据流
 """
 if __name__ == "__main__":
-    receiveImg = Camera()
-    receiveImg.connect_http("172.16.10.227")
-    receiveImg.start_receive_image_server()
-    receiveImg.open_window()
+    Camera.demo_connect_rpi_sever()
+
 
 
 
