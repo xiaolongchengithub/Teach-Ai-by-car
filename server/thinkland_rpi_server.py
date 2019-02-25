@@ -3,21 +3,39 @@ import socket
 import threading
 import time
 
-##################宏定义
-ONE_PARA = 1
-TWO_PARA = 2
-
-DERECT_CALL = 1
-THREAD_CALL = 0
-RETURN_CALL = 2
-
+__authors__ = 'xiao long & xu lao shi'
+__version__ = 'version 0.01'
+__license__ = 'Copyright...'
 
 class Server():
+    """
+    *在树莓派上搭建服务，提供远程调用树莓上的运动函数
+    *get_ip 获取本地的IP
+    *set_ip 设定ip
+    *function_registration 注册函数，记录函数的地址
+    *star_server 打开服务线程
+    *move_thread 对某个调用开启线程服务
+    *net_call_function 解析数据并调用服务
+    *demo_sever @@例子启动服务
+
+    """
+    ##################宏定义
+    ONE_PARA = 1
+    TWO_PARA = 2
+
+    DERECT_CALL = 1
+    THREAD_CALL = 0
+    RETURN_CALL = 2
     def __init__(self):
         self.car = Car()
         self.Function_List = {}
 
     def get_ip(self):
+        """
+        *function:get_ip
+        功能：获取本地Ip
+        """
+
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             s.connect(('www.baidu.com', 0))
@@ -114,9 +132,9 @@ class Server():
             para = func[key]
             num = len(para)
 
-            if num == ONE_PARA:
+            if num == Server.ONE_PARA:
                 self.Function_List[key](para[0])
-            if num == TWO_PARA:
+            if num == Server.TWO_PARA:
                 self.Function_List[key](para[0], para[1])
         self.stop_all_wheels()
 
@@ -150,34 +168,34 @@ class Server():
                     process = strJson['function']
                     mode    = strJson['mode']
 
-                    if mode == THREAD_CALL:
+                    if mode == Server.THREAD_CALL:
                         moveThread = threading.Thread(None, target=self.move_thread, args=(process,))
                         moveThread.start()
                         conn.send(bytes('res ok', encoding='utf8'))
 
                     else:
-                        if mode == DERECT_CALL:
+                        if mode == Server.DERECT_CALL:
                             for key in process:
                                 para = process[key]
                                 num = len(para)
 
-                                if num == ONE_PARA:
+                                if num == Server.ONE_PARA:
                                     self.Function_List[key](para[0])
-                                if num == TWO_PARA:
+                                if num == Server.TWO_PARA:
                                     self.Function_List[key](para[0], para[1])
                             conn.send(bytes('res ok', encoding='utf8'))
                         else:
-                            if mode == RETURN_CALL:
+                            if mode == Server.RETURN_CALL:
                                 print('return call')
                                 for key in process:
                                     para = process[key]
                                     num = len(para)
 
-                                    if num == ONE_PARA:
+                                    if num == Server.ONE_PARA:
                                         print('call one para')
                                         re = self.Function_List[key](para[0])
                                         print(re)
-                                    if num == TWO_PARA:
+                                    if num == Server.TWO_PARA:
                                         print('call two para')
                                         re = self.Function_List[key](para[0], para[1])
                                 strRe = "%d"%(re)
@@ -188,8 +206,8 @@ class Server():
                     conn.close()
                     break
 
-    @staticmethod
-    def server_demo():
+    @staticmethod 在本地启动服务
+    def demo_sever():
         """
         *function:server_demo
         功能：在本机上开启服务
@@ -205,7 +223,7 @@ def main():
     """
     启动服务例子
     """
-    Server().server_demo()
+    Server().demo_sever()
 
 """
 @@@@例子：

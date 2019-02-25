@@ -11,12 +11,25 @@ import numpy as np
 import urllib.request
 import numpy as np
 
+__authors__ = 'xiao long & xu lao shi'
+__version__ = 'version 0.02'
+__license__ = 'Copyright...'
 
-"""
-模块功能：从树莓派中获取图片
-#利用Mjpg_treamer 服务其，获树莓派中获取数据流，转换为OPENCV格式的图片
-"""
 class Camera:
+    """
+    模块功能：从树莓派中获取图片
+    利用Mjpg_treamer 服务其，获树莓派中获取数据流，转换为OPENCV格式的图片
+    *connect_http 远程连接
+    *socket_get_image_thread 获取图像数据
+    *open_window 打开显示窗口
+    *close_window 关闭显示窗口
+    *start_receive_image_server 启动图像采集线程
+    *show_image 图像显示
+    *set_ai 引入图像识别功能
+    *take_picture 采集一张图像数据
+    *save_picture 保存一张图像
+    """
+
     def __init__(self):
         print('init the mjpg_streamer')
         self.__Show_Flag = False
@@ -38,10 +51,10 @@ class Camera:
         connectPort = 'http://%s:8080/?action=stream'%port
         self.stream = urllib.request.urlopen(connectPort)
 
-    def socket_get_image_thread(self):
+    def http_get_image_thread(self):
         # 按照格式打包发送帧数和分辨率
         """
-        *function:socket_get_image_thread
+        *function:http_get_image_thread
         功能：从服务器获取，并解密获取图片
         ________
         Parameters
@@ -107,7 +120,7 @@ class Camera:
         * None
         """
 
-        self.showThread = threading.Thread(target=self.socket_get_image_thread())
+        self.showThread = threading.Thread(target=self.http_get_image_thread)
         self.showThread.start()
         time.sleep(1) #等待图像送达
 
@@ -168,30 +181,63 @@ class Camera:
         """
         return self.image
 
-    def demo_connect_rpi_sever():
+    def save_picture(self , mat, path):
         """
-        *function:demo_connect_rpi_sever
-        功能：连接树莓派的服务
+        *function:takePicture
+        功能：从视频流中获取一张图片
         ________
         Parameters
         * None
         ————
         Returns
         -------
-        * None
+        * Mat
+        返回一张图片
+        """
+        cv2.imwrite(path,mat)
+
+    @staticmethod
+    def demo_collect_picture_windowsOrlinux():
+        """
+        启动这个例子之前需要在树莓派上启动服务 python thinkland_rpi_sever.py
+        在windows/linux上使用此例子
+
         """
         receiveImg = Camera()
-        receiveImg.connect_http("172.16.10.227")#Ip为树莓派的Ip
-        receiveImg.start_receive_image_server()#启动数据获取线程
-        receiveImg.open_window()#实时图像显示
+        receiveImg.connect_http("172.16.10.227") ##Ip 需要根据实际进行修改（树莓派的Ip）
+        receiveImg.start_receive_image_server()
+        receiveImg.open_window()
+
+
+    @staticmethod
+    def demo_collect_picture_ios():
+        """
+        启动这个例子之前需要在树莓派上启动服务 python thinkland_rpi_sever.py
+        在ios上使用此例子
+
+        """
+        global receiveImg
+
+        mainThread = threading.Thread(target=main)
+        mainThread.start()
+        receiveImg.connect_http("172.16.10.227")
+        receiveImg.http_get_image_thread()
+
+
+
+def main():
+    while True:
+        input("Press Enter to open camera")
+        receiveImg.open_window()
+        input("Press Enter again to close it")
+        receiveImg.close_window()
 
 """
 @@@@例子：
-#获取树莓派的摄像头数据流
+#获取图片
 """
 if __name__ == "__main__":
-    Camera.demo_connect_rpi_sever()
-
+    Camera.demo_collect_picture_windowsOrlinux()
 
 
 

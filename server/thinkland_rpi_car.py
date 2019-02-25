@@ -7,6 +7,34 @@ __version__ = 'version 0.01'
 __license__ = 'Copyright...'
 
 class Car:
+    """
+    *类在树莓派上直接控制小车的运动，例如直行、转弯等
+    *__init_level  初始化io输出类型
+    *__init_pwm    初始化pwm
+    *__led_light    r、g、b同时控制，内部调用
+    *led_light      打开灯
+    *turn_on_led    打开灯（r、g、b）一种
+    *turn_off_led   关灯
+    *stop_all_wheels 停止运动
+    *run_forward  向前动
+    *run_reverse 向后转
+    *turn_left 向左转
+    *turn_right 向右转
+    *spin_left 向左转弯
+    *spin_right 向右转弯
+    *distance_from_obstacle 超声波测距
+    *line_tracking_turn_type 巡线类型
+    *demo_line_tracking @@例子，巡线
+    *demo_cruising @@例子，漫游
+    *obstacle_status_from_infrared 障碍物类型
+    *turn_servo_ultrasonic 多个角度进行超声波测距
+    *obstacle_status_from_ultrasound 超声波测距状态
+    *check_left_obstacle_with_sensor 左侧是否有障碍物
+    *check_right_obstacle_with_sensor 右侧是否有障碍物
+    *servo_front_rotate 超声波测距检测
+    *servo_camera_rotate 控制相机的舵机进行旋转
+    *servo_camera_rise_fall 控制相机的舵机进行抬升下降
+    """
     ################################################################
     #  直流电机引脚定义
     PIN_MOTOR_LEFT_FORWARD = 20
@@ -80,8 +108,6 @@ class Car:
         self.LED_FLAG[Car.LED_R] = True
         self.LED_FLAG[Car.LED_G] = True
         self.LED_FLAG[Car.LED_B] = True
-
-
 
     def __init_level(self):#私有变量 外部不能调用
         """
@@ -520,72 +546,6 @@ class Car:
         print('Turn type = {}'.format(turn))
         return turn
 
-    def demo_line_tracking(speed=50):
-        """
-        Demonstrates the line tracking mode using the line tracking sensor
-        """
-        time.sleep(2)
-        car = Car()
-
-        try:
-            while True:
-                turn = car.line_tracking_turn_type()
-                if turn == 'straight':
-                    car.run_forward(speed=speed)
-                elif turn == 'smooth_left':
-                    car.turn_left(speed=speed * 0.75)
-                elif turn == 'smooth_right':
-                    car.turn_right(speed=speed * 0.75)
-                elif turn == 'regular_left_turn':
-                    car.spin_left(speed=speed * 0.75)
-                elif turn == 'regular_right_turn':
-                    car.spin_right(speed=speed * 0.75)
-                elif turn == 'sharp_left_turn':
-                    car.spin_left(speed=speed)
-                elif turn == 'sharp_right_turn':
-                    car.spin_right(speed=speed)
-        except KeyboardInterrupt:
-            car.stop_completely()
-
-    @staticmethod  #自动巡游功能
-    def demo_cruising():
-        """
-        Demonstrates a cruising car that avoids obstacles in a room
-
-        * Use infrared sensors and ultrasonic sensor to gauge obstacles
-        * Use LED lights to indicate running/turning decisions
-        """
-        car = Car()
-        try:
-            while True:
-                obstacle_status_from_infrared = car.obstacle_status_from_infrared()
-                should_turn = True
-                if obstacle_status_from_infrared == 'clear':
-                    should_turn = False
-                    obstacle_status_from_ultrasound = \
-                        car.obstacle_status_from_ultrasound()
-                    if obstacle_status_from_ultrasound == 'clear':
-                        car.led_light('green')
-                        car.run_forward(speed=10)
-                    elif obstacle_status_from_ultrasound == 'approaching_obstacle':
-                        car.led_light('yellow')
-                        car.run_forward(speed=5)
-                    else:
-                        should_turn = True
-                if should_turn:
-                    car.run_reverse(duration=0.02)
-                    if obstacle_status_from_infrared == 'only_right_blocked':
-                        car.led_light('purple')
-                        car.spin_left(duration=random.uniform(0.25, 1.0))
-                    elif obstacle_status_from_infrared == 'only_left_blocked':
-                        car.led_light('cyan')
-                        car.spin_right(duration=random.uniform(0.25, 1.0))
-                    else:
-                        car.led_light('red')
-                        car.spin_right(duration=random.uniform(0.25, 1.0))
-        except KeyboardInterrupt:
-            car.stop_completely()
-
     def obstacle_status_from_infrared(self):
         """
         Return obstacle status obtained by infrared sensors that
@@ -784,9 +744,76 @@ class Car:
         self.__pwm_up_down_servo_pos.ChangeDutyCycle(0)
         time.sleep(0.02)
 
+    @staticmethod  #自动巡游功能
+    def demo_cruising():
+        """
+        Demonstrates a cruising car that avoids obstacles in a room
 
+        * Use infrared sensors and ultrasonic sensor to gauge obstacles
+        * Use LED lights to indicate running/turning decisions
+        """
+        car = Car()
+        try:
+            while True:
+                obstacle_status_from_infrared = car.obstacle_status_from_infrared()
+                should_turn = True
+                if obstacle_status_from_infrared == 'clear':
+                    should_turn = False
+                    obstacle_status_from_ultrasound = \
+                        car.obstacle_status_from_ultrasound()
+                    if obstacle_status_from_ultrasound == 'clear':
+                        car.led_light('green')
+                        car.run_forward(speed=10)
+                    elif obstacle_status_from_ultrasound == 'approaching_obstacle':
+                        car.led_light('yellow')
+                        car.run_forward(speed=5)
+                    else:
+                        should_turn = True
+                if should_turn:
+                    car.run_reverse(duration=0.02)
+                    if obstacle_status_from_infrared == 'only_right_blocked':
+                        car.led_light('purple')
+                        car.spin_left(duration=random.uniform(0.25, 1.0))
+                    elif obstacle_status_from_infrared == 'only_left_blocked':
+                        car.led_light('cyan')
+                        car.spin_right(duration=random.uniform(0.25, 1.0))
+                    else:
+                        car.led_light('red')
+                        car.spin_right(duration=random.uniform(0.25, 1.0))
+        except KeyboardInterrupt:
+            car.stop_completely()
 
+    @staticmethod  #自动巡线功能
+    def demo_line_tracking(speed=50):
+        """
+        Demonstrates the line tracking mode using the line tracking sensor
+        """
+        time.sleep(2)
+        car = Car()
 
+        try:
+            while True:
+                turn = car.line_tracking_turn_type()
+                if turn == 'straight':
+                    car.run_forward(speed=speed)
+                elif turn == 'smooth_left':
+                    car.turn_left(speed=speed * 0.75)
+                elif turn == 'smooth_right':
+                    car.turn_right(speed=speed * 0.75)
+                elif turn == 'regular_left_turn':
+                    car.spin_left(speed=speed * 0.75)
+                elif turn == 'regular_right_turn':
+                    car.spin_right(speed=speed * 0.75)
+                elif turn == 'sharp_left_turn':
+                    car.spin_left(speed=speed)
+                elif turn == 'sharp_right_turn':
+                    car.spin_right(speed=speed)
+        except KeyboardInterrupt:
+            car.stop_completely()
+"""
+@@@@主函数：
+#在里面测试本地各种功能
+"""
 def main():
   Car.demo_cruising()#例子漫游服务
 """

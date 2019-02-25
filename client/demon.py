@@ -9,13 +9,23 @@ import tensorflow as tf
 # mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
 
 
-x = np.array([[12,3,34,55],[2,2,2,2],[2,32,1,5]])
-print(type(x))
-x1 = x[1,:]
-y = x - x1
-print(x1)
-print(y)
-print(np.argmin(y,1))
+def test():
+    print(22)
+    while True:
+        input = (np.random.rand(2)-0.5)*20
+        output= input[1]>input[0]
+        yield input,output.astype(np.float32)
+
+print(11)
+test()
+print(33)
+# x = np.array([[12,3,34,55],[2,2,2,2],[2,32,1,5]])
+# print(type(x))
+# x1 = x[1,:]
+# y = x - x1
+# print(x1)
+# print(y)
+# print(np.argmin(y,1))
 #
 # # #这个例子限制了样本的数目
 # Xtr, Ytr = mnist.train.next_batch(1000) #1000 条候选样本，测试样本跟候选样本比较，得到最近的K个样本，然后k个样本的标签大多数为某类，测试样本就为某类

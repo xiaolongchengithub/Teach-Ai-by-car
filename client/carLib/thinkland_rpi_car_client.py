@@ -2,23 +2,50 @@ import socket
 import json
 import time
 
-################################宏定义
-DERECT_CALL = 1
-THREAD_CALL = 0
-RETURN_CALL = 2
+__authors__ = 'xiao long & xu lao shi'
+__version__ = 'version 0.02'
+__license__ = 'Copyright...'
 
-LED_R       = 0
-LED_G       = 1
-LED_B       = 2
-
-HAVE_OBSTACLE = 0
-NO_OBSTACLE   = 1
-
-OPEN  = 1
-CLOSE = 1
 ##############################
 
 class carControl:
+    """
+    *在客服端对小车的运动进行了封装 包含一下函数：
+    *connect 网络连接
+    *__send_order  发送数据流
+    *servo_camera_rotate 控制相机的舵机进行旋转
+    *servo_camera_rise_fall 控制相机的舵机上升和下降
+    *servo_front_rotate  控制超声波的舵机进行旋转
+    *turn_on_led 打开灯
+    *turn_off_led 关灯
+    *close_all_led 关闭所有的灯
+    *stop_all_wheels 停止运动
+    *stop_completely 停止运动 并关闭使能
+    *run_forward 车向前进
+    *run_reverse 车倒转
+    *turn_left 车左转
+    *turn_right 车右转
+    *spin_left 车左拐弯
+    *spin_right 车右拐弯
+    *distance_from_obstacle 超声波测距
+    *check_left_obstacle_with_sensor 左红外对管检测障碍物是否存在
+    *check_right_obstacle_with_sensor  右红外对管检测障碍物是否存在
+    """
+    ################################宏定义
+    DERECT_CALL = 1
+    THREAD_CALL = 0
+    RETURN_CALL = 2
+
+    LED_R = 0
+    LED_G = 1
+    LED_B = 2
+
+    HAVE_OBSTACLE = 0
+    NO_OBSTACLE = 1
+
+    OPEN = 1
+    CLOSE = 1
+
     def __init__(self):
         self.ip_port  = ('172.16.10.227', 12347)
         self.jsonData = '{"dir":1,"speed":0,"servo":0}';
@@ -77,7 +104,7 @@ class carControl:
         Func_Para                        = {}
         Func_Para["servo_camera_rotate"] = [angle]
         self.Dic_Para["function"]        = Func_Para
-        self.Dic_Para["mode"]            = THREAD_CALL
+        self.Dic_Para["mode"]            = carControl.THREAD_CALL
         self.__send_order(self.Dic_Para)
 
     def servo_camera_rise_fall(self , angle):
@@ -97,7 +124,7 @@ class carControl:
         Func_Para                           = {}
         Func_Para["servo_camera_rise_fall"] = [angle]
         self.Dic_Para["function"]           = Func_Para
-        self.Dic_Para["mode"]               = THREAD_CALL
+        self.Dic_Para["mode"]               = carControl.THREAD_CALL
         self.__send_order(self.Dic_Para)
 
     def servo_front_rotate(self, angle):
@@ -116,7 +143,7 @@ class carControl:
             Func_Para                       = {}
             Func_Para["servo_front_rotate"] = [angle]
             self.Dic_Para["function"]       = Func_Para
-            self.Dic_Para["mode"]           = THREAD_CALL
+            self.Dic_Para["mode"]           = carControl.THREAD_CALL
             self.__send_order(self.Dic_Para)
 ########################################################################################车灯控制
     def turn_on_led(self,  led):
@@ -135,7 +162,7 @@ class carControl:
             Func_Para                       = {}
             Func_Para["turn_on_led"]           = [led]
             self.Dic_Para["function"]       = Func_Para
-            self.Dic_Para["mode"]           = THREAD_CALL
+            self.Dic_Para["mode"]           = carControl.THREAD_CALL
             self.__send_order(self.Dic_Para)
 
     def turn_off_led(self,  led):
@@ -154,7 +181,7 @@ class carControl:
             Func_Para                       = {}
             Func_Para["turn_off_led"]       = [led]
             self.Dic_Para["function"]       = Func_Para
-            self.Dic_Para["mode"]           = THREAD_CALL
+            self.Dic_Para["mode"]           = carControl.THREAD_CALL
             self.__send_order(self.Dic_Para)
 
     def close_all_led(self):
@@ -170,21 +197,21 @@ class carControl:
             * None
             """
             Func_Para                       = {}
-            Func_Para["close_led"]          = [LED_R]
+            Func_Para["close_led"]          = [carControl.LED_R]
             self.Dic_Para["function"]       = Func_Para
-            self.Dic_Para["mode"]           = THREAD_CALL
+            self.Dic_Para["mode"]           = carControl.THREAD_CALL
             self.__send_order(self.Dic_Para)
 
             Func_Para                       = {}
-            Func_Para["close_led"]          = [LED_G]
+            Func_Para["close_led"]          = [carControl.LED_G]
             self.Dic_Para["function"]       = Func_Para
-            self.Dic_Para["mode"]           = THREAD_CALL
+            self.Dic_Para["mode"]           = carControl.THREAD_CALL
             self.__send_order(self.Dic_Para)
 
             Func_Para                       = {}
-            Func_Para["close_led"]          = [LED_B]
+            Func_Para["close_led"]          = carControl.LED_B]
             self.Dic_Para["function"]       = Func_Para
-            self.Dic_Para["mode"]           = THREAD_CALL
+            self.Dic_Para["mode"]           = carControl.THREAD_CALL
             self.__send_order(self.Dic_Para)
 #########################################################################小车速度控制
     def stop_all_wheels(self, delay = 0):
@@ -194,7 +221,7 @@ class carControl:
         Func_Para = {}
         Func_Para["stop_all_wheels"] = [delay]
         self.Dic_Para["function"]    = Func_Para
-        self.Dic_Para["mode"]        = DERECT_CALL
+        self.Dic_Para["mode"]        = carControl.DERECT_CALL
         self.__send_order(self.Dic_Para)
 
     def stop_completely(self,delay = 0):
@@ -204,7 +231,7 @@ class carControl:
         Func_Para = {}
         Func_Para["stop_completely"] = [delay]
         self.Dic_Para["function"]    = Func_Para
-        self.Dic_Para["mode"]        = DERECT_CALL
+        self.Dic_Para["mode"]        = carControl.DERECT_CALL
         self.__send_order(self.Dic_Para)
 
 
@@ -223,7 +250,7 @@ class carControl:
         Func_Para = {}
         Func_Para["run_forward"] = [speed,duration]
         self.Dic_Para["function"]    = Func_Para
-        self.Dic_Para["mode"]        = DERECT_CALL
+        self.Dic_Para["mode"]        = carControl.DERECT_CALL
         self.__send_order(self.Dic_Para)
 
     def run_reverse(self, speed=10, duration=0.0):
@@ -244,7 +271,7 @@ class carControl:
         Func_Para = {}
         Func_Para["run_reverse"] = [speed,duration]
         self.Dic_Para["function"]    = Func_Para
-        self.Dic_Para["mode"]        = DERECT_CALL
+        self.Dic_Para["mode"]        = carControl.DERECT_CALL
         self.__send_order(self.Dic_Para)
 
     def turn_left(self, speed=10, duration=0.0):
@@ -265,7 +292,7 @@ class carControl:
         Func_Para = {}
         Func_Para["turn_left"] = [speed,duration]
         self.Dic_Para["function"]    = Func_Para
-        self.Dic_Para["mode"]        = DERECT_CALL
+        self.Dic_Para["mode"]        = carControl.DERECT_CALL
         self.__send_order(self.Dic_Para)
 
     def turn_right(self, speed=10, duration=0.0):
@@ -286,7 +313,7 @@ class carControl:
         Func_Para = {}
         Func_Para["turn_right"] = [speed,duration]
         self.Dic_Para["function"]    = Func_Para
-        self.Dic_Para["mode"]        = DERECT_CALL
+        self.Dic_Para["mode"]        = carControl.DERECT_CALL
         self.__send_order(self.Dic_Para)
 
     def spin_left(self, speed=10, duration=0.0):
@@ -307,7 +334,7 @@ class carControl:
         Func_Para = {}
         Func_Para["spin_left"]       = [speed,duration]
         self.Dic_Para["function"]    = Func_Para
-        self.Dic_Para["mode"]        = DERECT_CALL
+        self.Dic_Para["mode"]        = carControl.DERECT_CALL
         self.__send_order(self.Dic_Para)
 
     def spin_right(self, speed=10, duration=0.0):
@@ -328,7 +355,7 @@ class carControl:
         Func_Para = {}
         Func_Para["spin_right"]      = [speed,duration]
         self.Dic_Para["function"]    = Func_Para
-        self.Dic_Para["mode"]        = DERECT_CALL
+        self.Dic_Para["mode"]        = carControl.DERECT_CALL
         self.__send_order(self.Dic_Para)
 ##############################################################################超声波检测
     def distance_from_obstacle(self ,val = 0):
@@ -348,7 +375,7 @@ class carControl:
         Func_Para = {}
         Func_Para["distance_from_obstacle"] = [val]
         self.Dic_Para["function"]           = Func_Para
-        self.Dic_Para["mode"]               = RETURN_CALL
+        self.Dic_Para["mode"]               = carControl.RETURN_CALL
         dis = self.__send_order(self.Dic_Para)
         return int(dis)
 
@@ -370,7 +397,7 @@ class carControl:
         Func_Para = {}
         Func_Para["check_left_obstacle_with_sensor"] = [0]
         self.Dic_Para["function"]                    = Func_Para
-        self.Dic_Para["mode"]                        = RETURN_CALL
+        self.Dic_Para["mode"]                        = carControl.RETURN_CALL
         dis = self.__send_order(self.Dic_Para)
         return int(dis)
 
@@ -391,23 +418,69 @@ class carControl:
         Func_Para = {}
         Func_Para["check_right_obstacle_with_sensor"] = [0]
         self.Dic_Para["function"]                     = Func_Para
-        self.Dic_Para["mode"]                         = RETURN_CALL
+        self.Dic_Para["mode"]                         = carControl.RETURN_CALL
         dis = self.__send_order(self.Dic_Para)
         return dis
+
+    @staticmethod
+    def demo_ranging():
+        """
+        例子：超声波测距
+        :return:None
+        """
+        test = carControl()
+        test.connect(('172.16.10.227', 12347)) ##需要修改Ip,需要提取指定树莓派的ip
+
+        while True:
+            dis = test.distance_from_obstacle()  # 超声波测距
+            print(dis)
+
+    @staticmethod
+    def demo_run():
+        """
+        例子：走20秒后停止,然后用卷尺亮出长度，找到当前速度，时间和距离的比值关系
+        """
+        test = carControl()
+        test.connect(('172.16.10.227', 12347)) ##需要修改Ip,需要提取指定树莓派的ip
+
+        while True:
+            test.run_forward(10,20)
+
+    @staticmethod
+    def demo_run():
+        """
+        例子：走一个1米的正方形，需要卷尺，量角器，笔等工具
+        """
+        test = carControl()
+        test.connect(('172.16.10.227', 12347)) ##需要修改Ip,需要提取指定树莓派的ip
+
+        while True:
+            test.run_forward(10,20)#需要提取保持速度不变，修改时间，然后用卷尺量出其关系
+            test.turn_left(4,6)#时间6s，需要修改，看转多少需要
+            test.run_forward(10,20)
+            test.turn_left(4,6)#时间6s，需要修改，看转多少需要
+            test.run_forward(10,20)#需要提取保持速度不变，修改时间，然后用卷尺量出其关系
+            test.turn_left(4,6)#时间6s，需要修改，看转多少需要
+            test.run_forward(10,20)
+            test.turn_left(4,6)#时间6s，需要修改，看转多少需要
+
+
+
 ################################################################################
+"""
+超声波的控制
+"""
+def main():
+    carControl.demo_servo_front_roate()
 
 """
 @@@@例子：
 #利用库进行简单超声波测距和舵机转动
 """
 if __name__ == "__main__":
-    test = carControl()
-    test.connect(('172.16.10.227', 12347))
+    mainThread = threading.Thread(target=main)
+    mainThread.start()
 
-    while True:
-        dis = test.check_right_obstacle_with_sensor()#超声波测距
-        print(dis)
-    test.servo_front_rotate(20)
 
 
 
