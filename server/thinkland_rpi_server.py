@@ -92,10 +92,16 @@ class Server():
         self.Function_List['demo_cruising']= Car.demo_cruising
 
         #超声波检测函数注册
-        self.Function_List['check_right_obstacle_with_sensor']  = self.car.check_right_obstacle_with_sensor
+        self.Function_List['distance_from_obstacle']  = self.car.distance_from_obstacle
 
         #红外对管检测函数注册
         self.Function_List['check_left_obstacle_with_sensor']  = self.car.check_left_obstacle_with_sensor
+        self.Function_List['check_right_obstacle_with_sensor']  = self.car.check_right_obstacle_with_sensor
+        self.Function_List['obstacle_status_from_infrared'] = self.car.obstacle_status_from_infrared
+
+        #黑白传感器检测情况
+        self.Function_List['line_tracking_turn_type'] = self.car.line_tracking_turn_type
+
 
     def star_server(self):
         """
@@ -136,7 +142,6 @@ class Server():
                 self.Function_List[key](para[0])
             if num == Server.TWO_PARA:
                 self.Function_List[key](para[0], para[1])
-        self.stop_all_wheels()
 
     def net_call_function(self, Function_List):
         """
@@ -198,7 +203,7 @@ class Server():
                                     if num == Server.TWO_PARA:
                                         print('call two para')
                                         re = self.Function_List[key](para[0], para[1])
-                                strRe = "%d"%(re)
+                                strRe = "%s"%(re)
                                 print(strRe)
                                 conn.send(bytes(strRe, encoding='utf8'))
                 except:
@@ -206,7 +211,7 @@ class Server():
                     conn.close()
                     break
 
-    @staticmethod 在本地启动服务
+    @staticmethod #在本地启动服务
     def demo_sever():
         """
         *function:server_demo
@@ -216,8 +221,6 @@ class Server():
         ip   = test.get_ip() #获取Ip
         test.set_ip(ip)#设置Ip
         test.star_server()
-
-
 
 def main():
     """

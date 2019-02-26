@@ -31,10 +31,9 @@ class Camera:
     """
 
     def __init__(self):
-        print('init the mjpg_streamer')
         self.__Show_Flag = False
 
-    def connect_http(self,port):
+    def connect_http(self,port = "172.16.10.227"):
         """
         *function:socket_connect
         功能：连接远程的 mjpg_streamer服务器
@@ -50,6 +49,10 @@ class Camera:
         """
         connectPort = 'http://%s:8080/?action=stream'%port
         self.stream = urllib.request.urlopen(connectPort)
+        print('init the mjpg_streamer')
+
+    def http_close(self):
+        urllib.request.urlcleanup()
 
     def http_get_image_thread(self):
         # 按照格式打包发送帧数和分辨率
@@ -201,43 +204,88 @@ class Camera:
         """
         启动这个例子之前需要在树莓派上启动服务 python thinkland_rpi_sever.py
         在windows/linux上使用此例子
-
+        如果不open_window，Ios系统也可以按照这个方式调用。IOS在系统图像显示的时候会出现卡死的问题
         """
-        receiveImg = Camera()
-        receiveImg.connect_http("172.16.10.227") ##Ip 需要根据实际进行修改（树莓派的Ip）
-        receiveImg.start_receive_image_server()
-        receiveImg.open_window()
+        camera = Camera()
+        camera.connect_http("172.16.10.227") ##Ip 需要根据实际进行修改（树莓派的Ip）
+        camera.start_receive_image_server()
+        camera.open_window()
+
+    @staticmethod
+    def demo_only_take_picture():
+        """
+        不实时显示图像，截取当前图片，并保存
+        """
+        camera = Camera()
+        camera.connect_http("172.16.10.227") ##Ip 需要根据实际进行修改（树莓派的Ip）
+        camera.start_receive_image_server()
+
+        picture = camera.take_picture()
+        camera.save_picture(picture,'./test.jpg')
 
 
     @staticmethod
-    def demo_collect_picture_ios():
+    def demo_collect_picture_windowsOrlinux_save_one_picture():
         """
-        启动这个例子之前需要在树莓派上启动服务 python thinkland_rpi_sever.py
-        在ios上使用此例子
-
+        启动服务，并截取一张张片，并保存
         """
-        global receiveImg
+        camera = Camera()
+        camera.connect_http("172.16.10.227") ##Ip 需要根据实际进行修改（树莓派的Ip）
+        camera.start_receive_image_server()
+        camera.open_window()
 
-        mainThread = threading.Thread(target=main)
+        picture = camera.take_picture()
+        camera.save_picture(picture,'./test.jpg')
+
+
+    @staticmethod
+    def demo_show_picture_ios():
+        """
+        在IOS上实时显示树莓派上的图像流
+        """
+        global ios_camera
+
+        mainThread = threading.Thread(target=window)
         mainThread.start()
-        receiveImg.connect_http("172.16.10.227")
-        receiveImg.http_get_image_thread()
+        ios_camera = Camera()
+        ios_camera.connect_http("172.16.10.227")
+        ios_camera.http_get_image_thread()
 
 
 
-def main():
+def window():
+    global ios_camera
     while True:
         input("Press Enter to open camera")
-        receiveImg.open_window()
+        ios_camera.open_window()
         input("Press Enter again to close it")
-        receiveImg.close_window()
+        ios_camera.close_window()
 
 """
 @@@@例子：
 #获取图片
 """
+
+camera_learning_status = 0  #相机学习等级 0 :在客服端实时显示图像的例子
+                            #相机学习等级 1 :在客服端实时显示图像，并从中截取一张图片用来显示
+                            #相机学习等级 2 ：不现实图像，并截取一张图像
+                            #相机学习等级 3： IOS系统实时显示
+
 if __name__ == "__main__":
-    Camera.demo_collect_picture_windowsOrlinux()
+    """
+    从树莓派中获取视频流，为了排除干扰，最好把电脑上的杀毒软件等关掉
+    """
+
+    camera_learning_status = int(input("输入相机学习等级(0:图像显示，1：显示并保存一张图到本地，2：不显示，只保存图像，3：Ios图像显示):"))
+    print(camera_learning_status)
+    if camera_learning_status == 0:
+        Camera.demo_collect_picture_windowsOrlinux()
+    elif camera_learning_status == 1:
+        Camera.demo_collect_picture_windowsOrlinux_save_one_picture()
+    elif  camera_learning_status == 2:
+        Camera.demo_only_take_picture()
+    elif  camera_learning_status == 3:
+        Camera.demo_show_picture_ios()
 
 
 

@@ -85,22 +85,31 @@ class Car:
     OPEN = GPIO.HIGH
     CLOSE = GPIO.LOW
 
+    LINE_MOVE_TYPE = 0
+    LINE_BACK_FORTH_MOVE_TYPE = 1
+    TURN_CORNER_MOVE_TYPE = 2
+    SPRIN_MOVE_TYPE = 3
+    RECT_MOVE_TYPE = 4
+
+    SENSOR_INFRARED_TYPE = 0
+    SENSOR_BLACK_WIGHT_TYPE = 1
+    SENSOR_ULTRASONIC_TYPE = 2
     #变量
     Car_Init = False
 
     def __init__(self):
         # 类的构造函数
         # 设置GPIO口为BCM编码方式
-        if Car.Car_Init == False:#保证只初始化一次
-            GPIO.setmode(GPIO.BCM)
-            # 忽略警告信息
-            GPIO.setwarnings(False)
-            # 初始化IO
-            self.__init_level()
-            #初始化 pwm
-            self.__init_pwm()
 
-            Car.Car_Init = True
+        GPIO.setmode(GPIO.BCM)
+        # 忽略警告信息
+        GPIO.setwarnings(False)
+        # 初始化IO
+        self.__init_level()
+        #初始化 pwm
+        self.__init_pwm()
+
+        Car.Car_Init = True
         #函数列表，用于存放函数的容器
         self.Function_List = {}
         #用于灯光控制标志
@@ -479,11 +488,12 @@ class Car:
         t2 = time.time()
         distance = ((t2 - t1) * 340 / 2) * 100
         print(distance)
-        return distance
+        return str(distance)
 
-    def line_tracking_turn_type(self):
+    def line_tracking_turn_type(self ,num = 4):
         """
         Indicates the type of turn required given current sensor values
+        num = 4,是为了上层调用而设定
 
         Returns
         -------
@@ -546,7 +556,7 @@ class Car:
         print('Turn type = {}'.format(turn))
         return turn
 
-    def obstacle_status_from_infrared(self):
+    def obstacle_status_from_infrared(self ,num = 0):
         """
         Return obstacle status obtained by infrared sensors that
         are situated at the left front and right front of the Car.
@@ -602,7 +612,8 @@ class Car:
 
         for i in range(10):  # do this for multiple times just to make sure
             self.__pwm_front_servo_pos.ChangeDutyCycle(2.5 + 10 * degree/180)
-        time.sleep(0.2)  # give enough time to settle
+        self.__pwm_front_servo_pos.ChangeDutyCycle(0)
+        time.sleep(0.02) # give enough time to settle
 
     def obstacle_status_from_ultrasound(self, dir='center'):
         """
@@ -654,9 +665,9 @@ class Car:
         have_obstacle = GPIO.input(Car.PIN_AVOID_LEFT_SENSOR)
         time.sleep(delay)
         if have_obstacle :
-            return Car.NO_OBSTACLE
+            return str(Car.NO_OBSTACLE)
         else:
-            return Car.HAVE_OBSTACLE
+            return str(Car.HAVE_OBSTACLE)
 
     def check_right_obstacle_with_sensor(self ,delay = 0):
         """
@@ -677,9 +688,9 @@ class Car:
         time.sleep(delay)
 
         if have_obstacle:
-            return Car.NO_OBSTACLE
+            return str(Car.NO_OBSTACLE)
         else:
-            return Car.HAVE_OBSTACLE
+            return str(Car.HAVE_OBSTACLE)
 
     def servo_front_rotate(self , pos):
         """
@@ -810,15 +821,129 @@ class Car:
                     car.spin_right(speed=speed)
         except KeyboardInterrupt:
             car.stop_completely()
+
+    @staticmethod  #输出电平，控制小车的灯的颜色
+    def demo_light():
+        """
+        控制灯
+        - one of ['red', 'green', 'blue',
+          'yellow', 'cyan', 'purple'
+          'white', 'off']
+        """
+        car = Car()
+        car.led_light('red')
+
+    @staticmethod  #小车的直行、转动、正方形
+    def demo_car_run():
+        """
+        运动类型：0 ：直线运动                LINE_MOVE_TYPE = 0
+                  1 ：来回运动                LINE_BACK_FORTH_MOVE_TYPE = 1
+                  2 : 转弯                    TURN_CORNER_MOVE_TYPE = 2
+                  3 ：拐弯                    SPRIN_MOVE_TYPE = 3
+                  4 ：正方形                  RECT_MOVE_TYPE = 4
+        """
+        run_type = 0
+        run_type = input("输入运动类型(0:直线，1：来回，2：转弯，3：拐弯，4：正方形)：")
+        car = Car()
+        if run_type == Car.LINE_MOVE_TYPE:
+            car.run_forward(5,10) #按照5的速度，走10s
+        elif run_type == Car.LINE_BACK_FORTH_MOVE_TYPE:
+            car.run_forward(5,10) #按照5的速度，走10s
+            car.run_reverse(5,10) #按照5的速度，原路返回走10s
+        elif run_type == Car.TURN_CORNER_MOVE_TYPE:
+            car.run_forward(5,10) #按照5的速度，走10s
+            car.turn_left(3,4)  #转弯
+            car.run_forward(5,10) #按照5的速度，走10s
+        elif  run_type == Car.SPRIN_MOVE_TYPE:
+            car.run_forward(5,10) #按照5的速度，走10s
+            car.spin_left(3,4)    #转弯
+            car.run_forward(5,10) #按照5的速度，走10s
+        elif run_type == Car.RECT_MOVE_TYPE:
+            car.run_forward(10,20)#需要提取保持速度不变
+            car.turn_left(4,6)#时间6s，需要修改，确保转90度，每一台设备有微小的差异
+            car.run_forward(10,20)
+            car.turn_left(4,6)#需要修改时间，确保转90度，每一台设备有微小的差异
+            car.run_forward(10,20)
+            car.turn_left(4,6)#时间6s，需要修改时间，确保转90度，每一台设备有微小的差异
+            car.run_forward(10,20)
+            car.turn_left(4,6)#时间6s，需要修改，看转多少需要
+
+    @staticmethod  #小车的直行、转动、正方形
+    def demo_sensor():
+        """
+        传感器类型：0 ：红外对管传感器的使用                  SENSOR_INFRARED_TYPE = 0
+                   1 ：黑白传感器的使用               SENSOR_BLACK_WIGHT_TYPE = 1
+                  2 : 超声波传感器                 SENSOR_ULTRASONIC_TYPE = 2
+        """
+        sensor_type = int(input("测试传感器类型 0:红外；1:黑白；2:超声波:"))
+        car = Car()
+        if sensor_type == Car.SENSOR_INFRARED_TYPE:
+            """
+            #用手来回挡住传感器，观看传感器的读数变化（在使用传感器前，面向传感器，                              
+            调节传感器的旋钮，让右侧的两个灯恰好亮）。当传感器被挡住的时候，左侧的传感器就会亮
+            根据传感器遇到障碍物类型可以分为下面四种类型
+            one of ['only_left_blocked', 'only_right_blocked','blocked', 'clear']
+            """
+            while True:
+                status = car.obstacle_status_from_infrared()
+                print(status)
+        elif sensor_type == Car.SENSOR_BLACK_WIGHT_TYPE:
+            """
+            #黑色的电工胶布一圈                          
+            使用过程：把电工胶布贴在A4纸张上或桌子上，让后把黑白传感器在黑色电工胶布上来回移动，观看传感器上灯的亮度变化或输出值的变化
+            当遇到黑色就会变亮，根据它可以做一个巡线机器人。根据四个传感器亮的组合可以分为下面几种情况:
+            ['sharp_left_turn', 'sharp_right_turn','regular_left_turn', 'regular_right_turn',
+            'smooth_left', 'smooth_right','straight', 'no_line']
+             """
+            while True:
+                status = car.line_tracking_turn_type()
+                print(status)
+        elif sensor_type == Car.SENSOR_ULTRASONIC_TYPE:
+            """
+            #超声波测距：用双手挡住超声波、并做靠近超声波、远离超声波，来回运动，观看超声波读取值的变化
+            """
+            while True:
+                    dis = car.distance_from_obstacle()  #固定在一个位置查看其变化
+                    print(dis)
+
+
+                    # dis = car.servo_front_rotate(30) #旋转超声波，并进行测距
+                    # print(dis)
+                    # dis = car.servo_front_rotate(90)
+                    # print(dis)
+                    # dis = car.servo_front_rotate(120)
+                    # print(dis)
+
+
 """
 @@@@主函数：
 #在里面测试本地各种功能
 """
+
+learning_level = 0 # 学习等级 0：初级 设置电平，可以控制灯的开和关
+                   # 学习等级 1：控制小车直行、运动、左转等
+                   # 学习等级 2：控制小车的传感器
+                   # 学习等级 3：控制小车漫游
+                   # 学习等级 4：控制小车巡线
+
+
 def main():
-  Car.demo_cruising()#例子漫游服务
+    learning_level = int(input("请输入学习等级（0：灯光、1：运动、2：传感器、3：漫游、4:巡线）："))
+    print(learning_level)
+    if learning_level == 0:
+        Car.demo_light()   #灯光操作例子
+    elif learning_level == 1:
+        Car.demo_car_run() #小车运动操作例子
+    elif learning_level == 2:
+        Car.demo_sensor()  #传感器操作例子
+    elif learning_level == 3:
+        Car.demo_cruising()  # 利用红外传感器、超声波和小车运动组合做漫游服务例子
+    elif learning_level == 4:
+        Car.demo_line_tracking() #利用黑白传感器和小车运动做巡线服务的例子
+
 """
 @@@@例子：
-#在树莓派系统本地上测试小车的功能
+#在树莓派上运行各种例子
 """
 if __name__ == "__main__":
     main()
