@@ -19,8 +19,8 @@ numpy
 
 ## 服务端功能
 - 1.RaspberryPi控制机器车轮 
-  - [前进后退的项目](https://github.com/GavinGaogao/Teach-Ai-by-car／server/thinkland_rpi_car.py)
-  - [角度转弯的项目](https://github.com/GavinGaogao/Teach-Ai-by-car／server/thinkland_rpi_car.py)
+  - [前进后退的项目](https://github.com/GavinGaogao/Teach-Ai-by-car/tree/master/server/thinkland_rpi_car.py)
+  - [角度转弯的项目](https://github.com/GavinGaogao/Teach-Ai-by-car/tree/master/server/thinkland_rpi_car.py)
   - 合成的项目（好比正方形） 
 - 2.RaspberryPi使用传感器 
   - 红外巡线行驶 
@@ -35,7 +35,7 @@ numpy
   - 转摄像头角度 
   
 ## 客户端功能
-- 1.通过笔记本客户端实现以上项目 
+- 1.通过笔记本客户端实现以下项目 
   - 控制机器车轮 
     - 前进后退的项目
     - 角度转弯的项目 
