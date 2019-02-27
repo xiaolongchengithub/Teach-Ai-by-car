@@ -1,8 +1,9 @@
 from carLib.thinkland_rpi_camera_client import Camera
 from carLib.thinkland_rpi_car_client import Car
 from aiLib.thinkland_rpi_ai import  Ai
-import time
 
+from aiLib.thinkland_rpi_speaker import Speaker
+import time
 
 
 def main():
@@ -17,6 +18,8 @@ def main():
 
     ai = Ai(classes="./aiLib/coco.names",config ="./aiLib/yolov3.cfg",weight = "./aiLib/yolov3.weights")
 
+    speaker = Speaker()
+
     car.servo_camera_rise_fall(30)
 
     for angle in range(20,180,20):
@@ -27,6 +30,7 @@ def main():
         print(names)
         for item in names:
             if item == 'cup':
+                speaker.say("find a cup")
                 camera.http_close()
                 return
         camera.http_close()

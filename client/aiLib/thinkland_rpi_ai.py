@@ -2,7 +2,6 @@ import socket
 import cv2
 import threading
 import struct
-import numpy
 import cv2 as cv
 import numpy as np
 
@@ -15,7 +14,6 @@ class Ai:
     *drawPred 对Rect进行绘制
     *read_image 读取图片
     *wait_key 等待
-
     """
     def __init__(self,classes ="./coco.names",config ="./yolov3.cfg",weight = "./yolov3.weights"):
         """
@@ -255,7 +253,6 @@ class Ai:
     def demo_find_dog():
         """
         读取一张图片，并识别图片中的物体
-        :return:
         """
         test = Ai()
         # 加载图片

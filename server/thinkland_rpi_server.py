@@ -73,13 +73,13 @@ class Server():
         * None
         """
         #舵机函数注册
-        self.Function_List['servo_camera_rise_fall'] = self.car.servo_camera_rise_fall
-        self.Function_List['servo_camera_rotate']    = self.car.servo_camera_rotate
+        self.Function_List['turn_servo_camera_vertical'] = self.car.turn_servo_camera_vertical
+        self.Function_List['turn_servo_camera_horizental']    = self.car.turn_servo_camera_horizental
         self.Function_List['servo_front_rotate']     = self.car.servo_front_rotate
 
         #灯的控制函数注册
         self.Function_List['turn_on_led'] = self.car.turn_on_led
-        self.car.Function_List['trun_off_led'] = self.car.turn_off_led
+        self.Function_List['turn_off_led'] = self.car.turn_off_led
 
         #运动控制函数注册
         self.Function_List['run_forward'] = self.car.run_forward

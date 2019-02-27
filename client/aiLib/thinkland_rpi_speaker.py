@@ -1,4 +1,4 @@
-import win32com.client
+import pyttsx3
 import pyaudio
 import time
 import threading
@@ -18,7 +18,7 @@ class Speaker():
         功能：初始化类型,初始化（现在的初始化只是针对windows）
         ________
         """
-        self.speaker = win32com.client.Dispatch("SAPI.SpVoice")
+        self.speaker = pyttsx3.init()
 
     def say(self , word):
         """
@@ -33,7 +33,8 @@ class Speaker():
         -------
         * None
         """
-        self.speaker.Speak(word)
+        self.speaker.say(word)
+        self.speaker.runAndWait()
 
     def demo_say():
         """
@@ -42,7 +43,8 @@ class Speaker():
         """
         test = Speaker()
         test.say("hello")
-
+        test.say("hello")
+        test.say("hello")
 
 """
 @@@@例子：

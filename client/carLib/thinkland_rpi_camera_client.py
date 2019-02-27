@@ -19,9 +19,9 @@ class Camera:
     """
     模块功能：从树莓派中获取图片
     利用Mjpg_treamer 服务其，获树莓派中获取数据流，转换为OPENCV格式的图片
-    *connect_http 远程连接
-    *socket_get_image_thread 获取图像数据
-    *open_window 打开显示窗口
+    *connect_http                   远程连接
+    *socket_get_image_thread        获取图像数据
+    *open_window                    打开显示窗口
     *close_window 关闭显示窗口
     *start_receive_image_server 启动图像采集线程
     *show_image 图像显示

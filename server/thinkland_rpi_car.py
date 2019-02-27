@@ -713,7 +713,7 @@ class Car:
         self.__pwm_front_servo_pos.ChangeDutyCycle(0)
         time.sleep(0.02)
 
-    def servo_camera_rotate(self , pos):
+    def turn_servo_camera_horizental(self , pos):
         """
         *function:servo_camera_roate
         功能：调整控制相机的舵机进行旋转
@@ -735,7 +735,7 @@ class Car:
         time.sleep(0.02)
 
 
-    def servo_camera_rise_fall(self , pos):
+    def turn_servo_camera_vertical(self , pos):
         """
         *function:servo_camera_rise_fall
         功能：舵机让相机上升和下降
@@ -823,7 +823,7 @@ class Car:
             car.stop_completely()
 
     @staticmethod  #输出电平，控制小车的灯的颜色
-    def demo_light():
+    def demo_led_switch():
         """
         控制灯
         - one of ['red', 'green', 'blue',
@@ -834,7 +834,7 @@ class Car:
         car.led_light('red')
 
     @staticmethod  #小车的直行、转动、正方形
-    def demo_car_run():
+    def demo_car_moving():
         """
         运动类型：0 ：直线运动                LINE_MOVE_TYPE = 0
                   1 ：来回运动                LINE_BACK_FORTH_MOVE_TYPE = 1
@@ -931,9 +931,9 @@ def main():
     learning_level = int(input("请输入学习等级（0：灯光、1：运动、2：传感器、3：漫游、4:巡线）："))
     print(learning_level)
     if learning_level == 0:
-        Car.demo_light()   #灯光操作例子
+        Car.demo_led_switch()   #灯光操作例子
     elif learning_level == 1:
-        Car.demo_car_run() #小车运动操作例子
+        Car.demo_car_moving() #小车运动操作例子
     elif learning_level == 2:
         Car.demo_sensor()  #传感器操作例子
     elif learning_level == 3:

@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module thinkland_rpi_camera_client</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>thinkland_rpi_camera_client</strong></big></big> (version version 0.02)</font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:c%3A%5Cpython%5Ccar%5Cclient%5Ccarlib%5Cthinkland_rpi_camera_client.py">c:\python\car\client\carlib\thinkland_rpi_camera_client.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="cv2.html">cv2</a><br>
+<a href="cv2.html">cv2</a><br>
+<a href="numpy.html">numpy</a><br>
+</td><td width="25%" valign=top><a href="numpy.html">numpy</a><br>
+<a href="socket.html">socket</a><br>
+<a href="struct.html">struct</a><br>
+</td><td width="25%" valign=top><a href="threading.html">threading</a><br>
+<a href="time.html">time</a><br>
+<a href="urllib.html">urllib</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="thinkland_rpi_camera_client.html#Camera">Camera</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Camera">class <strong>Camera</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>模块功能：从树莓派中获取图片<br>
+利用Mjpg_treamer&nbsp;服务其，获树莓派中获取数据流，转换为OPENCV格式的图片<br>
+*connect_http&nbsp;远程连接<br>
+*socket_get_image_thread&nbsp;获取图像数据<br>
+*open_window&nbsp;打开显示窗口<br>
+*close_window&nbsp;关闭显示窗口<br>
+*start_receive_image_server&nbsp;启动图像采集线程<br>
+*show_image&nbsp;图像显示<br>
+*set_ai&nbsp;引入图像识别功能<br>
+*take_picture&nbsp;采集一张图像数据<br>
+*save_picture&nbsp;保存一张图像<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Camera-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="Camera-close_receive_image_server"><strong>close_receive_image_server</strong></a>(self)</dt><dd><tt>*function:close_receive_image_server<br>
+功能：关闭视频流服务线程<br>
+________<br>
+Parameters<br>
+*&nbsp;None<br>
+————<br>
+Returns<br>
+-------<br>
+*&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="Camera-close_window"><strong>close_window</strong></a>(self)</dt><dd><tt>*function:show_window<br>
+功能：关闭窗口<br>
+________<br>
+Parameters<br>
+*&nbsp;None<br>
+————<br>
+Returns<br>
+-------<br>
+*&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="Camera-connect_http"><strong>connect_http</strong></a>(self, port='172.16.10.227')</dt><dd><tt>*function:socket_connect<br>
+功能：连接远程的&nbsp;mjpg_streamer服务器<br>
+________<br>
+Parameters<br>
+*&nbsp;port&nbsp;:&nbsp;string<br>
+-&nbsp;输入服务器的Ip地址，例如""172.16.10.227""<br>
+例如&nbsp;test&nbsp;=&nbsp;<a href="#Camera">Camera</a>(),test.<a href="#Camera-connect_http">connect_http</a>("172.16.10.227")<br>
+————<br>
+Returns<br>
+-------<br>
+*&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="Camera-http_close"><strong>http_close</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Camera-http_get_image_thread"><strong>http_get_image_thread</strong></a>(self)</dt><dd><tt>*function:http_get_image_thread<br>
+功能：从服务器获取，并解密获取图片<br>
+________<br>
+Parameters<br>
+*&nbsp;None<br>
+————<br>
+Returns<br>
+-------<br>
+*&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="Camera-open_window"><strong>open_window</strong></a>(self)</dt><dd><tt>*function:show_window<br>
+功能：进行图片显示<br>
+________<br>
+Parameters<br>
+*&nbsp;None<br>
+————<br>
+Returns<br>
+-------<br>
+*&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="Camera-save_picture"><strong>save_picture</strong></a>(self, mat, path)</dt><dd><tt>*function:takePicture<br>
+功能：从视频流中获取一张图片<br>
+________<br>
+Parameters<br>
+*&nbsp;None<br>
+————<br>
+Returns<br>
+-------<br>
+*&nbsp;Mat<br>
+返回一张图片</tt></dd></dl>
+
+<dl><dt><a name="Camera-set_ai"><strong>set_ai</strong></a>(self, ai)</dt><dd><tt>*function:set_ai<br>
+功能：引入yolo类<br>
+________<br>
+&nbsp;Parameters<br>
+*ai：thinkland_rpi_ai_yolov3模块中的AiYolo类</tt></dd></dl>
+
+<dl><dt><a name="Camera-show_image"><strong>show_image</strong></a>(self, mat, window_name='rpi')</dt><dd><tt>*function:show_image<br>
+功能：打开一个窗口进行图片显示<br>
+例如：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;import&nbsp;cv2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;img&nbsp;=&nbsp;cv2.imread("c://test.jpg")<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;camera&nbsp;=&nbsp;<a href="#Camera">Camera</a>()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;camera.<a href="#Camera-show_image">show_image</a>(img)<br>
+________<br>
+Parameters<br>
+*mat：图像数据，插入一张图片数据<br>
+————<br>
+Return<br>
+*None</tt></dd></dl>
+
+<dl><dt><a name="Camera-start_receive_image_server"><strong>start_receive_image_server</strong></a>(self)</dt><dd><tt>&nbsp;*function:start_receive_image_server<br>
+&nbsp;功能：开启接受图片的线程<br>
+例如:&nbsp;receiveImg&nbsp;=&nbsp;<a href="#Camera">Camera</a>();receiveImg.<a href="#Camera-connect_http">connect_http</a>("172.16.10.227");receiveImg.<a href="#Camera-start_receive_image_server">start_receive_image_server</a>()<br>
+&nbsp;________<br>
+&nbsp;Parameters<br>
+&nbsp;*&nbsp;None<br>
+&nbsp;————<br>
+&nbsp;Returns<br>
+&nbsp;-------<br>
+&nbsp;*&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="Camera-take_picture"><strong>take_picture</strong></a>(self)</dt><dd><tt>*function:takePicture<br>
+功能：从视频流中获取一张图片<br>
+________<br>
+Parameters<br>
+*&nbsp;None<br>
+————<br>
+Returns<br>
+-------<br>
+*&nbsp;Mat<br>
+返回一张图片</tt></dd></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="Camera-demo_collect_picture_windowsOrlinux"><strong>demo_collect_picture_windowsOrlinux</strong></a>()</dt><dd><tt>启动这个例子之前需要在树莓派上启动服务&nbsp;python&nbsp;thinkland_rpi_sever.py<br>
+在windows/linux上使用此例子<br>
+如果不open_window，Ios系统也可以按照这个方式调用。IOS在系统图像显示的时候会出现卡死的问题</tt></dd></dl>
+
+<dl><dt><a name="Camera-demo_collect_picture_windowsOrlinux_save_one_picture"><strong>demo_collect_picture_windowsOrlinux_save_one_picture</strong></a>()</dt><dd><tt>启动服务，并截取一张张片，并保存</tt></dd></dl>
+
+<dl><dt><a name="Camera-demo_only_take_picture"><strong>demo_only_take_picture</strong></a>()</dt><dd><tt>不实时显示图像，截取当前图片，并保存</tt></dd></dl>
+
+<dl><dt><a name="Camera-demo_show_picture_ios"><strong>demo_show_picture_ios</strong></a>()</dt><dd><tt>在IOS上实时显示树莓派上的图像流</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-window"><strong>window</strong></a>()</dt></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>__authors__</strong> = 'xiao long &amp; xu lao shi'<br>
+<strong>__license__</strong> = 'Copyright...'<br>
+<strong>camera_learning_status</strong> = 0</td></tr></table>
+</body></html>
