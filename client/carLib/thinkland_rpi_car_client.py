@@ -138,7 +138,7 @@ class Car(SocketMixin):
 
         order = {
             'function': {
-                'servo_camera_rotate': [degree],
+                'turn_servo_camera_horizental': [degree],
             },
             'mode': Car.THREAD_CALL,
         }
@@ -160,7 +160,7 @@ class Car(SocketMixin):
 
         order = {
             'function': {
-                'servo_camera_rise_fall': [degree],
+                'turn_servo_camera_vertical': [degree],
             },
             'mode': Car.THREAD_CALL,
         }
@@ -181,7 +181,7 @@ class Car(SocketMixin):
         """
         order = {
             'function': {
-                'servo_front_rotate': [degree],
+                'turn_servo_ultrasonic': [degree],
             },
 
             'mode': Car.THREAD_CALL,
@@ -420,6 +420,7 @@ class Car(SocketMixin):
         Raises
         ------
         """
+        print(speed)
 
         order = {
             'function': {
@@ -458,8 +459,11 @@ class Car(SocketMixin):
 
             'mode': Car.RETURN_CALL,
         }
+        ret = (self.__send_order(order)).decode("utf-8")
+        print(ret)
+        print(type(ret))
 
-        return self.__send_order(order)
+        return float(ret)
 
     def check_left_obstacle_with_sensor(self):
         """通过传感器检测小车的左侧是否存在障碍物
@@ -609,6 +613,38 @@ class Car(SocketMixin):
 
         self.__send_order(order)
 
+    def obstacle_status_from_ultrasound(self, dir='center'):
+        """
+        Return obstacle status obtained by ultrasonic sensor that is
+        situated in the front of the Car. The ultrasonic sensor is
+        located in the upper deck so it has a higher view than the
+        infrared sensors.
+
+        Parameters
+        ----------
+        * dir : str
+            - set the ultrasonic sensor to face a direction,
+            one of ['center', 'left', 'right']. Default is 'center'
+
+        Returns
+        -------
+        * str
+            - 'blocked' if distance <= 20cm
+            - 'approaching_obstacle' if distance is (20, 50]
+            - 'clear' if distance > 50cm
+        """
+
+        self.turn_servo_ultrasonic(dir)
+        distance = self.distance_from_obstacle()
+        if distance <= 20:
+            status = 'blocked'
+        elif distance <= 50:
+            status = 'approaching_obstacle'
+        else:
+            status = 'clear'
+        print('Ultrasound status = {}'.format(status))
+        return status
+
     @staticmethod  # 自动巡游功能
     def demo_cruising():
         """
@@ -622,9 +658,10 @@ class Car(SocketMixin):
         car.connect(ip)
         try:
             while True:
-                obstacle_status_from_infrared = car.obstacle_status_from_infrared()
+                obstacle_status_from_infrared = (car.obstacle_status_from_infrared()).decode("utf-8")
                 should_turn = True
                 if obstacle_status_from_infrared == 'clear':
+                    print(obstacle_status_from_infrared)
                     should_turn = False
                     obstacle_status_from_ultrasound = \
                         car.obstacle_status_from_ultrasound()

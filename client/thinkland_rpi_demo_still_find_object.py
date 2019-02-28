@@ -20,10 +20,10 @@ def main():
 
     speaker = Speaker()
 
-    car.servo_camera_rise_fall(30)
+    car.turn_servo_camera_vertical(30)
 
     for angle in range(20,180,20):
-        car.servo_camera_rotate(angle)
+        car.turn_servo_camera_horizental(angle)
         time.sleep(1)
         picture = camera.take_picture()
         _,names,_ = ai.find_object(picture)

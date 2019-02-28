@@ -4,8 +4,12 @@ import numpy as np
 #全局阈值
 
 class Algrithm():
-    def __init__():
+    def __init__(self):
         print("init")
+        self.__DEBUG = False
+
+    def switch_debug(self , status = True):
+        self.__DEBUG = True
 
     def threshold_demo(self , image , thre = 20):
         """
@@ -23,6 +27,9 @@ class Algrithm():
         gray = cv.cvtColor(image, cv.COLOR_RGB2GRAY)
         ret, binary = cv.threshold(gray, thre, 250, cv.THRESH_BINARY_INV)
         print("threshold value %s"%ret)
+        if self.__DEBUG:
+            cv.imshow('binary',binary)
+            cv.waitKey(0)
         return binary
 
     #局部阈值
@@ -41,7 +48,7 @@ class Algrithm():
         gray = cv.cvtColor(image, cv.COLOR_RGB2GRAY)
         binary =  cv.adaptiveThreshold(gray, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C,cv.THRESH_BINARY, 25, 10)
 
-    def line(self , img ， thre = 20 , area = 1000):
+    def line(self ,img ,thre=60, areaLimit=1000):
         """
         *function:line
         功能：从头图像中提取一条线
@@ -53,16 +60,21 @@ class Algrithm():
         -------
         * None
         """
-        binary = threshold_demo(img,thre)
+        binary = self.threshold_demo(img,thre)
         binImg, contours, hierarchy = cv.findContours(binary, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)  # 得到轮廓信息
         contourList = []
         cx = 0.0
         cy = 0.0
 
+        if self.__DEBUG:
+            cv.drawContours(img, contours, -1, (125, 15, 125), 2)
+            cv.imshow('contoure', img)
+            cv.waitKey(0)
+
         for contour in contours:
             area = cv.contourArea(contour)
-            # print(area)
-            if area > area:
+            print(area)
+            if area > areaLimit:
                 contourList.append(contour)
                 M = cv.moments(contour)
                 print(M)
@@ -70,5 +82,21 @@ class Algrithm():
                 cy = int(M['m01'] / M['m00'])
                 print('cx:%d' % cx)
                 print('cy:%d' % cy)
-        return [cx,cy]
+        return np.array([cx,cy])
+
+
+"""
+@@@@例子：
+#测试
+"""
+if __name__ == "__main__":
+    mat  = cv.imread('D://22.jpg')
+    gray = cv.cvtColor(mat, cv.COLOR_RGB2GRAY)
+    binary = cv.adaptiveThreshold(gray, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 25, 10)
+    cv.imwrite('D:/222.jpg',binary)
+    cv.imshow('binary',binary)
+    cv.waitKey(0)
+    # test = Figure()
+    # while True:
+    #     test.train() #训练
 

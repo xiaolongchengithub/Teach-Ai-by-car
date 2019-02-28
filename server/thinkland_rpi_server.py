@@ -76,6 +76,8 @@ class Server():
         self.Function_List['turn_servo_camera_vertical'] = self.car.turn_servo_camera_vertical
         self.Function_List['turn_servo_camera_horizental']    = self.car.turn_servo_camera_horizental
         self.Function_List['servo_front_rotate']     = self.car.servo_front_rotate
+        self.Function_List['turn_servo_ultrasonic']     = self.car.turn_servo_ultrasonic
+
 
         #灯的控制函数注册
         self.Function_List['turn_on_led'] = self.car.turn_on_led
