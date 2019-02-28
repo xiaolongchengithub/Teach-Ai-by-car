@@ -95,8 +95,6 @@ class Car(SocketMixin):
 
     def __init__(self):
         self.socket_client = socket.socket()
-        self.socket_address = (" ", 0)
-
 
     def __send_order(self, order={"function": {"auto_run": [8, 1]}, "mode": 1}):
         """通过Tcp ip发送消息
@@ -104,10 +102,8 @@ class Car(SocketMixin):
         Parameters
         --------------
         * order: 字典类型
-                - "function"：字典类型，包含控制小车的函数
-                - "mode": rpc调用方式。
-                
-
+            - "function"：字典类型，包含控制小车的函数
+            - "mode": rpc调用方式。
         Returns
         ---------------
         * 返回服务端发送来的消息
@@ -189,7 +185,6 @@ class Car(SocketMixin):
         }
         self.__send_order(order)
 
-
     def turn_on_led(self, led):
         """开启LED灯
 
@@ -211,7 +206,6 @@ class Car(SocketMixin):
         }
 
         self.__send_order(order)
-
 
     def turn_off_led(self, led):
         """关闭LED灯
@@ -239,7 +233,6 @@ class Car(SocketMixin):
         self.turn_off_led(Car.LED_R)
         self.turn_off_led(Car.LED_G)
         self.turn_off_led(Car.LED_B)
-
 
     def stop_all_wheels(self, delay=0):
         """停止小车移动
@@ -431,8 +424,7 @@ class Car(SocketMixin):
         }
         self.__send_order(order)
 
-
-    def distance_from_obstacle(self, val=0):
+    def distance_from_obstacle(self):
         """
         Measure the distance between ultrasonic sensor and the obstacle
         that it faces.
@@ -454,7 +446,7 @@ class Car(SocketMixin):
 
         order = {
             'function': {
-                'distance_from_obstacle': [val],
+                'distance_from_obstacle': [0],
             },
 
             'mode': Car.RETURN_CALL,
@@ -507,7 +499,7 @@ class Car(SocketMixin):
 
         return int(self.__send_order(order))
 
-    def obstacle_status_from_infrared(self, num=0):
+    def obstacle_status_from_infrared(self):
         """
         Return obstacle status obtained by infrared sensors that
         are situated at the left front and right front of the Car.
@@ -532,7 +524,7 @@ class Car(SocketMixin):
 
         order = {
             'function': {
-                'obstacle_status_from_infrared': [num],
+                'obstacle_status_from_infrared': [0],
             },
 
             'mode': Car.RETURN_CALL,
@@ -610,7 +602,7 @@ class Car(SocketMixin):
 
         self.__send_order(order)
 
-    @staticmethod  # 自动巡游功能
+    @staticmethod
     def demo_cruising():
         """
         Demonstrates a cruising car that avoids obstacles in a room
@@ -759,25 +751,16 @@ class Car(SocketMixin):
 
 
 def main():
-    ########################################
-    # learning_level:
-    # 学习等级 0：初级 设置电平，可以控制灯的开和关
-    # 学习等级 1：控制小车直行、运动、左转等
-    # 学习等级 2：控制小车的传感器
-    # 学习等级 3：控制小车漫游
-    # 学习等级 4：控制小车巡线
-    ##########################################
-    learning_level = int(input("请输入学习等级（0：灯光、1：运动、2：传感器、3：漫游、4:巡线）："))
-    print(learning_level)
-    if learning_level == 0:
+    demo_index = int(input("请选择演示demo（0：灯光、1：运动、2：传感器、3：漫游、4:巡线）："))
+    if demo_index == 0:
         Car.demo_led_switch()          # 灯光操作例子
-    elif learning_level == 1:
+    elif demo_index == 1:
         Car.demo_car_moving()          # 小车运动操作例子
-    elif learning_level == 2:
+    elif demo_index == 2:
         Car.demo_sensor()              # 传感器操作例子
-    elif learning_level == 3:
+    elif demo_index == 3:
         Car.demo_cruising()            # 利用红外传感器、超声波和小车运动组合做漫游服务例子
-    elif learning_level == 4:
+    elif demo_index == 4:
         Car.demo_line_tracking()       # 利用黑白传感器和小车运动做巡线服务的例子
 
 
