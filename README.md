@@ -13,7 +13,7 @@
 
 ## 客户端环境介绍
 python: >=3.5
-opencv        
+opencv
 numpy
 
 
