@@ -13,8 +13,8 @@
 详见[系统安装文档](https://thinklandai.com/faq/index.php)
 
 ## 服务端环境依赖
-python: >=3.5
-zerorpc
+python: >=3.5       
+zerorpc           
 RPI.GPIO
 
 ## 客户端环境介绍
