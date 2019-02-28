@@ -12,8 +12,8 @@
 详见[系统安装文档](https://thinklandai.com/faq/index.php)
 
 ## 客户端环境介绍
-python: >=3.5
-opencv
+python: >=3.5      
+opencv      
 numpy
 
 
