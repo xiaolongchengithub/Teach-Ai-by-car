@@ -1,0 +1,4380 @@
+<!doctype html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+
+    <title>thinkland_rpi_car_client API documentation</title>
+    <meta name="description" content="小车封装类，通过创建Car实例，调用相应的API，可以完成小车的基本控制
+具体控制方法参见本代码中的demo示例" />
+
+  <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
+  
+  <style type="text/css">
+  
+* {
+  box-sizing: border-box;
+}
+/*! normalize.css v1.1.1 | MIT License | git.io/normalize */
+
+/* ==========================================================================
+   HTML5 display definitions
+   ========================================================================== */
+
+/**
+ * Correct `block` display not defined in IE 6/7/8/9 and Firefox 3.
+ */
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section,
+summary {
+    display: block;
+}
+
+/**
+ * Correct `inline-block` display not defined in IE 6/7/8/9 and Firefox 3.
+ */
+
+audio,
+canvas,
+video {
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+}
+
+/**
+ * Prevent modern browsers from displaying `audio` without controls.
+ * Remove excess height in iOS 5 devices.
+ */
+
+audio:not([controls]) {
+    display: none;
+    height: 0;
+}
+
+/**
+ * Address styling not present in IE 7/8/9, Firefox 3, and Safari 4.
+ * Known issue: no IE 6 support.
+ */
+
+[hidden] {
+    display: none;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+/**
+ * 1. Prevent system color scheme's background color being used in Firefox, IE,
+ *    and Opera.
+ * 2. Prevent system color scheme's text color being used in Firefox, IE, and
+ *    Opera.
+ * 3. Correct text resizing oddly in IE 6/7 when body `font-size` is set using
+ *    `em` units.
+ * 4. Prevent iOS text size adjust after orientation change, without disabling
+ *    user zoom.
+ */
+
+html {
+    background: #fff; /* 1 */
+    color: #000; /* 2 */
+    font-size: 100%; /* 3 */
+    -webkit-text-size-adjust: 100%; /* 4 */
+    -ms-text-size-adjust: 100%; /* 4 */
+}
+
+/**
+ * Address `font-family` inconsistency between `textarea` and other form
+ * elements.
+ */
+
+html,
+button,
+input,
+select,
+textarea {
+    font-family: sans-serif;
+}
+
+/**
+ * Address margins handled incorrectly in IE 6/7.
+ */
+
+body {
+    margin: 0;
+}
+
+/* ==========================================================================
+   Links
+   ========================================================================== */
+
+/**
+ * Address `outline` inconsistency between Chrome and other browsers.
+ */
+
+a:focus {
+    outline: thin dotted;
+}
+
+/**
+ * Improve readability when focused and also mouse hovered in all browsers.
+ */
+
+a:active,
+a:hover {
+    outline: 0;
+}
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+
+/**
+ * Address font sizes and margins set differently in IE 6/7.
+ * Address font sizes within `section` and `article` in Firefox 4+, Safari 5,
+ * and Chrome.
+ */
+
+h1 {
+    font-size: 2em;
+    margin: 0.67em 0;
+}
+
+h2 {
+    font-size: 1.5em;
+    margin: 0.83em 0;
+}
+
+h3 {
+    font-size: 1.17em;
+    margin: 1em 0;
+}
+
+h4 {
+    font-size: 1em;
+    margin: 1.33em 0;
+}
+
+h5 {
+    font-size: 0.83em;
+    margin: 1.67em 0;
+}
+
+h6 {
+    font-size: 0.67em;
+    margin: 2.33em 0;
+}
+
+/**
+ * Address styling not present in IE 7/8/9, Safari 5, and Chrome.
+ */
+
+abbr[title] {
+    border-bottom: 1px dotted;
+}
+
+/**
+ * Address style set to `bolder` in Firefox 3+, Safari 4/5, and Chrome.
+ */
+
+b,
+strong {
+    font-weight: bold;
+}
+
+blockquote {
+    margin: 1em 40px;
+}
+
+/**
+ * Address styling not present in Safari 5 and Chrome.
+ */
+
+dfn {
+    font-style: italic;
+}
+
+/**
+ * Address differences between Firefox and other browsers.
+ * Known issue: no IE 6/7 normalization.
+ */
+
+hr {
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    height: 0;
+}
+
+/**
+ * Address styling not present in IE 6/7/8/9.
+ */
+
+mark {
+    background: #ff0;
+    color: #000;
+}
+
+/**
+ * Address margins set differently in IE 6/7.
+ */
+
+p,
+pre {
+    margin: 1em 0;
+}
+
+/**
+ * Correct font family set oddly in IE 6, Safari 4/5, and Chrome.
+ */
+
+code,
+kbd,
+pre,
+samp {
+    font-family: monospace, serif;
+    _font-family: 'courier new', monospace;
+    font-size: 1em;
+}
+
+/**
+ * Improve readability of pre-formatted text in all browsers.
+ */
+
+pre {
+    white-space: pre;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/**
+ * Address CSS quotes not supported in IE 6/7.
+ */
+
+q {
+    quotes: none;
+}
+
+/**
+ * Address `quotes` property not supported in Safari 4.
+ */
+
+q:before,
+q:after {
+    content: '';
+    content: none;
+}
+
+/**
+ * Address inconsistent and variable font size in all browsers.
+ */
+
+small {
+    font-size: 80%;
+}
+
+/**
+ * Prevent `sub` and `sup` affecting `line-height` in all browsers.
+ */
+
+sub,
+sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+
+sup {
+    top: -0.5em;
+}
+
+sub {
+    bottom: -0.25em;
+}
+
+/* ==========================================================================
+   Lists
+   ========================================================================== */
+
+/**
+ * Address margins set differently in IE 6/7.
+ */
+
+dl,
+menu,
+ol,
+ul {
+    margin: 1em 0;
+}
+
+dd {
+    margin: 0 0 0 40px;
+}
+
+/**
+ * Address paddings set differently in IE 6/7.
+ */
+
+menu,
+ol,
+ul {
+    padding: 0 0 0 40px;
+}
+
+/**
+ * Correct list images handled incorrectly in IE 7.
+ */
+
+nav ul,
+nav ol {
+    list-style: none;
+    list-style-image: none;
+}
+
+/* ==========================================================================
+   Embedded content
+   ========================================================================== */
+
+/**
+ * 1. Remove border when inside `a` element in IE 6/7/8/9 and Firefox 3.
+ * 2. Improve image quality when scaled in IE 7.
+ */
+
+img {
+    border: 0; /* 1 */
+    -ms-interpolation-mode: bicubic; /* 2 */
+}
+
+/**
+ * Correct overflow displayed oddly in IE 9.
+ */
+
+svg:not(:root) {
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   Figures
+   ========================================================================== */
+
+/**
+ * Address margin not present in IE 6/7/8/9, Safari 5, and Opera 11.
+ */
+
+figure {
+    margin: 0;
+}
+
+/* ==========================================================================
+   Forms
+   ========================================================================== */
+
+/**
+ * Correct margin displayed oddly in IE 6/7.
+ */
+
+form {
+    margin: 0;
+}
+
+/**
+ * Define consistent border, margin, and padding.
+ */
+
+fieldset {
+    border: 1px solid #c0c0c0;
+    margin: 0 2px;
+    padding: 0.35em 0.625em 0.75em;
+}
+
+/**
+ * 1. Correct color not being inherited in IE 6/7/8/9.
+ * 2. Correct text not wrapping in Firefox 3.
+ * 3. Correct alignment displayed oddly in IE 6/7.
+ */
+
+legend {
+    border: 0; /* 1 */
+    padding: 0;
+    white-space: normal; /* 2 */
+    *margin-left: -7px; /* 3 */
+}
+
+/**
+ * 1. Correct font size not being inherited in all browsers.
+ * 2. Address margins set differently in IE 6/7, Firefox 3+, Safari 5,
+ *    and Chrome.
+ * 3. Improve appearance and consistency in all browsers.
+ */
+
+button,
+input,
+select,
+textarea {
+    font-size: 100%; /* 1 */
+    margin: 0; /* 2 */
+    vertical-align: baseline; /* 3 */
+    *vertical-align: middle; /* 3 */
+}
+
+/**
+ * Address Firefox 3+ setting `line-height` on `input` using `!important` in
+ * the UA stylesheet.
+ */
+
+button,
+input {
+    line-height: normal;
+}
+
+/**
+ * Address inconsistent `text-transform` inheritance for `button` and `select`.
+ * All other form control elements do not inherit `text-transform` values.
+ * Correct `button` style inheritance in Chrome, Safari 5+, and IE 6+.
+ * Correct `select` style inheritance in Firefox 4+ and Opera.
+ */
+
+button,
+select {
+    text-transform: none;
+}
+
+/**
+ * 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
+ *    and `video` controls.
+ * 2. Correct inability to style clickable `input` types in iOS.
+ * 3. Improve usability and consistency of cursor style between image-type
+ *    `input` and others.
+ * 4. Remove inner spacing in IE 7 without affecting normal text inputs.
+ *    Known issue: inner spacing remains in IE 6.
+ */
+
+button,
+html input[type="button"], /* 1 */
+input[type="reset"],
+input[type="submit"] {
+    -webkit-appearance: button; /* 2 */
+    cursor: pointer; /* 3 */
+    *overflow: visible;  /* 4 */
+}
+
+/**
+ * Re-set default cursor for disabled elements.
+ */
+
+button[disabled],
+html input[disabled] {
+    cursor: default;
+}
+
+/**
+ * 1. Address box sizing set to content-box in IE 8/9.
+ * 2. Remove excess padding in IE 8/9.
+ * 3. Remove excess padding in IE 7.
+ *    Known issue: excess padding remains in IE 6.
+ */
+
+input[type="checkbox"],
+input[type="radio"] {
+    box-sizing: border-box; /* 1 */
+    padding: 0; /* 2 */
+    *height: 13px; /* 3 */
+    *width: 13px; /* 3 */
+}
+
+/**
+ * 1. Address `appearance` set to `searchfield` in Safari 5 and Chrome.
+ * 2. Address `box-sizing` set to `border-box` in Safari 5 and Chrome
+ *    (include `-moz` to future-proof).
+ */
+
+input[type="search"] {
+    -webkit-appearance: textfield; /* 1 */
+    -moz-box-sizing: content-box;
+    -webkit-box-sizing: content-box; /* 2 */
+    box-sizing: content-box;
+}
+
+/**
+ * Remove inner padding and search cancel button in Safari 5 and Chrome
+ * on OS X.
+ */
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+
+/**
+ * Remove inner padding and border in Firefox 3+.
+ */
+
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+
+/**
+ * 1. Remove default vertical scrollbar in IE 6/7/8/9.
+ * 2. Improve readability and alignment in all browsers.
+ */
+
+textarea {
+    overflow: auto; /* 1 */
+    vertical-align: top; /* 2 */
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
+/**
+ * Remove most spacing between table cells.
+ */
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+  </style>
+
+  <style type="text/css">
+  
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+  }
+  body {
+    background: #fff;
+    font-family: "Source Sans Pro", "Helvetica Neueue", Helvetica, sans;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.6em;
+  }
+  #content {
+    width: 70%;
+    max-width: 850px;
+    float: left;
+    padding: 30px 60px;
+    border-left: 1px solid #ddd;
+  }
+  #sidebar {
+    width: 25%;
+    float: left;
+    padding: 30px;
+    overflow: hidden;
+  }
+  #nav {
+    font-size: 130%;
+    margin: 0 0 15px 0;
+  }
+
+  #top {
+    display: block;
+    position: fixed;
+    bottom: 5px;
+    left: 5px;
+    font-size: .85em;
+    text-transform: uppercase;
+  }
+
+  #footer {
+    font-size: .75em;
+    padding: 5px 30px;
+    border-top: 1px solid #ddd;
+    text-align: right;
+  }
+    #footer p {
+      margin: 0 0 0 30px;
+      display: inline-block;
+    }
+
+  h1, h2, h3, h4, h5 {
+    font-weight: 300;
+  }
+  h1 {
+    font-size: 2.5em;
+    line-height: 1.1em;
+    margin: 0 0 .50em 0;
+  }
+
+  h2 {
+    font-size: 1.75em;
+    margin: 1em 0 .50em 0;
+  }
+
+  h3 {
+    margin: 25px 0 10px 0;
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 105%;
+  }
+
+  a {
+    color: #058;
+    text-decoration: none;
+    transition: color .3s ease-in-out;
+  }
+
+  a:hover {
+    color: #e08524;
+    transition: color .3s ease-in-out;
+  }
+
+  pre, code, .mono, .name {
+    font-family: "Ubuntu Mono", "Cousine", "DejaVu Sans Mono", monospace;
+  }
+
+  .title .name {
+    font-weight: bold;
+  }
+  .section-title {
+    margin-top: 2em;
+  }
+  .ident {
+    color: #900;
+  }
+
+  code {
+    background: #f9f9f9;
+  } 
+
+  pre {
+    background: #fefefe;
+    border: 1px solid #ddd;
+    box-shadow: 2px 2px 0 #f3f3f3;
+    margin: 0 30px;
+    padding: 15px 30px;
+  }
+
+  .codehilite {
+    margin: 0 30px 10px 30px;
+  }
+
+    .codehilite pre {
+      margin: 0;
+    }
+    .codehilite .err { background: #ff3300; color: #fff !important; } 
+
+  table#module-list {
+    font-size: 110%;
+  }
+
+    table#module-list tr td:first-child {
+      padding-right: 10px;
+      white-space: nowrap;
+    }
+
+    table#module-list td {
+      vertical-align: top;
+      padding-bottom: 8px;
+    }
+
+      table#module-list td p {
+        margin: 0 0 7px 0;
+      }
+
+  .def {
+    display: table;
+  }
+
+    .def p {
+      display: table-cell;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .def p:first-child {
+      white-space: nowrap;
+    }
+
+    .def p:last-child {
+      width: 100%;
+    }
+
+
+  #index {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+    ul#index .class_name {
+      /* font-size: 110%; */
+      font-weight: bold;
+    }
+    #index ul {
+      margin: 0;
+    }
+
+  .item {
+    margin: 0 0 15px 0;
+  }
+
+    .item .class {
+      margin: 0 0 25px 30px;
+    }
+
+      .item .class ul.class_list {
+        margin: 0 0 20px 0;
+      }
+
+    .item .name {
+      background: #fafafa;
+      margin: 0;
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 3px;
+      display: inline-block;
+      min-width: 40%;
+    }
+      .item .name:hover {
+        background: #f6f6f6;
+      }
+
+    .item .empty_desc {
+      margin: 0 0 5px 0;
+      padding: 0;
+    }
+
+    .item .inheritance {
+      margin: 3px 0 0 30px;
+    }
+
+    .item .inherited {
+      color: #666;
+    }
+
+    .item .desc {
+      padding: 0 8px;
+      margin: 0;
+    }
+
+      .item .desc p {
+        margin: 0 0 10px 0;
+      }
+
+    .source_cont {
+      margin: 0;
+      padding: 0;
+    }
+
+    .source_link a {
+      background: #ffc300;
+      font-weight: 400;
+      font-size: .75em;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 1px 1px 0 #f4b700;
+      
+      padding: 3px 8px;
+      border-radius: 2px;
+      transition: background .3s ease-in-out;
+    }
+      .source_link a:hover {
+        background: #FF7200;
+        text-shadow: none;
+        transition: background .3s ease-in-out;
+      }
+
+    .source {
+      display: none;
+      max-height: 600px;
+      overflow-y: scroll;
+      margin-bottom: 15px;
+    }
+
+      .source .codehilite {
+        margin: 0;
+      }
+
+  .desc h1, .desc h2, .desc h3 {
+    font-size: 100% !important;
+  }
+  .clear {
+    clear: both;
+  }
+
+  @media all and (max-width: 950px) {
+    #sidebar {
+      width: 35%;
+    }
+    #content {
+      width: 65%;
+    }
+  }
+  @media all and (max-width: 650px) {
+    #top {
+      display: none;
+    }
+    #sidebar {
+      float: none;
+      width: auto;
+    }
+    #content {
+      float: none;
+      width: auto;
+      padding: 30px;
+    }
+
+    #index ul {
+      padding: 0;
+      margin-bottom: 15px;
+    }
+    #index ul li {
+      display: inline-block;
+      margin-right: 30px;
+    }
+    #footer {
+      text-align: left;
+    }
+    #footer p {
+      display: block;
+      margin: inherit;
+    }
+  }
+
+  /*****************************/
+
+  </style>
+
+
+  <style type="text/css">
+  
+/* ==========================================================================
+   EXAMPLE Media Queries for Responsive Design.
+   These examples override the primary ('mobile first') styles.
+   Modify as content requires.
+   ========================================================================== */
+
+@media only screen and (min-width: 35em) {
+    /* Style adjustments for viewports that meet the condition */
+}
+
+@media print,
+       (-o-min-device-pixel-ratio: 5/4),
+       (-webkit-min-device-pixel-ratio: 1.25),
+       (min-resolution: 120dpi) {
+    /* Style adjustments for high resolution devices */
+}
+
+/* ==========================================================================
+   Print styles.
+   Inlined to avoid required HTTP connection: h5bp.com/r
+   ========================================================================== */
+
+@media print {
+    * {
+        background: transparent !important;
+        color: #000 !important; /* Black prints faster: h5bp.com/s */
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+
+    a[href]:after {
+        content: " (" attr(href) ")";
+    }
+
+    abbr[title]:after {
+        content: " (" attr(title) ")";
+    }
+
+    /*
+     * Don't show links for images, or javascript/internal links
+     */
+
+    .ir a:after,
+    a[href^="javascript:"]:after,
+    a[href^="#"]:after {
+        content: "";
+    }
+
+    pre,
+    blockquote {
+        border: 1px solid #999;
+        page-break-inside: avoid;
+    }
+
+    thead {
+        display: table-header-group; /* h5bp.com/t */
+    }
+
+    tr,
+    img {
+        page-break-inside: avoid;
+    }
+
+    img {
+        max-width: 100% !important;
+    }
+
+    @page {
+        margin: 0.5cm;
+    }
+
+    p,
+    h2,
+    h3 {
+        orphans: 3;
+        widows: 3;
+    }
+
+    h2,
+    h3 {
+        page-break-after: avoid;
+    }
+}
+
+  </style>
+
+  <script type="text/javascript">
+  function toggle(id, $link) {
+    $node = document.getElementById(id);
+    if (!$node)
+    return;
+    if (!$node.style.display || $node.style.display == 'none') {
+    $node.style.display = 'block';
+    $link.innerHTML = 'Hide source &nequiv;';
+    } else {
+    $node.style.display = 'none';
+    $link.innerHTML = 'Show source &equiv;';
+    }
+  }
+  </script>
+</head>
+<body>
+<a href="#" id="top">Top</a>
+
+<div id="container">
+    
+  
+  <div id="sidebar">
+    <h1>Index</h1>
+    <ul id="index">
+
+    <li class="set"><h3><a href="#header-functions">Functions</a></h3>
+      
+  <ul>
+    <li class="mono"><a href="#thinkland_rpi_car_client.main">main</a></li>
+  </ul>
+
+    </li>
+
+    <li class="set"><h3><a href="#header-classes">Classes</a></h3>
+      <ul>
+        <li class="mono">
+        <span class="class_name"><a href="#thinkland_rpi_car_client.Car">Car</a></span>
+        
+          
+  <ul>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.__init__">__init__</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.check_left_obstacle_with_sensor">check_left_obstacle_with_sensor</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.check_right_obstacle_with_sensor">check_right_obstacle_with_sensor</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.connect">connect</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.data_handler">data_handler</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.demo_car_moving">demo_car_moving</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.demo_cruising">demo_cruising</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.demo_led_switch">demo_led_switch</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.demo_line_tracking">demo_line_tracking</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.demo_sensor">demo_sensor</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.distance_from_obstacle">distance_from_obstacle</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.led_light">led_light</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.line_tracking_turn_type">line_tracking_turn_type</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.obstacle_status_from_infrared">obstacle_status_from_infrared</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.receive_data">receive_data</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.run_forward">run_forward</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.run_reverse">run_reverse</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.send_data">send_data</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.spin_left">spin_left</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.spin_right">spin_right</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.stop_all_wheels">stop_all_wheels</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.stop_completely">stop_completely</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.turn_left">turn_left</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.turn_off_all_led">turn_off_all_led</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.turn_off_led">turn_off_led</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.turn_on_led">turn_on_led</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.turn_right">turn_right</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.turn_servo_camera_horizental">turn_servo_camera_horizental</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.turn_servo_camera_vertical">turn_servo_camera_vertical</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.Car.turn_servo_ultrasonic">turn_servo_ultrasonic</a></li>
+  </ul>
+
+        </li>
+        <li class="mono">
+        <span class="class_name"><a href="#thinkland_rpi_car_client.SocketMixin">SocketMixin</a></span>
+        
+          
+  <ul>
+    <li class="mono"><a href="#thinkland_rpi_car_client.SocketMixin.connect">connect</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.SocketMixin.data_handler">data_handler</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.SocketMixin.receive_data">receive_data</a></li>
+    <li class="mono"><a href="#thinkland_rpi_car_client.SocketMixin.send_data">send_data</a></li>
+  </ul>
+
+        </li>
+      </ul>
+    </li>
+
+    </ul>
+  </div>
+
+    <article id="content">
+      
+  
+
+  
+
+
+  <header id="section-intro">
+  <h1 class="title"><span class="name">thinkland_rpi_car_client</span> module</h1>
+  <p>小车封装类，通过创建Car实例，调用相应的API，可以完成小车的基本控制
+具体控制方法参见本代码中的demo示例</p>
+  
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client" class="source">
+    <pre><code>"""
+    小车封装类，通过创建Car实例，调用相应的API，可以完成小车的基本控制
+    具体控制方法参见本代码中的demo示例
+"""
+import socket
+import time
+import random
+
+__authors__ = 'xiao long & xu lao shi'
+__version__ = 'version 0.02'
+__license__ = 'Copyright...'
+
+
+class SocketMixin:
+    """socket 功能Mixin
+    """
+    def connect(self, ip, port=12347):
+        """连接服务器
+        """
+        self.socket_address = (ip, port)
+        self.socket_client.connect(self.socket_address)
+
+    def send_data(self, data):
+        """向服务器发送数据
+        """
+        self.socket_client.send(bytes(data, encoding='utf-8'))  # 发送消息
+
+    def receive_data(self):
+        """从服务器接收数据
+        """
+        recv_data = b""
+        while True:
+            recv_data += self.socket_client.recv(1024)
+            if recv_data.__len__() == 0:
+                return recv_data
+
+    def data_handler(self, bytes):
+        """处理接收到数据
+
+        Parameters
+        ------------
+        bytes: b''
+            - 接收到的数据
+        """
+        pass
+
+
+class Car(SocketMixin):
+    """
+    小车类包含以下实例函数：
+        * connect                           建立网络连接
+        * __send_order                      发送数据流
+        * turn_servo_camera_horizental      控制摄像机的舵机进行旋转
+        * turn_servo_camera_vertical        控制相机的舵机上升和下降
+        * turn_servo_ultrasonic             控制超声波的舵机进行旋转
+        * turn_on_led                       开灯
+        * turn_off_led                      关灯
+        * turn_off_all_led                  关闭所有的灯
+        * stop_all_wheels                   停止运动
+        * stop_completely                   停止运动 并关闭使能
+        * run_forward                       控制车向前进
+        * run_reverse                       控制车倒转
+        * turn_left                         控制车左转
+        * turn_right                        控制车右转
+        * spin_left                         控制车左拐弯
+        * spin_right                        控制车右拐弯
+        * distance_from_obstacle            超声波测距
+        * check_left_obstacle_with_sensor   左红外对管检测障碍物是否存在
+        * check_right_obstacle_with_sensor  右红外对管检测障碍物是否存在
+    """
+
+    DIRECT_CALL = 1         # 直接调用，没有返回参数
+    THREAD_CALL = 0
+    RETURN_CALL = 2         # 回调，有返回参数
+
+    LED_R = 0               # LED灯的红色单元
+    LED_G = 1               # LED灯的绿色单元
+    LED_B = 2               # LED灯的蓝色单元
+
+    HAVE_OBSTACLE = 0       # 检测到障碍物
+    NO_OBSTACLE = 1         # 没有检测到障碍物
+
+    OPEN = 1
+    CLOSE = 1
+
+    LINE_MOVE_TYPE = 0
+    LINE_BACK_FORTH_MOVE_TYPE = 1
+    TURN_CORNER_MOVE_TYPE = 2
+    SPRIN_MOVE_TYPE = 3
+    RECT_MOVE_TYPE = 4
+
+    SENSOR_INFRARED_TYPE = 0
+    SENSOR_BLACK_WIGHT_TYPE = 1
+    SENSOR_ULTRASONIC_TYPE = 2
+
+    def __init__(self):
+        self.socket_client = socket.socket()
+        self.socket_address = (" ", 0)
+
+
+    def __send_order(self, order={"function": {"auto_run": [8, 1]}, "mode": 1}):
+        """通过Tcp ip发送消息
+
+        Parameters
+        --------------
+        * order: 字典类型
+                - "function"：字典类型，包含控制小车的函数
+                - "mode": rpc调用方式。
+                
+
+        Returns
+        ---------------
+        * 返回服务端发送来的消息
+        """
+        try:
+            str_ord = str(order)  # dic转换为string
+            self.send_data(str_ord)
+            receive_data = self.receive_data()
+            print(receive_data)
+            return self.receive_data
+        except socket.error:
+            print('connect error')
+            time.sleep(3)
+            self.connect(self.socket_address)  # 重新连接网络
+
+    def turn_servo_camera_horizental(self, degree=90):
+        """控制摄像头的舵机进行水平方向旋转
+
+        Parameters
+        ---------------------------
+        * degree：int 类型. 舵机的旋转角度
+            - 角度范围: 0-180度，90对应舵机正中间
+            - 提示：angle设置角度太小，可能观察不到舵机移动
+
+        Returns
+        -------
+        * None
+        """
+
+        order = {
+            'function': {
+                'servo_camera_rotate': [degree],
+            },
+            'mode': Car.THREAD_CALL,
+        }
+        self.__send_order(order)
+
+    def turn_servo_camera_vertical(self, degree=90):
+        """控制摄像头舵机进行垂直方向旋转
+
+        Parameters
+        ----------------
+        * degree：int . 舵机的旋转角度
+            - degree角度范围: 0-180度，90对应舵机正中间
+            - 提示：angle设置角度太小，可能观察不到舵机移动
+
+        Returns
+        -------
+        * None
+        """
+
+        order = {
+            'function': {
+                'servo_camera_rise_fall': [degree],
+            },
+            'mode': Car.THREAD_CALL,
+        }
+        self.__send_order(order)
+
+    def turn_servo_ultrasonic(self, degree=90):
+        """控制超声波的舵机进行水平方向旋转
+
+        Parameters
+        ----------
+        * degree：int 类型. 舵机的旋转角度
+            - degree角度范围: 0-180度，90对应舵机正中间
+            - 提示：angle设置角度太小，可能观察不到舵机移动
+
+        Returns
+        -------
+        * None
+        """
+        order = {
+            'function': {
+                'servo_front_rotate': [degree],
+            },
+
+            'mode': Car.THREAD_CALL,
+        }
+        self.__send_order(order)
+
+
+    def turn_on_led(self, led):
+        """开启LED灯
+
+        Parameters
+        -----------
+        * led : int
+            - LED_R  LED_G  LED_B 三个可选项
+
+        Returns
+        -------
+        * None
+        """
+
+        order = {
+            'function':  {
+                'turn_on_led': [led],
+            },
+            'mode': Car.THREAD_CALL,
+        }
+
+        self.__send_order(order)
+
+
+    def turn_off_led(self, led):
+        """关闭LED灯
+
+        Parameters
+        --------------
+        * led : int
+            - LED_R  LED_G  LED_B 三个可选项
+
+        Returns
+        -------
+        * None
+        """
+        order = {
+            'function': {
+                'turn_off_led': [led],
+            },
+            'mode': Car.THREAD_CALL,
+        }
+        self.__send_order(order)
+
+    def turn_off_all_led(self):
+        """关闭所有的LED灯
+        """
+        self.turn_off_led(Car.LED_R)
+        self.turn_off_led(Car.LED_G)
+        self.turn_off_led(Car.LED_B)
+
+
+    def stop_all_wheels(self, delay=0):
+        """停止小车移动
+
+        Parameters
+        ------------
+        * delay：int。
+            - 延时长度
+
+        Returns
+        -------
+        * None
+        """
+
+        order = {
+            'function': {
+                'stop_all_wheels': [delay],
+            },
+
+            'mode': Car.DIRECT_CALL,
+        }
+        self.__send_order(order)
+
+    def stop_completely(self, delay=0):
+        """完全停止小车
+
+        Parameters
+        ----------
+        * delay：int。
+            - 延时长度
+
+        Returns
+        -------
+        * None
+        """
+
+        order = {
+            'function': {
+                'stop_completely': [delay],
+            },
+
+            'mode': Car.DIRECT_CALL,
+        }
+        self.__send_order(order)
+
+    def run_forward(self, speed=50, duration=0.0):
+        """
+         Run forward
+
+         Parameters
+         ----------
+         * speed : int
+             - Speed of the motors. Valid range [0, 100]
+         * duration : float
+             - Duration of the motion.
+             (default=0.0 - continue indefinitely until other motions are set)
+         """
+
+        order = {
+            'function': {
+                'run_forward': [speed, duration],
+            },
+
+            'mode': Car.DIRECT_CALL,
+        }
+        self.__send_order(order)
+
+    def run_reverse(self, speed=10, duration=0.0):
+        """
+        Run forward
+
+        Parameters
+        ----------
+        * speed : int
+            - Speed of the motors. Valid range [0, 100]
+        * duration : float
+            - Duration of the motion.
+            (default=0.0 - continue indefinitely until other motions are set)
+
+        Raises
+        ------
+        """
+
+        order = {
+            'function': {
+                'run_reverse': [speed, duration],
+            },
+            'mode': Car.DIRECT_CALL,
+        }
+        self.__send_order(order)
+
+    def turn_left(self, speed=10, duration=0.0):
+        """
+        Turn left - only right-hand-side wheels run forward
+
+        Parameters
+        ----------
+        * speed : int
+            - Speed of the motors. Valid range [0, 100]
+        * duration : float
+            - Duration of the motion.
+            (default=0.0 - continue indefinitely until other motions are set)
+
+        Raises
+        ------
+        """
+
+        order = {
+            'function': {
+                'turn_left': [speed, duration],
+            },
+
+            'mode': Car.DIRECT_CALL,
+        }
+        self.__send_order(order)
+
+    def turn_right(self, speed=10, duration=0.0):
+        """
+        Turn right - only left-hand-side wheels run forward
+
+        Parameters
+        ----------
+        * speed : int
+            - Speed of the motors. Valid range [0, 100]
+        * duration : float
+            - Duration of the motion.
+            (default=0.0 - continue indefinitely until other motions are set)
+
+        Raises
+        ------
+        """
+
+        order = {
+            'function': {
+                    'turn_right': [speed, duration],
+                },
+
+            'mode': Car.DIRECT_CALL,
+        }
+        self.__send_order(order)
+
+    def spin_left(self, speed=10, duration=0.0):
+        """
+        Spin to the left in place
+
+        Parameters
+        ----------
+        * speed : int
+            - Speed of the motors. Valid range [0, 100]
+        * duration : float
+            - Duration of the motion.
+            (default=0.0 - continue indefinitely until other motions are set)
+
+        Raises
+        ------
+        """
+
+        order = {
+            'function': {
+                'spin_left': [speed, duration],
+            },
+
+            'mode': Car.DIRECT_CALL,
+        }
+        self.__send_order(order)
+
+    def spin_right(self, speed=10, duration=0.0):
+        """
+        Spin to the left in place
+
+        Parameters
+        ----------
+        * speed : int
+            - Speed of the motors. Valid range [0, 100]
+        * duration : float
+            - Duration of the motion.
+            (default=0.0 - continue indefinitely until other motions are set)
+
+        Raises
+        ------
+        """
+
+        order = {
+            'function': {
+                'spin_right': [speed, duration],
+            },
+
+            'mode': Car.DIRECT_CALL,
+        }
+        self.__send_order(order)
+
+
+    def distance_from_obstacle(self, val=0):
+        """
+        Measure the distance between ultrasonic sensor and the obstacle
+        that it faces.
+
+        The obstacle should have a relatively smooth surface for this
+        to be effective. Distance to fabric or other sound-absorbing
+        surfaces is difficult to measure.
+
+        Parameters
+        --------------
+        * val: int
+            - XXXXX
+
+        Returns
+        -------
+        * int
+            - Measured in centimeters: valid range is 2cm to 400cm
+        """
+
+        order = {
+            'function': {
+                'distance_from_obstacle': [val],
+            },
+
+            'mode': Car.RETURN_CALL,
+        }
+
+        return self.__send_order(order)
+
+    def check_left_obstacle_with_sensor(self):
+        """通过传感器检测小车的左侧是否存在障碍物
+
+        Parameters
+        ----------
+        * none
+
+        Returns
+        -------
+        * int
+            - 1 : 有障碍
+            - 0 : 无障碍
+        """
+        order = {
+            'function': {
+                'check_left_obstacle_with_sensor': [0],
+            },
+            'mode': Car.RETURN_CALL,
+        }
+
+        return int(self.__send_order(order))
+
+    def check_right_obstacle_with_sensor(self):
+        """通过传感器检测小车的右侧是否存在障碍物
+
+        Parameters
+        ----------
+        * none
+
+        Returns
+        -------
+        * int
+            - 1 : 有障碍
+            - 0 : 无障碍
+        """
+        order = {
+            'function': {
+                'check_right_obstacle_with_sensor': [0],
+            },
+
+            'mode': Car.RETURN_CALL,
+        }
+
+        return int(self.__send_order(order))
+
+    def obstacle_status_from_infrared(self, num=0):
+        """
+        Return obstacle status obtained by infrared sensors that
+        are situated at the left front and right front of the Car.
+        The infrared sensors are located on the lower deck, so they
+        have a lower view than the ultrasonic sensor.
+    
+        Indicates blockage by obstacle < 20cm away.
+        Depending on sensitivity of sensors, the distance of obstacles
+        sometimes needs to be as short as 15cm for effective detection
+
+        Parameters
+        ------------
+        * num: int
+            -
+        
+        Returns
+        -------
+        * str
+            - one of ['only_left_blocked', 'only_right_blocked',
+                    'blocked', 'clear']
+        """
+
+        order = {
+            'function': {
+                'obstacle_status_from_infrared': [num],
+            },
+
+            'mode': Car.RETURN_CALL,
+        }
+
+        return self.__send_order(order)
+
+    def line_tracking_turn_type(self, num=4):
+        """
+            Indicates the type of turn required given current sensor values
+
+            Parameters
+            ------------
+            * num: int
+                -
+            Returns
+            -------
+            * str
+                - one of ['sharp_left_turn', 'sharp_right_turn',
+                          'regular_left_turn', 'regular_right_turn',
+                          'smooth_left', 'smooth_right',
+                          'straight', 'no_line']
+        """
+
+        order = {
+            'function': {
+                'line_tracking_turn_type': [num],
+            },
+            'mode': Car.RETURN_CALL,
+        }
+
+        return self.__send_order(order)
+
+    def turn_servo_ultrasonic(self, dir='degree', degree=90):
+        """
+        Turn the servo for ultrasonic sensor
+
+        Parameters
+        ----------
+        * dir : str
+            - one of ['left', 'center', 'right']
+            - if dir == 'degree', use degree parameter
+        * degree : int
+            - the angle to turn, measured in degree [0, 180]
+            - if dir is specified other than 'degree', this is ignored
+        """
+
+        order = {
+            'function': {
+                'turn_servo_ultrasonic': [dir, degree],
+            },
+            'mode': Car.DIRECT_CALL,
+        }
+
+        self.__send_order(order)
+
+    def led_light(self, color):
+        """
+        Shine LED light
+
+        Parameters
+        ----------
+        * color : str
+            - one of ['red', 'green', 'blue',
+                      'yellow', 'cyan', 'purple'
+                      'white', 'off']
+        """
+
+        order = {
+            'function': {
+                'led_light': [color],
+            },
+            'mode': Car.DIRECT_CALL,
+        }
+
+        self.__send_order(order)
+
+    @staticmethod  # 自动巡游功能
+    def demo_cruising():
+        """
+        Demonstrates a cruising car that avoids obstacles in a room
+
+        * Use infrared sensors and ultrasonic sensor to gauge obstacles
+        * Use LED lights to indicate running/turning decisions
+        """
+        ip = input("请输入树莓的IP:")
+        car = Car()
+        car.connect(ip)
+        try:
+            while True:
+                obstacle_status_from_infrared = car.obstacle_status_from_infrared()
+                should_turn = True
+                if obstacle_status_from_infrared == 'clear':
+                    should_turn = False
+                    obstacle_status_from_ultrasound = \
+                        car.obstacle_status_from_ultrasound()
+                    if obstacle_status_from_ultrasound == 'clear':
+                        car.run_forward(speed=10)
+                    elif obstacle_status_from_ultrasound == 'approaching_obstacle':
+                        car.run_forward(speed=5)
+                    else:
+                        should_turn = True
+                if should_turn:
+                    car.run_reverse(duration=0.02)
+                    if obstacle_status_from_infrared == 'only_right_blocked':
+                        car.spin_left(duration=random.uniform(0.25, 1.0))
+                    elif obstacle_status_from_infrared == 'only_left_blocked':
+                        car.spin_right(duration=random.uniform(0.25, 1.0))
+                    else:
+                        car.spin_right(duration=random.uniform(0.25, 1.0))
+        except KeyboardInterrupt:
+            car.stop_completely()
+
+    @staticmethod
+    def demo_line_tracking(speed=50):
+        """
+        Demonstrates the line tracking mode using the line tracking sensor
+        """
+        ip = input("请输入树莓的IP:")
+        car = Car()
+        car.connect(ip)
+
+        try:
+            while True:
+                turn = car.line_tracking_turn_type()
+                if turn == 'straight':
+                    car.run_forward(speed=speed)
+                elif turn == 'smooth_left':
+                    car.turn_left(speed=speed * 0.75)
+                elif turn == 'smooth_right':
+                    car.turn_right(speed=speed * 0.75)
+                elif turn == 'regular_left_turn':
+                    car.spin_left(speed=speed * 0.75)
+                elif turn == 'regular_right_turn':
+                    car.spin_right(speed=speed * 0.75)
+                elif turn == 'sharp_left_turn':
+                    car.spin_left(speed=speed)
+                elif turn == 'sharp_right_turn':
+                    car.spin_right(speed=speed)
+        except KeyboardInterrupt:
+            car.stop_completely()
+
+    @staticmethod
+    def demo_led_switch():
+        """控制灯demo
+        """
+        ip = input("请输入树莓的IP:")
+        car = Car()
+        car.connect(ip)
+        car.turn_on_led(Car.LED_B)
+        time.sleep(2)
+        car.turn_on_led(Car.LED_G)
+        time.sleep(2)
+        car.turn_on_led(Car.LED_R)
+
+    @staticmethod  #
+    def demo_car_moving():
+        """小车的移动demo
+        """
+        car = Car()
+        ip = input("请输入树莓的IP:")
+        car.connect(ip)
+        run_type = int(input("输入运动类型(0:直线，1：来回，2：转弯，3：拐弯，4：正方形)："))
+        if run_type == Car.LINE_MOVE_TYPE:                  # 直线移动
+            car.run_forward(5, 2)
+        elif run_type == Car.LINE_BACK_FORTH_MOVE_TYPE:     # 来回移动
+            car.run_forward(5, 2)
+            car.run_reverse(5, 2)
+        elif run_type == Car.TURN_CORNER_MOVE_TYPE:         # 转弯
+            car.run_forward(5, 2)
+            car.turn_left(3, 4)
+            car.run_forward(5, 2)
+        elif run_type == Car.SPRIN_MOVE_TYPE:               # 拐弯
+            car.run_forward(5, 2)
+            car.spin_left(3, 2)
+            car.run_forward(5, 2)
+        elif run_type == Car.RECT_MOVE_TYPE:                # 按正方形路线行驶
+            car.run_forward(10, 5)
+            car.turn_left(4, 1)
+            car.run_forward(10, 5)
+            car.turn_left(4, 1)
+            car.run_forward(10, 5)
+            car.turn_left(4, 1)
+            car.run_forward(10, 5)
+            car.turn_left(4, 1)
+
+    @staticmethod
+    def demo_sensor():
+        """传感器控制demo
+
+        """
+        ####################################
+        # 红外线传感器测试方法：
+        #   用手来回挡住传感器，观看传感器的读数变化（在使用传感器前，面向传感器，
+        #   调节传感器的旋钮，让右侧的两个灯恰好亮）。当传感器被挡住的时候，左侧的传感器就会亮
+        #   根据传感器遇到障碍物类型可以分为下面四种类型：
+        #       one of ['only_left_blocked', 'only_right_blocked','blocked', 'clear']
+
+        # 黑白色检测传感器测试方法：
+        #   工具：黑色的电工胶布一圈
+        #   使用过程：把电工胶布贴在A4纸张上或桌子上，让后把黑白传感器在黑色电工胶布上来回移动，
+        #   观看传感器上灯的亮度变化或输出值的变化
+        #   当遇到黑色就会变亮，根据它可以做一个巡线机器人。
+
+        # 超声波传感器测试方法
+        #   超声波测距：用双手挡住超声波、并做靠近超声波、远离超声波，来回运动，观看超声波读取值的变化
+        ########################################
+        car = Car()
+        port = input("请输入树莓的IP:")
+        car.connect(port)
+        sensor_type = int(input("测试传感器类型 0:红外；1:黑白；2:超声波"))
+        if sensor_type == 0:    # 红外对管传感器
+            while True:
+                status = car.obstacle_status_from_infrared()
+                print(status)
+        elif sensor_type == 1:  # 黑白色检测传感器的使用
+            while True:
+                status = car.line_tracking_turn_type()
+                print(status)
+        elif sensor_type == 2:  # 超声波传感器
+            while True:
+                dis = car.distance_from_obstacle()  # 固定在一个位置查看其变化
+                print(dis)
+
+
+def main():
+    ########################################
+    # learning_level:
+    # 学习等级 0：初级 设置电平，可以控制灯的开和关
+    # 学习等级 1：控制小车直行、运动、左转等
+    # 学习等级 2：控制小车的传感器
+    # 学习等级 3：控制小车漫游
+    # 学习等级 4：控制小车巡线
+    ##########################################
+    learning_level = int(input("请输入学习等级（0：灯光、1：运动、2：传感器、3：漫游、4:巡线）："))
+    print(learning_level)
+    if learning_level == 0:
+        Car.demo_led_switch()          # 灯光操作例子
+    elif learning_level == 1:
+        Car.demo_car_moving()          # 小车运动操作例子
+    elif learning_level == 2:
+        Car.demo_sensor()              # 传感器操作例子
+    elif learning_level == 3:
+        Car.demo_cruising()            # 利用红外传感器、超声波和小车运动组合做漫游服务例子
+    elif learning_level == 4:
+        Car.demo_line_tracking()       # 利用黑白传感器和小车运动做巡线服务的例子
+
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+  </div>
+
+  </header>
+
+  <section id="section-items">
+
+    <h2 class="section-title" id="header-functions">Functions</h2>
+      
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.main">
+    <p>def <span class="ident">main</span>(</p><p>)</p>
+    </div>
+    
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.main', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.main" class="source">
+    <pre><code>def main():
+    ########################################
+    # learning_level:
+    # 学习等级 0：初级 设置电平，可以控制灯的开和关
+    # 学习等级 1：控制小车直行、运动、左转等
+    # 学习等级 2：控制小车的传感器
+    # 学习等级 3：控制小车漫游
+    # 学习等级 4：控制小车巡线
+    ##########################################
+    learning_level = int(input("请输入学习等级（0：灯光、1：运动、2：传感器、3：漫游、4:巡线）："))
+    print(learning_level)
+    if learning_level == 0:
+        Car.demo_led_switch()          # 灯光操作例子
+    elif learning_level == 1:
+        Car.demo_car_moving()          # 小车运动操作例子
+    elif learning_level == 2:
+        Car.demo_sensor()              # 传感器操作例子
+    elif learning_level == 3:
+        Car.demo_cruising()            # 利用红外传感器、超声波和小车运动组合做漫游服务例子
+    elif learning_level == 4:
+        Car.demo_line_tracking()       # 利用黑白传感器和小车运动做巡线服务的例子
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+
+    <h2 class="section-title" id="header-classes">Classes</h2>
+      
+      <div class="item">
+      <p id="thinkland_rpi_car_client.Car" class="name">class <span class="ident">Car</span></p>
+      
+  
+    <div class="desc"><p>小车类包含以下实例函数：
+<em> connect                           建立网络连接
+</em> __send_order                      发送数据流
+<em> turn_servo_camera_horizental      控制摄像机的舵机进行旋转
+</em> turn_servo_camera_vertical        控制相机的舵机上升和下降
+<em> turn_servo_ultrasonic             控制超声波的舵机进行旋转
+</em> turn_on_led                       开灯
+<em> turn_off_led                      关灯
+</em> turn_off_all_led                  关闭所有的灯
+<em> stop_all_wheels                   停止运动
+</em> stop_completely                   停止运动 并关闭使能
+<em> run_forward                       控制车向前进
+</em> run_reverse                       控制车倒转
+<em> turn_left                         控制车左转
+</em> turn_right                        控制车右转
+<em> spin_left                         控制车左拐弯
+</em> spin_right                        控制车右拐弯
+<em> distance_from_obstacle            超声波测距
+</em> check_left_obstacle_with_sensor   左红外对管检测障碍物是否存在
+* check_right_obstacle_with_sensor  右红外对管检测障碍物是否存在</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car" class="source">
+    <pre><code>class Car(SocketMixin):
+    """
+    小车类包含以下实例函数：
+        * connect                           建立网络连接
+        * __send_order                      发送数据流
+        * turn_servo_camera_horizental      控制摄像机的舵机进行旋转
+        * turn_servo_camera_vertical        控制相机的舵机上升和下降
+        * turn_servo_ultrasonic             控制超声波的舵机进行旋转
+        * turn_on_led                       开灯
+        * turn_off_led                      关灯
+        * turn_off_all_led                  关闭所有的灯
+        * stop_all_wheels                   停止运动
+        * stop_completely                   停止运动 并关闭使能
+        * run_forward                       控制车向前进
+        * run_reverse                       控制车倒转
+        * turn_left                         控制车左转
+        * turn_right                        控制车右转
+        * spin_left                         控制车左拐弯
+        * spin_right                        控制车右拐弯
+        * distance_from_obstacle            超声波测距
+        * check_left_obstacle_with_sensor   左红外对管检测障碍物是否存在
+        * check_right_obstacle_with_sensor  右红外对管检测障碍物是否存在
+    """
+
+    DIRECT_CALL = 1         # 直接调用，没有返回参数
+    THREAD_CALL = 0
+    RETURN_CALL = 2         # 回调，有返回参数
+
+    LED_R = 0               # LED灯的红色单元
+    LED_G = 1               # LED灯的绿色单元
+    LED_B = 2               # LED灯的蓝色单元
+
+    HAVE_OBSTACLE = 0       # 检测到障碍物
+    NO_OBSTACLE = 1         # 没有检测到障碍物
+
+    OPEN = 1
+    CLOSE = 1
+
+    LINE_MOVE_TYPE = 0
+    LINE_BACK_FORTH_MOVE_TYPE = 1
+    TURN_CORNER_MOVE_TYPE = 2
+    SPRIN_MOVE_TYPE = 3
+    RECT_MOVE_TYPE = 4
+
+    SENSOR_INFRARED_TYPE = 0
+    SENSOR_BLACK_WIGHT_TYPE = 1
+    SENSOR_ULTRASONIC_TYPE = 2
+
+    def __init__(self):
+        self.socket_client = socket.socket()
+        self.socket_address = (" ", 0)
+
+
+    def __send_order(self, order={"function": {"auto_run": [8, 1]}, "mode": 1}):
+        """通过Tcp ip发送消息
+
+        Parameters
+        --------------
+        * order: 字典类型
+                - "function"：字典类型，包含控制小车的函数
+                - "mode": rpc调用方式。
+                
+
+        Returns
+        ---------------
+        * 返回服务端发送来的消息
+        """
+        try:
+            str_ord = str(order)  # dic转换为string
+            self.send_data(str_ord)
+            receive_data = self.receive_data()
+            print(receive_data)
+            return self.receive_data
+        except socket.error:
+            print('connect error')
+            time.sleep(3)
+            self.connect(self.socket_address)  # 重新连接网络
+
+    def turn_servo_camera_horizental(self, degree=90):
+        """控制摄像头的舵机进行水平方向旋转
+
+        Parameters
+        ---------------------------
+        * degree：int 类型. 舵机的旋转角度
+            - 角度范围: 0-180度，90对应舵机正中间
+            - 提示：angle设置角度太小，可能观察不到舵机移动
+
+        Returns
+        -------
+        * None
+        """
+
+        order = {
+            'function': {
+                'servo_camera_rotate': [degree],
+            },
+            'mode': Car.THREAD_CALL,
+        }
+        self.__send_order(order)
+
+    def turn_servo_camera_vertical(self, degree=90):
+        """控制摄像头舵机进行垂直方向旋转
+
+        Parameters
+        ----------------
+        * degree：int . 舵机的旋转角度
+            - degree角度范围: 0-180度，90对应舵机正中间
+            - 提示：angle设置角度太小，可能观察不到舵机移动
+
+        Returns
+        -------
+        * None
+        """
+
+        order = {
+            'function': {
+                'servo_camera_rise_fall': [degree],
+            },
+            'mode': Car.THREAD_CALL,
+        }
+        self.__send_order(order)
+
+    def turn_servo_ultrasonic(self, degree=90):
+        """控制超声波的舵机进行水平方向旋转
+
+        Parameters
+        ----------
+        * degree：int 类型. 舵机的旋转角度
+            - degree角度范围: 0-180度，90对应舵机正中间
+            - 提示：angle设置角度太小，可能观察不到舵机移动
+
+        Returns
+        -------
+        * None
+        """
+        order = {
+            'function': {
+                'servo_front_rotate': [degree],
+            },
+
+            'mode': Car.THREAD_CALL,
+        }
+        self.__send_order(order)
+
+
+    def turn_on_led(self, led):
+        """开启LED灯
+
+        Parameters
+        -----------
+        * led : int
+            - LED_R  LED_G  LED_B 三个可选项
+
+        Returns
+        -------
+        * None
+        """
+
+        order = {
+            'function':  {
+                'turn_on_led': [led],
+            },
+            'mode': Car.THREAD_CALL,
+        }
+
+        self.__send_order(order)
+
+
+    def turn_off_led(self, led):
+        """关闭LED灯
+
+        Parameters
+        --------------
+        * led : int
+            - LED_R  LED_G  LED_B 三个可选项
+
+        Returns
+        -------
+        * None
+        """
+        order = {
+            'function': {
+                'turn_off_led': [led],
+            },
+            'mode': Car.THREAD_CALL,
+        }
+        self.__send_order(order)
+
+    def turn_off_all_led(self):
+        """关闭所有的LED灯
+        """
+        self.turn_off_led(Car.LED_R)
+        self.turn_off_led(Car.LED_G)
+        self.turn_off_led(Car.LED_B)
+
+
+    def stop_all_wheels(self, delay=0):
+        """停止小车移动
+
+        Parameters
+        ------------
+        * delay：int。
+            - 延时长度
+
+        Returns
+        -------
+        * None
+        """
+
+        order = {
+            'function': {
+                'stop_all_wheels': [delay],
+            },
+
+            'mode': Car.DIRECT_CALL,
+        }
+        self.__send_order(order)
+
+    def stop_completely(self, delay=0):
+        """完全停止小车
+
+        Parameters
+        ----------
+        * delay：int。
+            - 延时长度
+
+        Returns
+        -------
+        * None
+        """
+
+        order = {
+            'function': {
+                'stop_completely': [delay],
+            },
+
+            'mode': Car.DIRECT_CALL,
+        }
+        self.__send_order(order)
+
+    def run_forward(self, speed=50, duration=0.0):
+        """
+         Run forward
+
+         Parameters
+         ----------
+         * speed : int
+             - Speed of the motors. Valid range [0, 100]
+         * duration : float
+             - Duration of the motion.
+             (default=0.0 - continue indefinitely until other motions are set)
+         """
+
+        order = {
+            'function': {
+                'run_forward': [speed, duration],
+            },
+
+            'mode': Car.DIRECT_CALL,
+        }
+        self.__send_order(order)
+
+    def run_reverse(self, speed=10, duration=0.0):
+        """
+        Run forward
+
+        Parameters
+        ----------
+        * speed : int
+            - Speed of the motors. Valid range [0, 100]
+        * duration : float
+            - Duration of the motion.
+            (default=0.0 - continue indefinitely until other motions are set)
+
+        Raises
+        ------
+        """
+
+        order = {
+            'function': {
+                'run_reverse': [speed, duration],
+            },
+            'mode': Car.DIRECT_CALL,
+        }
+        self.__send_order(order)
+
+    def turn_left(self, speed=10, duration=0.0):
+        """
+        Turn left - only right-hand-side wheels run forward
+
+        Parameters
+        ----------
+        * speed : int
+            - Speed of the motors. Valid range [0, 100]
+        * duration : float
+            - Duration of the motion.
+            (default=0.0 - continue indefinitely until other motions are set)
+
+        Raises
+        ------
+        """
+
+        order = {
+            'function': {
+                'turn_left': [speed, duration],
+            },
+
+            'mode': Car.DIRECT_CALL,
+        }
+        self.__send_order(order)
+
+    def turn_right(self, speed=10, duration=0.0):
+        """
+        Turn right - only left-hand-side wheels run forward
+
+        Parameters
+        ----------
+        * speed : int
+            - Speed of the motors. Valid range [0, 100]
+        * duration : float
+            - Duration of the motion.
+            (default=0.0 - continue indefinitely until other motions are set)
+
+        Raises
+        ------
+        """
+
+        order = {
+            'function': {
+                    'turn_right': [speed, duration],
+                },
+
+            'mode': Car.DIRECT_CALL,
+        }
+        self.__send_order(order)
+
+    def spin_left(self, speed=10, duration=0.0):
+        """
+        Spin to the left in place
+
+        Parameters
+        ----------
+        * speed : int
+            - Speed of the motors. Valid range [0, 100]
+        * duration : float
+            - Duration of the motion.
+            (default=0.0 - continue indefinitely until other motions are set)
+
+        Raises
+        ------
+        """
+
+        order = {
+            'function': {
+                'spin_left': [speed, duration],
+            },
+
+            'mode': Car.DIRECT_CALL,
+        }
+        self.__send_order(order)
+
+    def spin_right(self, speed=10, duration=0.0):
+        """
+        Spin to the left in place
+
+        Parameters
+        ----------
+        * speed : int
+            - Speed of the motors. Valid range [0, 100]
+        * duration : float
+            - Duration of the motion.
+            (default=0.0 - continue indefinitely until other motions are set)
+
+        Raises
+        ------
+        """
+
+        order = {
+            'function': {
+                'spin_right': [speed, duration],
+            },
+
+            'mode': Car.DIRECT_CALL,
+        }
+        self.__send_order(order)
+
+
+    def distance_from_obstacle(self, val=0):
+        """
+        Measure the distance between ultrasonic sensor and the obstacle
+        that it faces.
+
+        The obstacle should have a relatively smooth surface for this
+        to be effective. Distance to fabric or other sound-absorbing
+        surfaces is difficult to measure.
+
+        Parameters
+        --------------
+        * val: int
+            - XXXXX
+
+        Returns
+        -------
+        * int
+            - Measured in centimeters: valid range is 2cm to 400cm
+        """
+
+        order = {
+            'function': {
+                'distance_from_obstacle': [val],
+            },
+
+            'mode': Car.RETURN_CALL,
+        }
+
+        return self.__send_order(order)
+
+    def check_left_obstacle_with_sensor(self):
+        """通过传感器检测小车的左侧是否存在障碍物
+
+        Parameters
+        ----------
+        * none
+
+        Returns
+        -------
+        * int
+            - 1 : 有障碍
+            - 0 : 无障碍
+        """
+        order = {
+            'function': {
+                'check_left_obstacle_with_sensor': [0],
+            },
+            'mode': Car.RETURN_CALL,
+        }
+
+        return int(self.__send_order(order))
+
+    def check_right_obstacle_with_sensor(self):
+        """通过传感器检测小车的右侧是否存在障碍物
+
+        Parameters
+        ----------
+        * none
+
+        Returns
+        -------
+        * int
+            - 1 : 有障碍
+            - 0 : 无障碍
+        """
+        order = {
+            'function': {
+                'check_right_obstacle_with_sensor': [0],
+            },
+
+            'mode': Car.RETURN_CALL,
+        }
+
+        return int(self.__send_order(order))
+
+    def obstacle_status_from_infrared(self, num=0):
+        """
+        Return obstacle status obtained by infrared sensors that
+        are situated at the left front and right front of the Car.
+        The infrared sensors are located on the lower deck, so they
+        have a lower view than the ultrasonic sensor.
+    
+        Indicates blockage by obstacle < 20cm away.
+        Depending on sensitivity of sensors, the distance of obstacles
+        sometimes needs to be as short as 15cm for effective detection
+
+        Parameters
+        ------------
+        * num: int
+            -
+        
+        Returns
+        -------
+        * str
+            - one of ['only_left_blocked', 'only_right_blocked',
+                    'blocked', 'clear']
+        """
+
+        order = {
+            'function': {
+                'obstacle_status_from_infrared': [num],
+            },
+
+            'mode': Car.RETURN_CALL,
+        }
+
+        return self.__send_order(order)
+
+    def line_tracking_turn_type(self, num=4):
+        """
+            Indicates the type of turn required given current sensor values
+
+            Parameters
+            ------------
+            * num: int
+                -
+            Returns
+            -------
+            * str
+                - one of ['sharp_left_turn', 'sharp_right_turn',
+                          'regular_left_turn', 'regular_right_turn',
+                          'smooth_left', 'smooth_right',
+                          'straight', 'no_line']
+        """
+
+        order = {
+            'function': {
+                'line_tracking_turn_type': [num],
+            },
+            'mode': Car.RETURN_CALL,
+        }
+
+        return self.__send_order(order)
+
+    def turn_servo_ultrasonic(self, dir='degree', degree=90):
+        """
+        Turn the servo for ultrasonic sensor
+
+        Parameters
+        ----------
+        * dir : str
+            - one of ['left', 'center', 'right']
+            - if dir == 'degree', use degree parameter
+        * degree : int
+            - the angle to turn, measured in degree [0, 180]
+            - if dir is specified other than 'degree', this is ignored
+        """
+
+        order = {
+            'function': {
+                'turn_servo_ultrasonic': [dir, degree],
+            },
+            'mode': Car.DIRECT_CALL,
+        }
+
+        self.__send_order(order)
+
+    def led_light(self, color):
+        """
+        Shine LED light
+
+        Parameters
+        ----------
+        * color : str
+            - one of ['red', 'green', 'blue',
+                      'yellow', 'cyan', 'purple'
+                      'white', 'off']
+        """
+
+        order = {
+            'function': {
+                'led_light': [color],
+            },
+            'mode': Car.DIRECT_CALL,
+        }
+
+        self.__send_order(order)
+
+    @staticmethod  # 自动巡游功能
+    def demo_cruising():
+        """
+        Demonstrates a cruising car that avoids obstacles in a room
+
+        * Use infrared sensors and ultrasonic sensor to gauge obstacles
+        * Use LED lights to indicate running/turning decisions
+        """
+        ip = input("请输入树莓的IP:")
+        car = Car()
+        car.connect(ip)
+        try:
+            while True:
+                obstacle_status_from_infrared = car.obstacle_status_from_infrared()
+                should_turn = True
+                if obstacle_status_from_infrared == 'clear':
+                    should_turn = False
+                    obstacle_status_from_ultrasound = \
+                        car.obstacle_status_from_ultrasound()
+                    if obstacle_status_from_ultrasound == 'clear':
+                        car.run_forward(speed=10)
+                    elif obstacle_status_from_ultrasound == 'approaching_obstacle':
+                        car.run_forward(speed=5)
+                    else:
+                        should_turn = True
+                if should_turn:
+                    car.run_reverse(duration=0.02)
+                    if obstacle_status_from_infrared == 'only_right_blocked':
+                        car.spin_left(duration=random.uniform(0.25, 1.0))
+                    elif obstacle_status_from_infrared == 'only_left_blocked':
+                        car.spin_right(duration=random.uniform(0.25, 1.0))
+                    else:
+                        car.spin_right(duration=random.uniform(0.25, 1.0))
+        except KeyboardInterrupt:
+            car.stop_completely()
+
+    @staticmethod
+    def demo_line_tracking(speed=50):
+        """
+        Demonstrates the line tracking mode using the line tracking sensor
+        """
+        ip = input("请输入树莓的IP:")
+        car = Car()
+        car.connect(ip)
+
+        try:
+            while True:
+                turn = car.line_tracking_turn_type()
+                if turn == 'straight':
+                    car.run_forward(speed=speed)
+                elif turn == 'smooth_left':
+                    car.turn_left(speed=speed * 0.75)
+                elif turn == 'smooth_right':
+                    car.turn_right(speed=speed * 0.75)
+                elif turn == 'regular_left_turn':
+                    car.spin_left(speed=speed * 0.75)
+                elif turn == 'regular_right_turn':
+                    car.spin_right(speed=speed * 0.75)
+                elif turn == 'sharp_left_turn':
+                    car.spin_left(speed=speed)
+                elif turn == 'sharp_right_turn':
+                    car.spin_right(speed=speed)
+        except KeyboardInterrupt:
+            car.stop_completely()
+
+    @staticmethod
+    def demo_led_switch():
+        """控制灯demo
+        """
+        ip = input("请输入树莓的IP:")
+        car = Car()
+        car.connect(ip)
+        car.turn_on_led(Car.LED_B)
+        time.sleep(2)
+        car.turn_on_led(Car.LED_G)
+        time.sleep(2)
+        car.turn_on_led(Car.LED_R)
+
+    @staticmethod  #
+    def demo_car_moving():
+        """小车的移动demo
+        """
+        car = Car()
+        ip = input("请输入树莓的IP:")
+        car.connect(ip)
+        run_type = int(input("输入运动类型(0:直线，1：来回，2：转弯，3：拐弯，4：正方形)："))
+        if run_type == Car.LINE_MOVE_TYPE:                  # 直线移动
+            car.run_forward(5, 2)
+        elif run_type == Car.LINE_BACK_FORTH_MOVE_TYPE:     # 来回移动
+            car.run_forward(5, 2)
+            car.run_reverse(5, 2)
+        elif run_type == Car.TURN_CORNER_MOVE_TYPE:         # 转弯
+            car.run_forward(5, 2)
+            car.turn_left(3, 4)
+            car.run_forward(5, 2)
+        elif run_type == Car.SPRIN_MOVE_TYPE:               # 拐弯
+            car.run_forward(5, 2)
+            car.spin_left(3, 2)
+            car.run_forward(5, 2)
+        elif run_type == Car.RECT_MOVE_TYPE:                # 按正方形路线行驶
+            car.run_forward(10, 5)
+            car.turn_left(4, 1)
+            car.run_forward(10, 5)
+            car.turn_left(4, 1)
+            car.run_forward(10, 5)
+            car.turn_left(4, 1)
+            car.run_forward(10, 5)
+            car.turn_left(4, 1)
+
+    @staticmethod
+    def demo_sensor():
+        """传感器控制demo
+
+        """
+        ####################################
+        # 红外线传感器测试方法：
+        #   用手来回挡住传感器，观看传感器的读数变化（在使用传感器前，面向传感器，
+        #   调节传感器的旋钮，让右侧的两个灯恰好亮）。当传感器被挡住的时候，左侧的传感器就会亮
+        #   根据传感器遇到障碍物类型可以分为下面四种类型：
+        #       one of ['only_left_blocked', 'only_right_blocked','blocked', 'clear']
+
+        # 黑白色检测传感器测试方法：
+        #   工具：黑色的电工胶布一圈
+        #   使用过程：把电工胶布贴在A4纸张上或桌子上，让后把黑白传感器在黑色电工胶布上来回移动，
+        #   观看传感器上灯的亮度变化或输出值的变化
+        #   当遇到黑色就会变亮，根据它可以做一个巡线机器人。
+
+        # 超声波传感器测试方法
+        #   超声波测距：用双手挡住超声波、并做靠近超声波、远离超声波，来回运动，观看超声波读取值的变化
+        ########################################
+        car = Car()
+        port = input("请输入树莓的IP:")
+        car.connect(port)
+        sensor_type = int(input("测试传感器类型 0:红外；1:黑白；2:超声波"))
+        if sensor_type == 0:    # 红外对管传感器
+            while True:
+                status = car.obstacle_status_from_infrared()
+                print(status)
+        elif sensor_type == 1:  # 黑白色检测传感器的使用
+            while True:
+                status = car.line_tracking_turn_type()
+                print(status)
+        elif sensor_type == 2:  # 超声波传感器
+            while True:
+                dis = car.distance_from_obstacle()  # 固定在一个位置查看其变化
+                print(dis)
+</code></pre>
+  </div>
+</div>
+
+
+      <div class="class">
+          <h3>Ancestors (in MRO)</h3>
+          <ul class="class_list">
+          <li><a href="#thinkland_rpi_car_client.Car">Car</a></li>
+          <li><a href="#thinkland_rpi_car_client.SocketMixin">SocketMixin</a></li>
+          <li>builtins.object</li>
+          </ul>
+          <h3>Class variables</h3>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.CLOSE" class="name">var <span class="ident">CLOSE</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.DIRECT_CALL" class="name">var <span class="ident">DIRECT_CALL</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.HAVE_OBSTACLE" class="name">var <span class="ident">HAVE_OBSTACLE</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.LED_B" class="name">var <span class="ident">LED_B</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.LED_G" class="name">var <span class="ident">LED_G</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.LED_R" class="name">var <span class="ident">LED_R</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.LINE_BACK_FORTH_MOVE_TYPE" class="name">var <span class="ident">LINE_BACK_FORTH_MOVE_TYPE</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.LINE_MOVE_TYPE" class="name">var <span class="ident">LINE_MOVE_TYPE</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.NO_OBSTACLE" class="name">var <span class="ident">NO_OBSTACLE</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.OPEN" class="name">var <span class="ident">OPEN</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.RECT_MOVE_TYPE" class="name">var <span class="ident">RECT_MOVE_TYPE</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.RETURN_CALL" class="name">var <span class="ident">RETURN_CALL</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.SENSOR_BLACK_WIGHT_TYPE" class="name">var <span class="ident">SENSOR_BLACK_WIGHT_TYPE</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.SENSOR_INFRARED_TYPE" class="name">var <span class="ident">SENSOR_INFRARED_TYPE</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.SENSOR_ULTRASONIC_TYPE" class="name">var <span class="ident">SENSOR_ULTRASONIC_TYPE</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.SPRIN_MOVE_TYPE" class="name">var <span class="ident">SPRIN_MOVE_TYPE</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.THREAD_CALL" class="name">var <span class="ident">THREAD_CALL</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.TURN_CORNER_MOVE_TYPE" class="name">var <span class="ident">TURN_CORNER_MOVE_TYPE</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Initialize self.  See help(type(self)) for accurate signature.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.__init__', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.__init__" class="source">
+    <pre><code>def __init__(self):
+    self.socket_client = socket.socket()
+    self.socket_address = (" ", 0)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.check_left_obstacle_with_sensor">
+    <p>def <span class="ident">check_left_obstacle_with_sensor</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>通过传感器检测小车的左侧是否存在障碍物</p>
+<h2>Parameters</h2>
+<ul>
+<li>none</li>
+</ul>
+<h2>Returns</h2>
+<ul>
+<li>int<ul>
+<li>1 : 有障碍</li>
+<li>0 : 无障碍</li>
+</ul>
+</li>
+</ul></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.check_left_obstacle_with_sensor', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.check_left_obstacle_with_sensor" class="source">
+    <pre><code>def check_left_obstacle_with_sensor(self):
+    """通过传感器检测小车的左侧是否存在障碍物
+    Parameters
+    ----------
+    * none
+    Returns
+    -------
+    * int
+        - 1 : 有障碍
+        - 0 : 无障碍
+    """
+    order = {
+        'function': {
+            'check_left_obstacle_with_sensor': [0],
+        },
+        'mode': Car.RETURN_CALL,
+    }
+    return int(self.__send_order(order))
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.check_right_obstacle_with_sensor">
+    <p>def <span class="ident">check_right_obstacle_with_sensor</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>通过传感器检测小车的右侧是否存在障碍物</p>
+<h2>Parameters</h2>
+<ul>
+<li>none</li>
+</ul>
+<h2>Returns</h2>
+<ul>
+<li>int<ul>
+<li>1 : 有障碍</li>
+<li>0 : 无障碍</li>
+</ul>
+</li>
+</ul></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.check_right_obstacle_with_sensor', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.check_right_obstacle_with_sensor" class="source">
+    <pre><code>def check_right_obstacle_with_sensor(self):
+    """通过传感器检测小车的右侧是否存在障碍物
+    Parameters
+    ----------
+    * none
+    Returns
+    -------
+    * int
+        - 1 : 有障碍
+        - 0 : 无障碍
+    """
+    order = {
+        'function': {
+            'check_right_obstacle_with_sensor': [0],
+        },
+        'mode': Car.RETURN_CALL,
+    }
+    return int(self.__send_order(order))
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.connect">
+    <p>def <span class="ident">connect</span>(</p><p>self, ip, port=12347)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>连接服务器</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.connect', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.connect" class="source">
+    <pre><code>def connect(self, ip, port=12347):
+    """连接服务器
+    """
+    self.socket_address = (ip, port)
+    self.socket_client.connect(self.socket_address)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.data_handler">
+    <p>def <span class="ident">data_handler</span>(</p><p>self, bytes)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>处理接收到数据</p>
+<h2>Parameters</h2>
+<p>bytes: b''
+    - 接收到的数据</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.data_handler', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.data_handler" class="source">
+    <pre><code>def data_handler(self, bytes):
+    """处理接收到数据
+    Parameters
+    ------------
+    bytes: b''
+        - 接收到的数据
+    """
+    pass
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.demo_car_moving">
+    <p>def <span class="ident">demo_car_moving</span>(</p><p>)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>小车的移动demo</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.demo_car_moving', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.demo_car_moving" class="source">
+    <pre><code>@staticmethod  #
+def demo_car_moving():
+    """小车的移动demo
+    """
+    car = Car()
+    ip = input("请输入树莓的IP:")
+    car.connect(ip)
+    run_type = int(input("输入运动类型(0:直线，1：来回，2：转弯，3：拐弯，4：正方形)："))
+    if run_type == Car.LINE_MOVE_TYPE:                  # 直线移动
+        car.run_forward(5, 2)
+    elif run_type == Car.LINE_BACK_FORTH_MOVE_TYPE:     # 来回移动
+        car.run_forward(5, 2)
+        car.run_reverse(5, 2)
+    elif run_type == Car.TURN_CORNER_MOVE_TYPE:         # 转弯
+        car.run_forward(5, 2)
+        car.turn_left(3, 4)
+        car.run_forward(5, 2)
+    elif run_type == Car.SPRIN_MOVE_TYPE:               # 拐弯
+        car.run_forward(5, 2)
+        car.spin_left(3, 2)
+        car.run_forward(5, 2)
+    elif run_type == Car.RECT_MOVE_TYPE:                # 按正方形路线行驶
+        car.run_forward(10, 5)
+        car.turn_left(4, 1)
+        car.run_forward(10, 5)
+        car.turn_left(4, 1)
+        car.run_forward(10, 5)
+        car.turn_left(4, 1)
+        car.run_forward(10, 5)
+        car.turn_left(4, 1)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.demo_cruising">
+    <p>def <span class="ident">demo_cruising</span>(</p><p>)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Demonstrates a cruising car that avoids obstacles in a room</p>
+<ul>
+<li>Use infrared sensors and ultrasonic sensor to gauge obstacles</li>
+<li>Use LED lights to indicate running/turning decisions</li>
+</ul></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.demo_cruising', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.demo_cruising" class="source">
+    <pre><code>@staticmethod  # 自动巡游功能
+def demo_cruising():
+    """
+    Demonstrates a cruising car that avoids obstacles in a room
+    * Use infrared sensors and ultrasonic sensor to gauge obstacles
+    * Use LED lights to indicate running/turning decisions
+    """
+    ip = input("请输入树莓的IP:")
+    car = Car()
+    car.connect(ip)
+    try:
+        while True:
+            obstacle_status_from_infrared = car.obstacle_status_from_infrared()
+            should_turn = True
+            if obstacle_status_from_infrared == 'clear':
+                should_turn = False
+                obstacle_status_from_ultrasound = \
+                    car.obstacle_status_from_ultrasound()
+                if obstacle_status_from_ultrasound == 'clear':
+                    car.run_forward(speed=10)
+                elif obstacle_status_from_ultrasound == 'approaching_obstacle':
+                    car.run_forward(speed=5)
+                else:
+                    should_turn = True
+            if should_turn:
+                car.run_reverse(duration=0.02)
+                if obstacle_status_from_infrared == 'only_right_blocked':
+                    car.spin_left(duration=random.uniform(0.25, 1.0))
+                elif obstacle_status_from_infrared == 'only_left_blocked':
+                    car.spin_right(duration=random.uniform(0.25, 1.0))
+                else:
+                    car.spin_right(duration=random.uniform(0.25, 1.0))
+    except KeyboardInterrupt:
+        car.stop_completely()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.demo_led_switch">
+    <p>def <span class="ident">demo_led_switch</span>(</p><p>)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>控制灯demo</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.demo_led_switch', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.demo_led_switch" class="source">
+    <pre><code>@staticmethod
+def demo_led_switch():
+    """控制灯demo
+    """
+    ip = input("请输入树莓的IP:")
+    car = Car()
+    car.connect(ip)
+    car.turn_on_led(Car.LED_B)
+    time.sleep(2)
+    car.turn_on_led(Car.LED_G)
+    time.sleep(2)
+    car.turn_on_led(Car.LED_R)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.demo_line_tracking">
+    <p>def <span class="ident">demo_line_tracking</span>(</p><p>speed=50)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Demonstrates the line tracking mode using the line tracking sensor</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.demo_line_tracking', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.demo_line_tracking" class="source">
+    <pre><code>@staticmethod
+def demo_line_tracking(speed=50):
+    """
+    Demonstrates the line tracking mode using the line tracking sensor
+    """
+    ip = input("请输入树莓的IP:")
+    car = Car()
+    car.connect(ip)
+    try:
+        while True:
+            turn = car.line_tracking_turn_type()
+            if turn == 'straight':
+                car.run_forward(speed=speed)
+            elif turn == 'smooth_left':
+                car.turn_left(speed=speed * 0.75)
+            elif turn == 'smooth_right':
+                car.turn_right(speed=speed * 0.75)
+            elif turn == 'regular_left_turn':
+                car.spin_left(speed=speed * 0.75)
+            elif turn == 'regular_right_turn':
+                car.spin_right(speed=speed * 0.75)
+            elif turn == 'sharp_left_turn':
+                car.spin_left(speed=speed)
+            elif turn == 'sharp_right_turn':
+                car.spin_right(speed=speed)
+    except KeyboardInterrupt:
+        car.stop_completely()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.demo_sensor">
+    <p>def <span class="ident">demo_sensor</span>(</p><p>)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>传感器控制demo</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.demo_sensor', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.demo_sensor" class="source">
+    <pre><code>@staticmethod
+def demo_sensor():
+    """传感器控制demo
+    """
+    ####################################
+    # 红外线传感器测试方法：
+    #   用手来回挡住传感器，观看传感器的读数变化（在使用传感器前，面向传感器，
+    #   调节传感器的旋钮，让右侧的两个灯恰好亮）。当传感器被挡住的时候，左侧的传感器就会亮
+    #   根据传感器遇到障碍物类型可以分为下面四种类型：
+    #       one of ['only_left_blocked', 'only_right_blocked','blocked', 'clear']
+    # 黑白色检测传感器测试方法：
+    #   工具：黑色的电工胶布一圈
+    #   使用过程：把电工胶布贴在A4纸张上或桌子上，让后把黑白传感器在黑色电工胶布上来回移动，
+    #   观看传感器上灯的亮度变化或输出值的变化
+    #   当遇到黑色就会变亮，根据它可以做一个巡线机器人。
+    # 超声波传感器测试方法
+    #   超声波测距：用双手挡住超声波、并做靠近超声波、远离超声波，来回运动，观看超声波读取值的变化
+    ########################################
+    car = Car()
+    port = input("请输入树莓的IP:")
+    car.connect(port)
+    sensor_type = int(input("测试传感器类型 0:红外；1:黑白；2:超声波"))
+    if sensor_type == 0:    # 红外对管传感器
+        while True:
+            status = car.obstacle_status_from_infrared()
+            print(status)
+    elif sensor_type == 1:  # 黑白色检测传感器的使用
+        while True:
+            status = car.line_tracking_turn_type()
+            print(status)
+    elif sensor_type == 2:  # 超声波传感器
+        while True:
+            dis = car.distance_from_obstacle()  # 固定在一个位置查看其变化
+            print(dis)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.distance_from_obstacle">
+    <p>def <span class="ident">distance_from_obstacle</span>(</p><p>self, val=0)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Measure the distance between ultrasonic sensor and the obstacle
+that it faces.</p>
+<p>The obstacle should have a relatively smooth surface for this
+to be effective. Distance to fabric or other sound-absorbing
+surfaces is difficult to measure.</p>
+<h2>Parameters</h2>
+<ul>
+<li>val: int<ul>
+<li>XXXXX</li>
+</ul>
+</li>
+</ul>
+<h2>Returns</h2>
+<ul>
+<li>int<ul>
+<li>Measured in centimeters: valid range is 2cm to 400cm</li>
+</ul>
+</li>
+</ul></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.distance_from_obstacle', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.distance_from_obstacle" class="source">
+    <pre><code>def distance_from_obstacle(self, val=0):
+    """
+    Measure the distance between ultrasonic sensor and the obstacle
+    that it faces.
+    The obstacle should have a relatively smooth surface for this
+    to be effective. Distance to fabric or other sound-absorbing
+    surfaces is difficult to measure.
+    Parameters
+    --------------
+    * val: int
+        - XXXXX
+    Returns
+    -------
+    * int
+        - Measured in centimeters: valid range is 2cm to 400cm
+    """
+    order = {
+        'function': {
+            'distance_from_obstacle': [val],
+        },
+        'mode': Car.RETURN_CALL,
+    }
+    return self.__send_order(order)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.led_light">
+    <p>def <span class="ident">led_light</span>(</p><p>self, color)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Shine LED light</p>
+<h2>Parameters</h2>
+<ul>
+<li>color : str<ul>
+<li>one of ['red', 'green', 'blue',
+          'yellow', 'cyan', 'purple'
+          'white', 'off']</li>
+</ul>
+</li>
+</ul></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.led_light', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.led_light" class="source">
+    <pre><code>def led_light(self, color):
+    """
+    Shine LED light
+    Parameters
+    ----------
+    * color : str
+        - one of ['red', 'green', 'blue',
+                  'yellow', 'cyan', 'purple'
+                  'white', 'off']
+    """
+    order = {
+        'function': {
+            'led_light': [color],
+        },
+        'mode': Car.DIRECT_CALL,
+    }
+    self.__send_order(order)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.line_tracking_turn_type">
+    <p>def <span class="ident">line_tracking_turn_type</span>(</p><p>self, num=4)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Indicates the type of turn required given current sensor values</p>
+<h2>Parameters</h2>
+<ul>
+<li>num: int
+    -
+Returns</li>
+</ul>
+<hr />
+<ul>
+<li>str<ul>
+<li>one of ['sharp_left_turn', 'sharp_right_turn',
+          'regular_left_turn', 'regular_right_turn',
+          'smooth_left', 'smooth_right',
+          'straight', 'no_line']</li>
+</ul>
+</li>
+</ul></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.line_tracking_turn_type', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.line_tracking_turn_type" class="source">
+    <pre><code>def line_tracking_turn_type(self, num=4):
+    """
+        Indicates the type of turn required given current sensor values
+        Parameters
+        ------------
+        * num: int
+            -
+        Returns
+        -------
+        * str
+            - one of ['sharp_left_turn', 'sharp_right_turn',
+                      'regular_left_turn', 'regular_right_turn',
+                      'smooth_left', 'smooth_right',
+                      'straight', 'no_line']
+    """
+    order = {
+        'function': {
+            'line_tracking_turn_type': [num],
+        },
+        'mode': Car.RETURN_CALL,
+    }
+    return self.__send_order(order)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.obstacle_status_from_infrared">
+    <p>def <span class="ident">obstacle_status_from_infrared</span>(</p><p>self, num=0)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return obstacle status obtained by infrared sensors that
+are situated at the left front and right front of the Car.
+The infrared sensors are located on the lower deck, so they
+have a lower view than the ultrasonic sensor.</p>
+<p>Indicates blockage by obstacle &lt; 20cm away.
+Depending on sensitivity of sensors, the distance of obstacles
+sometimes needs to be as short as 15cm for effective detection</p>
+<h2>Parameters</h2>
+<ul>
+<li>num: int
+    -</li>
+</ul>
+<h2>Returns</h2>
+<ul>
+<li>str<ul>
+<li>one of ['only_left_blocked', 'only_right_blocked',
+        'blocked', 'clear']</li>
+</ul>
+</li>
+</ul></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.obstacle_status_from_infrared', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.obstacle_status_from_infrared" class="source">
+    <pre><code>def obstacle_status_from_infrared(self, num=0):
+    """
+    Return obstacle status obtained by infrared sensors that
+    are situated at the left front and right front of the Car.
+    The infrared sensors are located on the lower deck, so they
+    have a lower view than the ultrasonic sensor.
+
+    Indicates blockage by obstacle < 20cm away.
+    Depending on sensitivity of sensors, the distance of obstacles
+    sometimes needs to be as short as 15cm for effective detection
+    Parameters
+    ------------
+    * num: int
+        -
+    
+    Returns
+    -------
+    * str
+        - one of ['only_left_blocked', 'only_right_blocked',
+                'blocked', 'clear']
+    """
+    order = {
+        'function': {
+            'obstacle_status_from_infrared': [num],
+        },
+        'mode': Car.RETURN_CALL,
+    }
+    return self.__send_order(order)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.receive_data">
+    <p>def <span class="ident">receive_data</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>从服务器接收数据</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.receive_data', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.receive_data" class="source">
+    <pre><code>def receive_data(self):
+    """从服务器接收数据
+    """
+    recv_data = b""
+    while True:
+        recv_data += self.socket_client.recv(1024)
+        if recv_data.__len__() == 0:
+            return recv_data
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.run_forward">
+    <p>def <span class="ident">run_forward</span>(</p><p>self, speed=50, duration=0.0)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Run forward</p>
+<h2>Parameters</h2>
+<ul>
+<li>speed : int<ul>
+<li>Speed of the motors. Valid range [0, 100]</li>
+</ul>
+</li>
+<li>duration : float<ul>
+<li>Duration of the motion.
+(default=0.0 - continue indefinitely until other motions are set)</li>
+</ul>
+</li>
+</ul></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.run_forward', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.run_forward" class="source">
+    <pre><code>def run_forward(self, speed=50, duration=0.0):
+    """
+     Run forward
+     Parameters
+     ----------
+     * speed : int
+         - Speed of the motors. Valid range [0, 100]
+     * duration : float
+         - Duration of the motion.
+         (default=0.0 - continue indefinitely until other motions are set)
+     """
+    order = {
+        'function': {
+            'run_forward': [speed, duration],
+        },
+        'mode': Car.DIRECT_CALL,
+    }
+    self.__send_order(order)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.run_reverse">
+    <p>def <span class="ident">run_reverse</span>(</p><p>self, speed=10, duration=0.0)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Run forward</p>
+<h2>Parameters</h2>
+<ul>
+<li>speed : int<ul>
+<li>Speed of the motors. Valid range [0, 100]</li>
+</ul>
+</li>
+<li>duration : float<ul>
+<li>Duration of the motion.
+(default=0.0 - continue indefinitely until other motions are set)</li>
+</ul>
+</li>
+</ul>
+<h2>Raises</h2></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.run_reverse', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.run_reverse" class="source">
+    <pre><code>def run_reverse(self, speed=10, duration=0.0):
+    """
+    Run forward
+    Parameters
+    ----------
+    * speed : int
+        - Speed of the motors. Valid range [0, 100]
+    * duration : float
+        - Duration of the motion.
+        (default=0.0 - continue indefinitely until other motions are set)
+    Raises
+    ------
+    """
+    order = {
+        'function': {
+            'run_reverse': [speed, duration],
+        },
+        'mode': Car.DIRECT_CALL,
+    }
+    self.__send_order(order)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.send_data">
+    <p>def <span class="ident">send_data</span>(</p><p>self, data)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>向服务器发送数据</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.send_data', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.send_data" class="source">
+    <pre><code>def send_data(self, data):
+    """向服务器发送数据
+    """
+    self.socket_client.send(bytes(data, encoding='utf-8'))  # 发送消息
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.spin_left">
+    <p>def <span class="ident">spin_left</span>(</p><p>self, speed=10, duration=0.0)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Spin to the left in place</p>
+<h2>Parameters</h2>
+<ul>
+<li>speed : int<ul>
+<li>Speed of the motors. Valid range [0, 100]</li>
+</ul>
+</li>
+<li>duration : float<ul>
+<li>Duration of the motion.
+(default=0.0 - continue indefinitely until other motions are set)</li>
+</ul>
+</li>
+</ul>
+<h2>Raises</h2></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.spin_left', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.spin_left" class="source">
+    <pre><code>def spin_left(self, speed=10, duration=0.0):
+    """
+    Spin to the left in place
+    Parameters
+    ----------
+    * speed : int
+        - Speed of the motors. Valid range [0, 100]
+    * duration : float
+        - Duration of the motion.
+        (default=0.0 - continue indefinitely until other motions are set)
+    Raises
+    ------
+    """
+    order = {
+        'function': {
+            'spin_left': [speed, duration],
+        },
+        'mode': Car.DIRECT_CALL,
+    }
+    self.__send_order(order)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.spin_right">
+    <p>def <span class="ident">spin_right</span>(</p><p>self, speed=10, duration=0.0)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Spin to the left in place</p>
+<h2>Parameters</h2>
+<ul>
+<li>speed : int<ul>
+<li>Speed of the motors. Valid range [0, 100]</li>
+</ul>
+</li>
+<li>duration : float<ul>
+<li>Duration of the motion.
+(default=0.0 - continue indefinitely until other motions are set)</li>
+</ul>
+</li>
+</ul>
+<h2>Raises</h2></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.spin_right', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.spin_right" class="source">
+    <pre><code>def spin_right(self, speed=10, duration=0.0):
+    """
+    Spin to the left in place
+    Parameters
+    ----------
+    * speed : int
+        - Speed of the motors. Valid range [0, 100]
+    * duration : float
+        - Duration of the motion.
+        (default=0.0 - continue indefinitely until other motions are set)
+    Raises
+    ------
+    """
+    order = {
+        'function': {
+            'spin_right': [speed, duration],
+        },
+        'mode': Car.DIRECT_CALL,
+    }
+    self.__send_order(order)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.stop_all_wheels">
+    <p>def <span class="ident">stop_all_wheels</span>(</p><p>self, delay=0)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>停止小车移动</p>
+<h2>Parameters</h2>
+<ul>
+<li>delay：int。<ul>
+<li>延时长度</li>
+</ul>
+</li>
+</ul>
+<h2>Returns</h2>
+<ul>
+<li>None</li>
+</ul></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.stop_all_wheels', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.stop_all_wheels" class="source">
+    <pre><code>def stop_all_wheels(self, delay=0):
+    """停止小车移动
+    Parameters
+    ------------
+    * delay：int。
+        - 延时长度
+    Returns
+    -------
+    * None
+    """
+    order = {
+        'function': {
+            'stop_all_wheels': [delay],
+        },
+        'mode': Car.DIRECT_CALL,
+    }
+    self.__send_order(order)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.stop_completely">
+    <p>def <span class="ident">stop_completely</span>(</p><p>self, delay=0)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>完全停止小车</p>
+<h2>Parameters</h2>
+<ul>
+<li>delay：int。<ul>
+<li>延时长度</li>
+</ul>
+</li>
+</ul>
+<h2>Returns</h2>
+<ul>
+<li>None</li>
+</ul></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.stop_completely', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.stop_completely" class="source">
+    <pre><code>def stop_completely(self, delay=0):
+    """完全停止小车
+    Parameters
+    ----------
+    * delay：int。
+        - 延时长度
+    Returns
+    -------
+    * None
+    """
+    order = {
+        'function': {
+            'stop_completely': [delay],
+        },
+        'mode': Car.DIRECT_CALL,
+    }
+    self.__send_order(order)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.turn_left">
+    <p>def <span class="ident">turn_left</span>(</p><p>self, speed=10, duration=0.0)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Turn left - only right-hand-side wheels run forward</p>
+<h2>Parameters</h2>
+<ul>
+<li>speed : int<ul>
+<li>Speed of the motors. Valid range [0, 100]</li>
+</ul>
+</li>
+<li>duration : float<ul>
+<li>Duration of the motion.
+(default=0.0 - continue indefinitely until other motions are set)</li>
+</ul>
+</li>
+</ul>
+<h2>Raises</h2></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.turn_left', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.turn_left" class="source">
+    <pre><code>def turn_left(self, speed=10, duration=0.0):
+    """
+    Turn left - only right-hand-side wheels run forward
+    Parameters
+    ----------
+    * speed : int
+        - Speed of the motors. Valid range [0, 100]
+    * duration : float
+        - Duration of the motion.
+        (default=0.0 - continue indefinitely until other motions are set)
+    Raises
+    ------
+    """
+    order = {
+        'function': {
+            'turn_left': [speed, duration],
+        },
+        'mode': Car.DIRECT_CALL,
+    }
+    self.__send_order(order)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.turn_off_all_led">
+    <p>def <span class="ident">turn_off_all_led</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>关闭所有的LED灯</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.turn_off_all_led', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.turn_off_all_led" class="source">
+    <pre><code>def turn_off_all_led(self):
+    """关闭所有的LED灯
+    """
+    self.turn_off_led(Car.LED_R)
+    self.turn_off_led(Car.LED_G)
+    self.turn_off_led(Car.LED_B)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.turn_off_led">
+    <p>def <span class="ident">turn_off_led</span>(</p><p>self, led)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>关闭LED灯</p>
+<h2>Parameters</h2>
+<ul>
+<li>led : int<ul>
+<li>LED_R  LED_G  LED_B 三个可选项</li>
+</ul>
+</li>
+</ul>
+<h2>Returns</h2>
+<ul>
+<li>None</li>
+</ul></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.turn_off_led', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.turn_off_led" class="source">
+    <pre><code>def turn_off_led(self, led):
+    """关闭LED灯
+    Parameters
+    --------------
+    * led : int
+        - LED_R  LED_G  LED_B 三个可选项
+    Returns
+    -------
+    * None
+    """
+    order = {
+        'function': {
+            'turn_off_led': [led],
+        },
+        'mode': Car.THREAD_CALL,
+    }
+    self.__send_order(order)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.turn_on_led">
+    <p>def <span class="ident">turn_on_led</span>(</p><p>self, led)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>开启LED灯</p>
+<h2>Parameters</h2>
+<ul>
+<li>led : int<ul>
+<li>LED_R  LED_G  LED_B 三个可选项</li>
+</ul>
+</li>
+</ul>
+<h2>Returns</h2>
+<ul>
+<li>None</li>
+</ul></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.turn_on_led', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.turn_on_led" class="source">
+    <pre><code>def turn_on_led(self, led):
+    """开启LED灯
+    Parameters
+    -----------
+    * led : int
+        - LED_R  LED_G  LED_B 三个可选项
+    Returns
+    -------
+    * None
+    """
+    order = {
+        'function':  {
+            'turn_on_led': [led],
+        },
+        'mode': Car.THREAD_CALL,
+    }
+    self.__send_order(order)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.turn_right">
+    <p>def <span class="ident">turn_right</span>(</p><p>self, speed=10, duration=0.0)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Turn right - only left-hand-side wheels run forward</p>
+<h2>Parameters</h2>
+<ul>
+<li>speed : int<ul>
+<li>Speed of the motors. Valid range [0, 100]</li>
+</ul>
+</li>
+<li>duration : float<ul>
+<li>Duration of the motion.
+(default=0.0 - continue indefinitely until other motions are set)</li>
+</ul>
+</li>
+</ul>
+<h2>Raises</h2></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.turn_right', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.turn_right" class="source">
+    <pre><code>def turn_right(self, speed=10, duration=0.0):
+    """
+    Turn right - only left-hand-side wheels run forward
+    Parameters
+    ----------
+    * speed : int
+        - Speed of the motors. Valid range [0, 100]
+    * duration : float
+        - Duration of the motion.
+        (default=0.0 - continue indefinitely until other motions are set)
+    Raises
+    ------
+    """
+    order = {
+        'function': {
+                'turn_right': [speed, duration],
+            },
+        'mode': Car.DIRECT_CALL,
+    }
+    self.__send_order(order)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.turn_servo_camera_horizental">
+    <p>def <span class="ident">turn_servo_camera_horizental</span>(</p><p>self, degree=90)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>控制摄像头的舵机进行水平方向旋转</p>
+<h2>Parameters</h2>
+<ul>
+<li>degree：int 类型. 舵机的旋转角度<ul>
+<li>角度范围: 0-180度，90对应舵机正中间</li>
+<li>提示：angle设置角度太小，可能观察不到舵机移动</li>
+</ul>
+</li>
+</ul>
+<h2>Returns</h2>
+<ul>
+<li>None</li>
+</ul></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.turn_servo_camera_horizental', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.turn_servo_camera_horizental" class="source">
+    <pre><code>def turn_servo_camera_horizental(self, degree=90):
+    """控制摄像头的舵机进行水平方向旋转
+    Parameters
+    ---------------------------
+    * degree：int 类型. 舵机的旋转角度
+        - 角度范围: 0-180度，90对应舵机正中间
+        - 提示：angle设置角度太小，可能观察不到舵机移动
+    Returns
+    -------
+    * None
+    """
+    order = {
+        'function': {
+            'servo_camera_rotate': [degree],
+        },
+        'mode': Car.THREAD_CALL,
+    }
+    self.__send_order(order)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.turn_servo_camera_vertical">
+    <p>def <span class="ident">turn_servo_camera_vertical</span>(</p><p>self, degree=90)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>控制摄像头舵机进行垂直方向旋转</p>
+<h2>Parameters</h2>
+<ul>
+<li>degree：int . 舵机的旋转角度<ul>
+<li>degree角度范围: 0-180度，90对应舵机正中间</li>
+<li>提示：angle设置角度太小，可能观察不到舵机移动</li>
+</ul>
+</li>
+</ul>
+<h2>Returns</h2>
+<ul>
+<li>None</li>
+</ul></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.turn_servo_camera_vertical', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.turn_servo_camera_vertical" class="source">
+    <pre><code>def turn_servo_camera_vertical(self, degree=90):
+    """控制摄像头舵机进行垂直方向旋转
+    Parameters
+    ----------------
+    * degree：int . 舵机的旋转角度
+        - degree角度范围: 0-180度，90对应舵机正中间
+        - 提示：angle设置角度太小，可能观察不到舵机移动
+    Returns
+    -------
+    * None
+    """
+    order = {
+        'function': {
+            'servo_camera_rise_fall': [degree],
+        },
+        'mode': Car.THREAD_CALL,
+    }
+    self.__send_order(order)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.Car.turn_servo_ultrasonic">
+    <p>def <span class="ident">turn_servo_ultrasonic</span>(</p><p>self, dir=&#39;degree&#39;, degree=90)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Turn the servo for ultrasonic sensor</p>
+<h2>Parameters</h2>
+<ul>
+<li>dir : str<ul>
+<li>one of ['left', 'center', 'right']</li>
+<li>if dir == 'degree', use degree parameter</li>
+</ul>
+</li>
+<li>degree : int<ul>
+<li>the angle to turn, measured in degree [0, 180]</li>
+<li>if dir is specified other than 'degree', this is ignored</li>
+</ul>
+</li>
+</ul></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.Car.turn_servo_ultrasonic', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.Car.turn_servo_ultrasonic" class="source">
+    <pre><code>def turn_servo_ultrasonic(self, dir='degree', degree=90):
+    """
+    Turn the servo for ultrasonic sensor
+    Parameters
+    ----------
+    * dir : str
+        - one of ['left', 'center', 'right']
+        - if dir == 'degree', use degree parameter
+    * degree : int
+        - the angle to turn, measured in degree [0, 180]
+        - if dir is specified other than 'degree', this is ignored
+    """
+    order = {
+        'function': {
+            'turn_servo_ultrasonic': [dir, degree],
+        },
+        'mode': Car.DIRECT_CALL,
+    }
+    self.__send_order(order)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+          <h3>Instance variables</h3>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.socket_address" class="name">var <span class="ident">socket_address</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="thinkland_rpi_car_client.Car.socket_client" class="name">var <span class="ident">socket_client</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+      </div>
+      </div>
+      
+      <div class="item">
+      <p id="thinkland_rpi_car_client.SocketMixin" class="name">class <span class="ident">SocketMixin</span></p>
+      
+  
+    <div class="desc"><p>socket 功能Mixin</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.SocketMixin', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.SocketMixin" class="source">
+    <pre><code>class SocketMixin:
+    """socket 功能Mixin
+    """
+    def connect(self, ip, port=12347):
+        """连接服务器
+        """
+        self.socket_address = (ip, port)
+        self.socket_client.connect(self.socket_address)
+
+    def send_data(self, data):
+        """向服务器发送数据
+        """
+        self.socket_client.send(bytes(data, encoding='utf-8'))  # 发送消息
+
+    def receive_data(self):
+        """从服务器接收数据
+        """
+        recv_data = b""
+        while True:
+            recv_data += self.socket_client.recv(1024)
+            if recv_data.__len__() == 0:
+                return recv_data
+
+    def data_handler(self, bytes):
+        """处理接收到数据
+
+        Parameters
+        ------------
+        bytes: b''
+            - 接收到的数据
+        """
+        pass
+</code></pre>
+  </div>
+</div>
+
+
+      <div class="class">
+          <h3>Ancestors (in MRO)</h3>
+          <ul class="class_list">
+          <li><a href="#thinkland_rpi_car_client.SocketMixin">SocketMixin</a></li>
+          <li>builtins.object</li>
+          </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.SocketMixin.connect">
+    <p>def <span class="ident">connect</span>(</p><p>self, ip, port=12347)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>连接服务器</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.SocketMixin.connect', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.SocketMixin.connect" class="source">
+    <pre><code>def connect(self, ip, port=12347):
+    """连接服务器
+    """
+    self.socket_address = (ip, port)
+    self.socket_client.connect(self.socket_address)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.SocketMixin.data_handler">
+    <p>def <span class="ident">data_handler</span>(</p><p>self, bytes)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>处理接收到数据</p>
+<h2>Parameters</h2>
+<p>bytes: b''
+    - 接收到的数据</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.SocketMixin.data_handler', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.SocketMixin.data_handler" class="source">
+    <pre><code>def data_handler(self, bytes):
+    """处理接收到数据
+    Parameters
+    ------------
+    bytes: b''
+        - 接收到的数据
+    """
+    pass
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.SocketMixin.receive_data">
+    <p>def <span class="ident">receive_data</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>从服务器接收数据</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.SocketMixin.receive_data', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.SocketMixin.receive_data" class="source">
+    <pre><code>def receive_data(self):
+    """从服务器接收数据
+    """
+    recv_data = b""
+    while True:
+        recv_data += self.socket_client.recv(1024)
+        if recv_data.__len__() == 0:
+            return recv_data
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="thinkland_rpi_car_client.SocketMixin.send_data">
+    <p>def <span class="ident">send_data</span>(</p><p>self, data)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>向服务器发送数据</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-thinkland_rpi_car_client.SocketMixin.send_data', this);">Show source &equiv;</a></p>
+  <div id="source-thinkland_rpi_car_client.SocketMixin.send_data" class="source">
+    <pre><code>def send_data(self, data):
+    """向服务器发送数据
+    """
+    self.socket_client.send(bytes(data, encoding='utf-8'))  # 发送消息
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+      </div>
+      </div>
+
+  </section>
+
+    </article>
+  <div class="clear"> </div>
+  <footer id="footer">
+    <p>
+      Documentation generated by
+      <a href="https://github.com/BurntSushi/pdoc">pdoc 0.3.2</a>
+    </p>
+
+    <p>pdoc is in the public domain with the
+      <a href="http://unlicense.org">UNLICENSE</a></p>
+
+    <p>Design by <a href="http://nadh.in">Kailash Nadh</a></p>
+  </footer>
+</div>
+</body>
+</html>

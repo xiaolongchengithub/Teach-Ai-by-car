@@ -17,7 +17,7 @@ class SocketMixin:
     def connect(self, ip, port=12347):
         """连接服务器
         """
-        self.socket_address = ("172.16.10.227", port)
+        self.socket_address = (ip, port)
         self.socket_client.connect(self.socket_address)
 
     def send_data(self, data):
