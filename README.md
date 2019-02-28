@@ -17,7 +17,7 @@ python: >=3.5
 zerorpc           
 RPI.GPIO
 
-## 客户端环境介绍
+## 客户端环境依赖
 python: >=3.5      
 opencv      
 numpy
