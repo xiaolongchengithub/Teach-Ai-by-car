@@ -1,51 +1,18 @@
 """
     小车封装类，通过创建Car实例，调用相应的API，可以完成小车的基本控制
     具体控制方法参见本代码中的demo示例
+    rpc调用通过zerorpc框架
 """
-import socket
 import time
 import random
+import zerorpc
 
 __authors__ = 'xiao long & xu lao shi'
 __version__ = 'version 0.02'
 __license__ = 'Copyright...'
 
 
-class SocketMixin:
-    """socket 功能Mixin
-    """
-    def connect(self, ip, port=12347):
-        """连接服务器
-        """
-        self.socket_address = (ip, port)
-        self.socket_client.connect(self.socket_address)
-
-    def send_data(self, data):
-        """向服务器发送数据
-        """
-        self.socket_client.send(bytes(data, encoding='utf-8'))  # 发送消息
-
-    def receive_data(self):
-        """从服务器接收数据
-        """
-        recv_data = b""
-        while True:
-            recv_data += self.socket_client.recv(1024)
-            if recv_data.__len__() == 0:
-                return recv_data
-
-    def data_handler(self, bytes):
-        """处理接收到数据
-
-        Parameters
-        ------------
-        bytes: b''
-            - 接收到的数据
-        """
-        pass
-
-
-class Car(SocketMixin):
+class Car:
     """
     小车类包含以下实例函数：
         * connect                           建立网络连接
@@ -93,31 +60,10 @@ class Car(SocketMixin):
     SENSOR_BLACK_WIGHT_TYPE = 1
     SENSOR_ULTRASONIC_TYPE = 2
 
-    def __init__(self):
-        self.socket_client = socket.socket()
+    def __init__(self, ip, port=12347):
 
-    def __send_order(self, order={"function": {"auto_run": [8, 1]}, "mode": 1}):
-        """通过Tcp ip发送消息
-
-        Parameters
-        --------------
-        * order: 字典类型
-            - "function"：字典类型，包含控制小车的函数
-            - "mode": rpc调用方式。
-        Returns
-        ---------------
-        * 返回服务端发送来的消息
-        """
-        try:
-            str_ord = str(order)  # dic转换为string
-            self.send_data(str_ord)
-            receive_data = self.receive_data()
-            print(receive_data)
-            return self.receive_data
-        except socket.error:
-            print('connect error')
-            time.sleep(3)
-            self.connect(self.socket_address)  # 重新连接网络
+        self.rpc = zerorpc.Client()
+        self.rpc.connect('tcp://{}:{}'.format(ip, port))
 
     def turn_servo_camera_horizental(self, degree=90):
         """控制摄像头的舵机进行水平方向旋转
@@ -133,13 +79,7 @@ class Car(SocketMixin):
         * None
         """
 
-        order = {
-            'function': {
-                'servo_camera_rotate': [degree],
-            },
-            'mode': Car.THREAD_CALL,
-        }
-        self.__send_order(order)
+        self.rpc.servo_camera_rotate(degree)
 
     def turn_servo_camera_vertical(self, degree=90):
         """控制摄像头舵机进行垂直方向旋转
@@ -155,13 +95,7 @@ class Car(SocketMixin):
         * None
         """
 
-        order = {
-            'function': {
-                'servo_camera_rise_fall': [degree],
-            },
-            'mode': Car.THREAD_CALL,
-        }
-        self.__send_order(order)
+        self.rpc.servo_camera_rise_fall(degree)
 
     def turn_servo_ultrasonic(self, degree=90):
         """控制超声波的舵机进行水平方向旋转
@@ -176,14 +110,8 @@ class Car(SocketMixin):
         -------
         * None
         """
-        order = {
-            'function': {
-                'servo_front_rotate': [degree],
-            },
 
-            'mode': Car.THREAD_CALL,
-        }
-        self.__send_order(order)
+        self.rpc.servo_front_rotate(degree)
 
     def turn_on_led(self, led):
         """开启LED灯
@@ -198,14 +126,7 @@ class Car(SocketMixin):
         * None
         """
 
-        order = {
-            'function':  {
-                'turn_on_led': [led],
-            },
-            'mode': Car.THREAD_CALL,
-        }
-
-        self.__send_order(order)
+        self.rpc.turn_on_led(led)
 
     def turn_off_led(self, led):
         """关闭LED灯
@@ -219,13 +140,8 @@ class Car(SocketMixin):
         -------
         * None
         """
-        order = {
-            'function': {
-                'turn_off_led': [led],
-            },
-            'mode': Car.THREAD_CALL,
-        }
-        self.__send_order(order)
+
+        self.rpc.turn_off_led(led)
 
     def turn_off_all_led(self):
         """关闭所有的LED灯
@@ -247,14 +163,7 @@ class Car(SocketMixin):
         * None
         """
 
-        order = {
-            'function': {
-                'stop_all_wheels': [delay],
-            },
-
-            'mode': Car.DIRECT_CALL,
-        }
-        self.__send_order(order)
+        self.rpc.stop_all_wheels(delay)
 
     def stop_completely(self, delay=0):
         """完全停止小车
@@ -269,14 +178,7 @@ class Car(SocketMixin):
         * None
         """
 
-        order = {
-            'function': {
-                'stop_completely': [delay],
-            },
-
-            'mode': Car.DIRECT_CALL,
-        }
-        self.__send_order(order)
+        self.rpc.stop_completely(delay)
 
     def run_forward(self, speed=50, duration=0.0):
         """
@@ -291,14 +193,7 @@ class Car(SocketMixin):
              (default=0.0 - continue indefinitely until other motions are set)
          """
 
-        order = {
-            'function': {
-                'run_forward': [speed, duration],
-            },
-
-            'mode': Car.DIRECT_CALL,
-        }
-        self.__send_order(order)
+        self.rpc(speed, duration)
 
     def run_reverse(self, speed=10, duration=0.0):
         """
@@ -316,13 +211,7 @@ class Car(SocketMixin):
         ------
         """
 
-        order = {
-            'function': {
-                'run_reverse': [speed, duration],
-            },
-            'mode': Car.DIRECT_CALL,
-        }
-        self.__send_order(order)
+        self.rpc.run_reverse(speed, duration)
 
     def turn_left(self, speed=10, duration=0.0):
         """
@@ -340,14 +229,7 @@ class Car(SocketMixin):
         ------
         """
 
-        order = {
-            'function': {
-                'turn_left': [speed, duration],
-            },
-
-            'mode': Car.DIRECT_CALL,
-        }
-        self.__send_order(order)
+        self.rpc.turn_left(speed, duration)
 
     def turn_right(self, speed=10, duration=0.0):
         """
@@ -365,14 +247,7 @@ class Car(SocketMixin):
         ------
         """
 
-        order = {
-            'function': {
-                    'turn_right': [speed, duration],
-                },
-
-            'mode': Car.DIRECT_CALL,
-        }
-        self.__send_order(order)
+        self.rpc.turn_right(speed, duration)
 
     def spin_left(self, speed=10, duration=0.0):
         """
@@ -390,14 +265,8 @@ class Car(SocketMixin):
         ------
         """
 
-        order = {
-            'function': {
-                'spin_left': [speed, duration],
-            },
 
-            'mode': Car.DIRECT_CALL,
-        }
-        self.__send_order(order)
+        self.rpc.spin_left(speed, duration)
 
     def spin_right(self, speed=10, duration=0.0):
         """
@@ -414,15 +283,7 @@ class Car(SocketMixin):
         Raises
         ------
         """
-
-        order = {
-            'function': {
-                'spin_right': [speed, duration],
-            },
-
-            'mode': Car.DIRECT_CALL,
-        }
-        self.__send_order(order)
+        self.rpc.spin_right(speed, duration)
 
     def distance_from_obstacle(self):
         """
@@ -444,15 +305,7 @@ class Car(SocketMixin):
             - Measured in centimeters: valid range is 2cm to 400cm
         """
 
-        order = {
-            'function': {
-                'distance_from_obstacle': [0],
-            },
-
-            'mode': Car.RETURN_CALL,
-        }
-
-        return self.__send_order(order)
+        return self.rpc.distance_from_obstacle()
 
     def check_left_obstacle_with_sensor(self):
         """通过传感器检测小车的左侧是否存在障碍物
@@ -467,14 +320,8 @@ class Car(SocketMixin):
             - 1 : 有障碍
             - 0 : 无障碍
         """
-        order = {
-            'function': {
-                'check_left_obstacle_with_sensor': [0],
-            },
-            'mode': Car.RETURN_CALL,
-        }
 
-        return int(self.__send_order(order))
+        return self.rpc.check_left_obstacle_with_sensor()
 
     def check_right_obstacle_with_sensor(self):
         """通过传感器检测小车的右侧是否存在障碍物
@@ -489,15 +336,9 @@ class Car(SocketMixin):
             - 1 : 有障碍
             - 0 : 无障碍
         """
-        order = {
-            'function': {
-                'check_right_obstacle_with_sensor': [0],
-            },
 
-            'mode': Car.RETURN_CALL,
-        }
+        return self.rpc.check_right_obstacle_with_sensor()
 
-        return int(self.__send_order(order))
 
     def obstacle_status_from_infrared(self):
         """
@@ -521,25 +362,15 @@ class Car(SocketMixin):
             - one of ['only_left_blocked', 'only_right_blocked',
                     'blocked', 'clear']
         """
+        return self.rpc.obstacle_status_from_infrared()
 
-        order = {
-            'function': {
-                'obstacle_status_from_infrared': [0],
-            },
-
-            'mode': Car.RETURN_CALL,
-        }
-
-        return self.__send_order(order)
-
-    def line_tracking_turn_type(self, num=4):
+    def line_tracking_turn_type(self):
         """
             Indicates the type of turn required given current sensor values
 
             Parameters
             ------------
-            * num: int
-                -
+
             Returns
             -------
             * str
@@ -549,14 +380,7 @@ class Car(SocketMixin):
                           'straight', 'no_line']
         """
 
-        order = {
-            'function': {
-                'line_tracking_turn_type': [num],
-            },
-            'mode': Car.RETURN_CALL,
-        }
-
-        return self.__send_order(order)
+        return self.rpc.line_tracking_turn_type()
 
     def turn_servo_ultrasonic(self, dir='degree', degree=90):
         """
@@ -572,14 +396,7 @@ class Car(SocketMixin):
             - if dir is specified other than 'degree', this is ignored
         """
 
-        order = {
-            'function': {
-                'turn_servo_ultrasonic': [dir, degree],
-            },
-            'mode': Car.DIRECT_CALL,
-        }
-
-        self.__send_order(order)
+        self.rpc.turn_servo_ultrasonic(dir,degree)
 
     def led_light(self, color):
         """
@@ -593,14 +410,7 @@ class Car(SocketMixin):
                       'white', 'off']
         """
 
-        order = {
-            'function': {
-                'led_light': [color],
-            },
-            'mode': Car.DIRECT_CALL,
-        }
-
-        self.__send_order(order)
+        self.rpc.led_light(color)
 
     @staticmethod
     def demo_cruising():
@@ -611,8 +421,7 @@ class Car(SocketMixin):
         * Use LED lights to indicate running/turning decisions
         """
         ip = input("请输入树莓的IP:")
-        car = Car()
-        car.connect(ip)
+        car = Car(ip)
         try:
             while True:
                 obstacle_status_from_infrared = car.obstacle_status_from_infrared()
@@ -644,9 +453,7 @@ class Car(SocketMixin):
         Demonstrates the line tracking mode using the line tracking sensor
         """
         ip = input("请输入树莓的IP:")
-        car = Car()
-        car.connect(ip)
-
+        car = Car(ip)
         try:
             while True:
                 turn = car.line_tracking_turn_type()
@@ -672,8 +479,7 @@ class Car(SocketMixin):
         """控制灯demo
         """
         ip = input("请输入树莓的IP:")
-        car = Car()
-        car.connect(ip)
+        car = Car(ip)
         car.turn_on_led(Car.LED_B)
         time.sleep(2)
         car.turn_on_led(Car.LED_G)
@@ -684,9 +490,8 @@ class Car(SocketMixin):
     def demo_car_moving():
         """小车的移动demo
         """
-        car = Car()
         ip = input("请输入树莓的IP:")
-        car.connect(ip)
+        car = Car(ip)
         run_type = int(input("输入运动类型(0:直线，1：来回，2：转弯，3：拐弯，4：正方形)："))
         if run_type == Car.LINE_MOVE_TYPE:                  # 直线移动
             car.run_forward(5, 2)
@@ -732,9 +537,10 @@ class Car(SocketMixin):
         # 超声波传感器测试方法
         #   超声波测距：用双手挡住超声波、并做靠近超声波、远离超声波，来回运动，观看超声波读取值的变化
         ########################################
-        car = Car()
-        port = input("请输入树莓的IP:")
-        car.connect(port)
+
+        ip = input("请输入树莓的IP:")
+        car = Car(ip)
+
         sensor_type = int(input("测试传感器类型 0:红外；1:黑白；2:超声波"))
         if sensor_type == 0:    # 红外对管传感器
             while True:

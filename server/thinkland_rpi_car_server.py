@@ -1,41 +1,22 @@
+"""
+    小车服务端类，该类提供了供远程控制小车的所有api
+    直接运行本文件就会启动rpc服务
+"""
+
 import time
 import RPi.GPIO as GPIO
 import random
+import zerorpc
 
 __authors__ = 'xiao long & xu lao shi'
 __version__ = 'version 0.01'
 __license__ = 'Copyright...'
 
+
 class Car:
+    """小车服务端类
     """
-    *类在树莓派上直接控制小车的运动，例如直行、转弯等
-    *__init_level  初始化io输出类型
-    *__init_pwm    初始化pwm
-    *__led_light    r、g、b同时控制，内部调用
-    *led_light      打开灯
-    *turn_on_led    打开灯（r、g、b）一种
-    *turn_off_led   关灯
-    *stop_all_wheels 停止运动
-    *run_forward  向前动
-    *run_reverse 向后转
-    *turn_left 向左转
-    *turn_right 向右转
-    *spin_left 向左转弯
-    *spin_right 向右转弯
-    *distance_from_obstacle 超声波测距
-    *line_tracking_turn_type 巡线类型
-    *demo_line_tracking @@例子，巡线
-    *demo_cruising @@例子，漫游
-    *obstacle_status_from_infrared 障碍物类型
-    *turn_servo_ultrasonic 多个角度进行超声波测距
-    *obstacle_status_from_ultrasound 超声波测距状态
-    *check_left_obstacle_with_sensor 左侧是否有障碍物
-    *check_right_obstacle_with_sensor 右侧是否有障碍物
-    *servo_front_rotate 超声波测距检测
-    *servo_camera_rotate 控制相机的舵机进行旋转
-    *servo_camera_rise_fall 控制相机的舵机进行抬升下降
-    """
-    ################################################################
+
     #  直流电机引脚定义
     PIN_MOTOR_LEFT_FORWARD = 20
     PIN_MOTOR_LEFT_BACKWARD = 21
@@ -70,13 +51,11 @@ class Car:
 
     # 蜂鸣器
     PIN_BUFFER = 8
-    #########################################################
-    # 宏定义特殊
+
     HAVE_OBSTACLE = 0
     NO_OBSTACLE = 1
 
     SERVO_TOTAL_STEP = 18
-
 
     LED_R = 0
     LED_G = 1
@@ -94,38 +73,27 @@ class Car:
     SENSOR_INFRARED_TYPE = 0
     SENSOR_BLACK_WIGHT_TYPE = 1
     SENSOR_ULTRASONIC_TYPE = 2
-    #变量
+
     Car_Init = False
 
     def __init__(self):
-        # 类的构造函数
-        # 设置GPIO口为BCM编码方式
-
-        GPIO.setmode(GPIO.BCM)
-        # 忽略警告信息
-        GPIO.setwarnings(False)
-        # 初始化IO
-        self.__init_level()
-        #初始化 pwm
-        self.__init_pwm()
+        GPIO.setmode(GPIO.BCM)  # 设置GPIO口为BCM编码方式
+        GPIO.setwarnings(False)  # 忽略警告信息
+        self.__init_level()  # 初始化IO
+        self.__init_pwm()  # 初始化 pwm
 
         Car.Car_Init = True
-        #函数列表，用于存放函数的容器
-        self.Function_List = {}
-        #用于灯光控制标志
         self.LED_FLAG = {}
         self.LED_FLAG[Car.LED_R] = True
         self.LED_FLAG[Car.LED_G] = True
         self.LED_FLAG[Car.LED_B] = True
 
-    def __init_level(self):#私有变量 外部不能调用
-        """
-        #  设置Io的输出方式：
-        # 输出模式：即是具有上拉电阻
-        # 输入模式：即是能获取电平的高低，在数字电路上高于二极管的导通电压为高，否则为低电平
+    def __init_level(self):
+        """初始化小车各部分引脚电平
+        设置Io的输出方式：
+            输出模式：即是具有上拉电阻
+            输入模式：即是能获取电平的高低，在数字电路上高于二极管的导通电压为高，否则为低电平
 
-        Parameters
-        ----------
         """
         # 设置超声波电平
         GPIO.setup(Car.PIN_ECHO, GPIO.IN)
@@ -164,8 +132,8 @@ class Car:
         GPIO.setup(Car.PIN_TRACK_3, GPIO.IN)
         GPIO.setup(Car.PIN_TRACK_4, GPIO.IN)
 
-    def __init_pwm(self):#私有变量 外部不能调用
-        """
+    def __init_pwm(self):
+        """初始化pwm
         设置PWM，是脉冲宽度调制缩写
         它是通过对一系列脉冲的宽度进行调制，等效出所需要的波形（包含形状以及幅值），对模拟信号电平进行数字编码，
         也就是说通过调节占空比的变化来调节信号、能量等的变化，占空比就是指在一个周期内，信号处于高电平的时间占据整个信号周期的百分比
@@ -173,34 +141,25 @@ class Car:
         """
 
         # 初始化控制小车的PWM
-        self.__pwm_left_speed  = GPIO.PWM(Car.PIN_MOTOR_LEFT_SPEED, 2000)
+        self.__pwm_left_speed = GPIO.PWM(Car.PIN_MOTOR_LEFT_SPEED, 2000)
         self.__pwm_right_speed = GPIO.PWM(Car.PIN_MOTOR_RIGHT_SPEED, 2000)
 
         self.__pwm_left_speed.start(0)
         self.__pwm_right_speed.start(0)
 
         # 设置舵机的频率和起始占空比
-        self.__pwm_front_servo_pos      = GPIO.PWM(Car.PIN_FRONT_SERVER, 50)
-        self.__pwm_up_down_servo_pos    =  GPIO.PWM(Car.PIN_UP_DOWN_SERVER, 50)
+        self.__pwm_front_servo_pos = GPIO.PWM(Car.PIN_FRONT_SERVER, 50)
+        self.__pwm_up_down_servo_pos = GPIO.PWM(Car.PIN_UP_DOWN_SERVER, 50)
         self.__pwm_left_right_servo_pos = GPIO.PWM(Car.PIN_LEFT_RIGHT_SERVER, 50)
 
         self.__pwm_front_servo_pos.start(0)
         self.__pwm_up_down_servo_pos.start(0)
         self.__pwm_left_right_servo_pos.start(0)
 
-        #设置灯的频率 从而控制其亮度
-        # self.__pwm_led_r = GPIO.PWM(PIN_LED_R, 1000)
-        # self.__pwm_led_g = GPIO.PWM(PIN_LED_G, 1000)
-        # self.__pwm_led_b = GPIO.PWM(PIN_LED_B, 1000)
-        #
-        # self.__pwm_led_r.start(0)
-        # self.__pwm_led_g.start(0)
-        # self.__pwm_led_b.start(0)
-
     def __set_motion(self, left_forward, left_backward,
-                    right_forward, right_backward,
-                    speed_left, speed_right,
-                    duration=0.0):
+                     right_forward, right_backward,
+                     speed_left, speed_right,
+                     duration=0.0):
         """
         Helper function to set car wheel motions
 
@@ -220,9 +179,9 @@ class Car:
         Raises
         ------
         """
-        GPIO.output(Car.PIN_MOTOR_LEFT_FORWARD,   left_forward)
-        GPIO.output(Car.PIN_MOTOR_LEFT_BACKWARD,  left_backward)
-        GPIO.output(Car.PIN_MOTOR_RIGHT_FORWARD,  right_forward)
+        GPIO.output(Car.PIN_MOTOR_LEFT_FORWARD, left_forward)
+        GPIO.output(Car.PIN_MOTOR_LEFT_BACKWARD, left_backward)
+        GPIO.output(Car.PIN_MOTOR_RIGHT_FORWARD, right_forward)
         GPIO.output(Car.PIN_MOTOR_RIGHT_BACKWARD, right_backward)
         self.__pwm_left_speed.ChangeDutyCycle(speed_left)
         self.__pwm_right_speed.ChangeDutyCycle(speed_right)
@@ -231,7 +190,8 @@ class Car:
             self.__pwm_left_speed.ChangeDutyCycle(0)
             self.__pwm_right_speed.ChangeDutyCycle(0)
 
-    def __led_light(self, r, g, b):
+    @staticmethod
+    def __led_light(r, g, b):
         """
          __led_light
 
@@ -277,10 +237,8 @@ class Car:
             self.__led_light(GPIO.LOW, GPIO.LOW, GPIO.LOW)
 
     def turn_on_led(self, led):
-        """
-         open_led:
-         打开灯
-         ____________
+        """打开灯
+
          Parameters
          ----------
          * led : int
@@ -297,10 +255,8 @@ class Car:
                 GPIO.output(Car.PIN_LED_B, Car.OPEN)
 
     def turn_off_led(self, led):
-        """
-         close_led:
-         关闭LED灯光
-         ____________
+        """关闭LED灯光
+
          Parameters
          ----------
          * led : int
@@ -314,7 +270,7 @@ class Car:
         else:
             GPIO.output(Car.PIN_LED_B, Car.CLOSE)
 
-    def stop_all_wheels(self ,delay = 0):
+    def stop_all_wheels(self, delay=0):
         """
         Stop wheel movement
         """
@@ -322,7 +278,7 @@ class Car:
 
         self.__set_motion(GPIO.LOW, GPIO.LOW, GPIO.LOW, GPIO.LOW, 0, 0)
 
-    def stop_completely(self ,delay = 0):
+    def stop_completely(self, delay=0):
         """
         Completely stop the Car
         """
@@ -346,7 +302,7 @@ class Car:
              (default=0.0 - continue indefinitely until other motions are set)
          """
         self.__set_motion(GPIO.HIGH, GPIO.LOW, GPIO.HIGH, GPIO.LOW,
-                         speed, speed, duration)
+                          speed, speed, duration)
 
     def run_reverse(self, speed=10, duration=0.0):
         """
@@ -364,7 +320,7 @@ class Car:
         ------
         """
         self.__set_motion(GPIO.LOW, GPIO.HIGH, GPIO.LOW, GPIO.HIGH,
-                         speed, speed, duration)
+                          speed, speed, duration)
 
     def turn_left(self, speed=10, duration=0.0):
         """
@@ -382,7 +338,7 @@ class Car:
         ------
         """
         self.__set_motion(GPIO.LOW, GPIO.LOW, GPIO.HIGH, GPIO.LOW,
-                         0, speed, duration)
+                          0, speed, duration)
 
     def turn_right(self, speed=10, duration=0.0):
         """
@@ -400,7 +356,7 @@ class Car:
         ------
         """
         self.__set_motion(GPIO.HIGH, GPIO.LOW, GPIO.LOW, GPIO.LOW,
-                         speed, 0, duration)
+                          speed, 0, duration)
 
     def spin_left(self, speed=10, duration=0.0):
         """
@@ -418,7 +374,7 @@ class Car:
         ------
         """
         self.__set_motion(GPIO.LOW, GPIO.HIGH, GPIO.HIGH, GPIO.LOW,
-                         speed, speed, duration)
+                          speed, speed, duration)
 
     def spin_right(self, speed=10, duration=0.0):
         """
@@ -436,9 +392,9 @@ class Car:
         ------
         """
         self.__set_motion(GPIO.HIGH, GPIO.LOW, GPIO.LOW, GPIO.HIGH,
-                         speed, speed, duration)
+                          speed, speed, duration)
 
-    def distance_from_obstacle(self ,val = 0):
+    def distance_from_obstacle(self, val=0):
         """
         Measure the distance between ultrasonic sensor and the obstacle
         that it faces.
@@ -454,7 +410,7 @@ class Car:
         """
         # set HIGH at TRIG for 15us to trigger the ultrasonic ping
         print('check distance')
-        #产生一个10us的脉冲
+        # 产生一个10us的脉冲
         distance = 0
         GPIO.output(Car.PIN_TRIG, GPIO.LOW)
         time.sleep(0.02)
@@ -463,7 +419,7 @@ class Car:
         GPIO.output(Car.PIN_TRIG, GPIO.LOW)
         time.sleep(0.00001)
 
-        #等待接受
+        # 等待接受
         if GPIO.input(Car.PIN_ECHO):
             distance = -2
             return distance
@@ -490,7 +446,7 @@ class Car:
         print(distance)
         return str(distance)
 
-    def line_tracking_turn_type(self ,num = 4):
+    def line_tracking_turn_type(self, num=4):
         """
         Indicates the type of turn required given current sensor values
         num = 4,是为了上层调用而设定
@@ -556,7 +512,7 @@ class Car:
         print('Turn type = {}'.format(turn))
         return turn
 
-    def obstacle_status_from_infrared(self ,num = 0):
+    def obstacle_status_from_infrared(self, num=0):
         """
         Return obstacle status obtained by infrared sensors that
         are situated at the left front and right front of the Car.
@@ -573,7 +529,7 @@ class Car:
             - one of ['only_left_blocked', 'only_right_blocked',
                     'blocked', 'clear']
         """
-        is_left_clear  = GPIO.input(Car.PIN_AVOID_LEFT_SENSOR)
+        is_left_clear = GPIO.input(Car.PIN_AVOID_LEFT_SENSOR)
         is_right_clear = GPIO.input(Car.PIN_AVOID_RIGHT_SENSOR)
 
         if is_left_clear and is_right_clear:
@@ -611,9 +567,9 @@ class Car:
             degree = 180
 
         for i in range(10):  # do this for multiple times just to make sure
-            self.__pwm_front_servo_pos.ChangeDutyCycle(2.5 + 10 * degree/180)
+            self.__pwm_front_servo_pos.ChangeDutyCycle(2.5 + 10 * degree / 180)
         self.__pwm_front_servo_pos.ChangeDutyCycle(0)
-        time.sleep(0.02) # give enough time to settle
+        time.sleep(0.02)  # give enough time to settle
 
     def obstacle_status_from_ultrasound(self, dir='center'):
         """
@@ -647,14 +603,14 @@ class Car:
         print('Ultrasound status = {}'.format(status))
         return status
 
-    def check_left_obstacle_with_sensor(self ,delay = 0):
+    def check_left_obstacle_with_sensor(self, delay=0):
         """
         利用小车左侧的红外对管传感器检测物体是否存在
 
         Parameters
         ----------
         * delay ：int
-        读取稳定时间
+            - 读取稳定时间
 
         Returns
         -------
@@ -664,19 +620,19 @@ class Car:
         """
         have_obstacle = GPIO.input(Car.PIN_AVOID_LEFT_SENSOR)
         time.sleep(delay)
-        if have_obstacle :
+        if have_obstacle:
             return str(Car.NO_OBSTACLE)
         else:
             return str(Car.HAVE_OBSTACLE)
 
-    def check_right_obstacle_with_sensor(self ,delay = 0):
+    def check_right_obstacle_with_sensor(self, delay=0):
         """
         利用小车右侧的红外对管传感器检测物体是否存在
 
         Parameters
         ----------
         * delay ：int
-        读取稳定时间
+            - 读取稳定时间
         -----------
         Returns
         -------
@@ -692,14 +648,12 @@ class Car:
         else:
             return str(Car.HAVE_OBSTACLE)
 
-    def servo_front_rotate(self , pos):
-        """
-        *function:servo_front_roate
-        功能：控制超声波的舵机进行旋转
+    def servo_front_rotate(self, pos):
+        """控制超声波的舵机进行旋转
         舵机：SG90 脉冲周期为20ms,脉宽0.5ms-2.5ms对应的角度-90到+90，对应的占空比为2.5%-12.5%
         Parameters
-        *pos
-        舵机旋转的角度：0 到 180 度
+        * pos: int
+            - 舵机旋转的角度：0-180 度
         ----------
         * none
         Returns
@@ -713,36 +667,34 @@ class Car:
         self.__pwm_front_servo_pos.ChangeDutyCycle(0)
         time.sleep(0.02)
 
-    def servo_camera_rotate(self , pos):
-        """
-        *function:servo_camera_roate
-        功能：调整控制相机的舵机进行旋转
+    def servo_camera_rotate(self, degree):
+        """调整控制相机的舵机进行旋转
         原理：舵机：SG90 脉冲周期为20ms,脉宽0.5ms-2.5ms对应的角度-90到+90，对应的占空比为2.5%-12.5%
 
         Parameters
-        *pos
-        舵机旋转的角度：0 到 180 度
+        -------------
+        * degree
+            - 舵机旋转的角度：0 到 180 度
         ----------
         Returns
         -------
         * None
         """
         for i in range(Car.SERVO_TOTAL_STEP):
-            self.__pwm_left_right_servo_pos.ChangeDutyCycle(2.5 + 10 * pos / 180)
+            self.__pwm_left_right_servo_pos.ChangeDutyCycle(2.5 + 10 * degree / 180)
             time.sleep(0.02)
 
         self.__pwm_left_right_servo_pos.ChangeDutyCycle(0)
         time.sleep(0.02)
 
-
-    def servo_camera_rise_fall(self , pos):
-        """
-        *function:servo_camera_rise_fall
-        功能：舵机让相机上升和下降
+    def servo_camera_rise_fall(self, pos):
+        """舵机让相机上升和下降
         舵机：SG90 脉冲周期为20ms,脉宽0.5ms-2.5ms对应的角度-90到+90，对应的占空比为2.5%-12.5%
+
         Parameters
-        *pos
-        舵机旋转的角度：0 到 180 度
+        -------------
+        * pos
+            - 舵机旋转的角度：0 到 180 度
         ----------
         Returns
         -------
@@ -755,7 +707,7 @@ class Car:
         self.__pwm_up_down_servo_pos.ChangeDutyCycle(0)
         time.sleep(0.02)
 
-    @staticmethod  #自动巡游功能
+    @staticmethod  # 自动巡游功能
     def demo_cruising():
         """
         Demonstrates a cruising car that avoids obstacles in a room
@@ -794,7 +746,7 @@ class Car:
         except KeyboardInterrupt:
             car.stop_completely()
 
-    @staticmethod  #自动巡线功能
+    @staticmethod  # 自动巡线功能
     def demo_line_tracking(speed=50):
         """
         Demonstrates the line tracking mode using the line tracking sensor
@@ -822,7 +774,7 @@ class Car:
         except KeyboardInterrupt:
             car.stop_completely()
 
-    @staticmethod  #输出电平，控制小车的灯的颜色
+    @staticmethod  # 输出电平，控制小车的灯的颜色
     def demo_light():
         """
         控制灯
@@ -833,145 +785,12 @@ class Car:
         car = Car()
         car.led_light('red')
 
-    @staticmethod  #小车的直行、转动、正方形
-    def demo_car_run():
-        """
-        运动类型：0 ：直线运动                LINE_MOVE_TYPE = 0
-                  1 ：来回运动                LINE_BACK_FORTH_MOVE_TYPE = 1
-                  2 : 转弯                    TURN_CORNER_MOVE_TYPE = 2
-                  3 ：拐弯                    SPRIN_MOVE_TYPE = 3
-                  4 ：正方形                  RECT_MOVE_TYPE = 4
-        """
-        run_type = 0
-        run_type = input("输入运动类型(0:直线，1：来回，2：转弯，3：拐弯，4：正方形)：")
-        car = Car()
-        if run_type == Car.LINE_MOVE_TYPE:
-            car.run_forward(5,10) #按照5的速度，走10s
-        elif run_type == Car.LINE_BACK_FORTH_MOVE_TYPE:
-            car.run_forward(5,10) #按照5的速度，走10s
-            car.run_reverse(5,10) #按照5的速度，原路返回走10s
-        elif run_type == Car.TURN_CORNER_MOVE_TYPE:
-            car.run_forward(5,10) #按照5的速度，走10s
-            car.turn_left(3,4)  #转弯
-            car.run_forward(5,10) #按照5的速度，走10s
-        elif  run_type == Car.SPRIN_MOVE_TYPE:
-            car.run_forward(5,10) #按照5的速度，走10s
-            car.spin_left(3,4)    #转弯
-            car.run_forward(5,10) #按照5的速度，走10s
-        elif run_type == Car.RECT_MOVE_TYPE:
-            car.run_forward(10,20)#需要提取保持速度不变
-            car.turn_left(4,6)#时间6s，需要修改，确保转90度，每一台设备有微小的差异
-            car.run_forward(10,20)
-            car.turn_left(4,6)#需要修改时间，确保转90度，每一台设备有微小的差异
-            car.run_forward(10,20)
-            car.turn_left(4,6)#时间6s，需要修改时间，确保转90度，每一台设备有微小的差异
-            car.run_forward(10,20)
-            car.turn_left(4,6)#时间6s，需要修改，看转多少需要
-
-    @staticmethod  #小车的直行、转动、正方形
-    def demo_sensor():
-        """
-        传感器类型：0 ：红外对管传感器的使用                  SENSOR_INFRARED_TYPE = 0
-                   1 ：黑白传感器的使用               SENSOR_BLACK_WIGHT_TYPE = 1
-                  2 : 超声波传感器                 SENSOR_ULTRASONIC_TYPE = 2
-        """
-        sensor_type = int(input("测试传感器类型 0:红外；1:黑白；2:超声波:"))
-        car = Car()
-        if sensor_type == Car.SENSOR_INFRARED_TYPE:
-            """
-            #用手来回挡住传感器，观看传感器的读数变化（在使用传感器前，面向传感器，                              
-            调节传感器的旋钮，让右侧的两个灯恰好亮）。当传感器被挡住的时候，左侧的传感器就会亮
-            根据传感器遇到障碍物类型可以分为下面四种类型
-            one of ['only_left_blocked', 'only_right_blocked','blocked', 'clear']
-            """
-            while True:
-                status = car.obstacle_status_from_infrared()
-                print(status)
-        elif sensor_type == Car.SENSOR_BLACK_WIGHT_TYPE:
-            """
-            #黑色的电工胶布一圈                          
-            使用过程：把电工胶布贴在A4纸张上或桌子上，让后把黑白传感器在黑色电工胶布上来回移动，观看传感器上灯的亮度变化或输出值的变化
-            当遇到黑色就会变亮，根据它可以做一个巡线机器人。根据四个传感器亮的组合可以分为下面几种情况:
-            ['sharp_left_turn', 'sharp_right_turn','regular_left_turn', 'regular_right_turn',
-            'smooth_left', 'smooth_right','straight', 'no_line']
-             """
-            while True:
-                status = car.line_tracking_turn_type()
-                print(status)
-        elif sensor_type == Car.SENSOR_ULTRASONIC_TYPE:
-            """
-            #超声波测距：用双手挡住超声波、并做靠近超声波、远离超声波，来回运动，观看超声波读取值的变化
-            """
-            while True:
-                    dis = car.distance_from_obstacle()  #固定在一个位置查看其变化
-                    print(dis)
-
-
-                    # dis = car.servo_front_rotate(30) #旋转超声波，并进行测距
-                    # print(dis)
-                    # dis = car.servo_front_rotate(90)
-                    # print(dis)
-                    # dis = car.servo_front_rotate(120)
-                    # print(dis)
-
-
-"""
-@@@@主函数：
-#在里面测试本地各种功能
-"""
-
-learning_level = 0 # 学习等级 0：初级 设置电平，可以控制灯的开和关
-                   # 学习等级 1：控制小车直行、运动、左转等
-                   # 学习等级 2：控制小车的传感器
-                   # 学习等级 3：控制小车漫游
-                   # 学习等级 4：控制小车巡线
-
 
 def main():
-    learning_level = int(input("请输入学习等级（0：灯光、1：运动、2：传感器、3：漫游、4:巡线）："))
-    print(learning_level)
-    if learning_level == 0:
-        Car.demo_light()   #灯光操作例子
-    elif learning_level == 1:
-        Car.demo_car_run() #小车运动操作例子
-    elif learning_level == 2:
-        Car.demo_sensor()  #传感器操作例子
-    elif learning_level == 3:
-        Car.demo_cruising()  # 利用红外传感器、超声波和小车运动组合做漫游服务例子
-    elif learning_level == 4:
-        Car.demo_line_tracking() #利用黑白传感器和小车运动做巡线服务的例子
+    rpc_car_server = zerorpc.Server(Car())
+    rpc_car_server.bind("tcp://0.0.0.0:12347")
+    rpc_car_server.run()
 
-"""
-@@@@例子：
-#在树莓派上运行各种例子
-"""
+
 if __name__ == "__main__":
     main()
-
-
-
-
-
-    
-    
-
-
-
-
-
-    
-
-
-
-
-
-
-      
-
-
-  
-  
-
-
-
-
