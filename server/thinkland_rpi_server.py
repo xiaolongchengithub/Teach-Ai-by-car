@@ -1,5 +1,5 @@
 """
-    rpc服务类，将小车的api注册到服务上，就可以通过socket远程调用小车api
+    rpc服务类，将小车的api注册到远程调用服务上，就可以通过socket远程调用小车api
 """
 
 from server.thinkland_rpi_car import Car
@@ -29,26 +29,22 @@ class Server:
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.function_registration()
 
-    def get_ip(self):
+    @staticmethod
+    def get_ip():
+        """获取本地Ip
         """
-        *function:get_ip
-        功能：获取本地Ip
-        """
-
         try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            s.connect(('www.baidu.com', 0))
-            ip = s.getsockname()[0]
+            test_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            test_socket.connect(('www.baidu.com', 0))
+            local_ip = test_socket.getsockname()[0]
         except:
-            ip = "x.x.x.x"
+            local_ip = "x.x.x.x"
         finally:
-            s.close()
-        return ip
+            test_socket.close()
+        return local_ip
 
     def set_server_port(self, port=12347):
-        """设置服务端口
-        *function:set_ip
-        功能：设置Ip
+        """设置服务端监听端口
 
         Parameters
         ------------
@@ -59,16 +55,12 @@ class Server:
         * None
         """
 
-        self.socket = (self.get_ip(), 12347)
+        self.socket = (self.get_ip(), port)
         print(self.socket)
 
     def function_registration(self):
         """将小车的api注册为rpc
-        Parameters
-        * None
-        Returns
-        -------
-        * None
+       
         """
         # 舵机函数注册
         self.Function_List['servo_camera_rise_fall'] = self.car.servo_camera_rise_fall
@@ -103,12 +95,7 @@ class Server:
 
     def star_server(self):
         """创建一个线程用于提供rpc服务
-        Parameters
-        * None
-        ————
-        Returns
-        -------
-        * None
+
         """
 
         server_thread = threading.Thread(None, target=self.net_call_function, args=(self.Function_List,))
@@ -144,7 +131,7 @@ class Server:
         --------------
         tupple类型
         * port：网络的IP
-        ————
+
         Returns
         -------
         * None
@@ -204,7 +191,7 @@ class Server:
         """在本机上开启rpc服务
         """
         test = Server()
-        test.set_server_port(12347)  # 设置Ip
+        test.set_server_port(12347)
         test.star_server()
 
 
