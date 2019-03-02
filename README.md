@@ -77,5 +77,5 @@ thinkland_rpi_demon_figure 相机读取图像，左键移动框取数字，然�
 
 
 
-			  
-备注：yolov3.weights文件太大，需要网上下载https://pan.baidu.com/s/1e1knQGCw-jl9TBQ-z4-SOg
+			 
+备注：https://pan.baidu.com/s/1ytlQ7MfrA-KgGgkhSzCPCw下载下来拷贝到aiLlib文件下，并解压。
