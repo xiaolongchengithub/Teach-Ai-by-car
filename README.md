@@ -11,8 +11,10 @@
 查找每个模块的*.html文档
 
 ## 安装环境
-### 树莓派：pip install zerorpc
-### 客服端：pip install zerorpc; pip install opencv-python>=3.4.5;pip install numpy; pip install tensorflow
+### 树莓派：
+pip install zerorpc
+### 客服端：
+pip install zerorpc; pip install opencv-python>=3.4.5;pip install numpy; pip install tensorflow
            pip install Pillow
 
 
