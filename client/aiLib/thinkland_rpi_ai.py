@@ -15,13 +15,13 @@ class Ai:
     *read_image 读取图片
     *wait_key 等待
     """
-    def __init__(self,classes ="./coco.names",config ="./yolov3.cfg",weight = "./yolov3.weights"):
+    def __init__(self,classes ="./coco/coco.names",config ="./coco/yolov3.cfg",weight = "./coco/yolov3.weights"):
         """
         *function:__init__
         功能：初始化注意需要把coco.names,yolove.cfg,yolov3.weights文件拷贝到当前目录.如果没有在当前目录，需要指定路径
         ________
         """
-        self.confThreshold = 0.6  # Confidence threshold
+        self.confThreshold = 0.1  # Confidence threshold
         self.nmsThreshold = 0.6  # Non-maximum suppression threshold
         self.inpWidth = 188  # Width of network's input image
         self.inpHeight = 188  # Height of n

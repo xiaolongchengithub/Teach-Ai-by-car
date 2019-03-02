@@ -6,6 +6,7 @@ import threading
 from aiLib.thinkland_rpi_speaker import Speaker
 from aiLib.thinkland_rpi_figure import Figure
 
+
 global figureImage
 global figure
 x1  = 0
@@ -15,6 +16,9 @@ y2  = 0
 
 
 def OnMouseAction(event, x, y, flags, param):
+    """
+     按键响应
+    """
     global figureImage
     global x1
     global y1
@@ -37,7 +41,6 @@ def OnMouseAction(event, x, y, flags, param):
     elif event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON:
         x2 = x
         y2 = y
-
 
 class cameraFigure():
     """
@@ -62,9 +65,11 @@ class cameraFigure():
         print("init camera")
         self.camera = Camera()
 
-        self.camera.connect_http(ip)
-        self.camera.start_receive_image_server()
-        self.ai = Ai(classes="./aiLib/coco.names",config ="./aiLib/yolov3.cfg",weight = "./aiLib/yolov3.weights")
+        self.camera = Camera()
+        self.camera.connect_server(ip)
+        self.camera.start_receive()
+
+        self.ai = Ai(classes="./aiLib/coco/coco.names",config ="./aiLib/coco/yolov3.cfg",weight = "./aiLib/coco/yolov3.weights")
         self.speaker = Speaker()
 
 

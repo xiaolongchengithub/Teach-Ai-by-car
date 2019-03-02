@@ -1,293 +1,203 @@
-import socket
-import cv2
+"""
+    摄像机封装类，通过创建Camera类示例，调用相应api可以获得摄像机视频流并显示。
+    小车服务端运行了一个Mjpg_streamer串流服务，该服务会将摄像机的视频通过http协议
+    进行传输。当我们连接到这个服务的ip和port，就可以接收到流媒体数据，我们再将数据
+    解码并显示。
+    提示：由于macOS系统下opencv不支持在fork的线程和进程中刷新GDI,并且会引起程序崩溃。
+         所以为了兼容macOS系统只有将视频显示放到主线程中，会阻塞主线程
+"""
+# Todo: 改进图像更新方式
+
 import threading
-import struct
-import numpy
-import time
-import cv2 as cv
 import cv2
 import urllib
-import numpy as np
 import urllib.request
 import numpy as np
+import time
+
 
 __authors__ = 'xiao long & xu lao shi'
 __version__ = 'version 0.02'
 __license__ = 'Copyright...'
 
-class Camera:
+
+class HttpMixin:
+    """http功能Mixin
     """
-    模块功能：从树莓派中获取图片
-    利用Mjpg_treamer 服务其，获树莓派中获取数据流，转换为OPENCV格式的图片
-    *connect_http                   远程连接
-    *socket_get_image_thread        获取图像数据
-    *open_window                    打开显示窗口
-    *close_window 关闭显示窗口
-    *start_receive_image_server 启动图像采集线程
-    *show_image 图像显示
-    *set_ai 引入图像识别功能
-    *take_picture 采集一张图像数据
-    *save_picture 保存一张图像
+    url_streamer = 'http://172.16.10.227:8080/?action=streamer'
+    SHOW_THREAD_FLAG = False
+
+    def connect_server(self, ip, port=8080):
+        """连接服务器
+        """
+        url = 'http://{}:{}/?action=streamer'.format(ip, port)
+        print("streamer_url", url)
+        self.stream = urllib.request.urlopen(url)
+
+    def start_receive(self):
+        """开始接收数据
+        """
+        receiveThread = threading.Thread(target=self.receive_data)
+        receiveThread.start()
+
+    def thread_play(self):
+        """线程显示
+        """
+        HttpMixin.SHOW_THREAD_FLAG = True
+
+    def thread_shut_off_play(self):
+        """线程里面显示图像关闭
+        """
+        HttpMixin.SHOW_THREAD_FLAG = False
+
+
+    def receive_data(self):
+        """接收数据
+        """
+        time.sleep(2)
+        print("start receive")
+        buffer = b''
+        while True:
+            buffer += self.stream.read(1024)
+            data_header = buffer.find(b'\xff\xd8')
+            data_end = buffer.find(b'\xff\xd9')
+            if data_header != - 1 and data_end != -1:
+                jpg = buffer[data_header:data_end + 2]
+                buffer = buffer[data_end + 2:]
+                image = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8), 1)
+                if HttpMixin.SHOW_THREAD_FLAG:
+                    cv2.imshow('ai',image)
+                    cv2.waitKey(1)
+
+                self.data_handler(image)
+
+    def data_handler(self, data):
+        """处理数据
+        由子类定义具体功能
+        Parameters
+        -----------
+        data:
+            - 接收到的解析数据
+        Return
+        ---------
+
+        """
+        pass
+
+
+class Camera(HttpMixin):
+    """摄像机类
     """
 
     def __init__(self):
         self.__Show_Flag = False
+        self.ai = None
+        self._image = np.array([])
 
-    def connect_http(self,port = "172.16.10.227"):
-        """
-        *function:socket_connect
-        功能：连接远程的 mjpg_streamer服务器
-        ________
+    def data_handler(self, data):
+        """处理从小车摄像获取的图片
+
         Parameters
-        * port : string
-        - 输入服务器的Ip地址，例如""172.16.10.227""
-        例如 test = Camera(),test.connect_http("172.16.10.227")
-        ————
+        * data: numpy array
+            - 从小车摄像机数据
+
         Returns
         -------
         * None
         """
-        connectPort = 'http://%s:8080/?action=stream'%port
-        self.stream = urllib.request.urlopen(connectPort)
-        print('init the mjpg_streamer')
+        self._image = data
 
-    def http_close(self):
-        urllib.request.urlcleanup()
-
-    def http_get_image_thread(self):
-        # 按照格式打包发送帧数和分辨率
+    def play(self):
+        """播放摄像头视频,可以通过ESC键关闭
         """
-        *function:http_get_image_thread
-        功能：从服务器获取，并解密获取图片
-        ________
+        while not self._image.size:
+            time.sleep(1)
+
+        while True:
+            try:
+                cv2.imshow("Camera", self._image)
+                k = cv2.waitKey(1)
+                if k == 27:  # wait for ESC key to exit
+                    cv2.destroyAllWindows()
+                    self._image = np.array([])
+                    break
+            except:
+                pass
+
+    def set_ai(self, ai_yolo):
+        """引入yolo类
+
         Parameters
-        * None
-        ————
-        Returns
-        -------
-        * None
-        """
-        bytes = b''
-        self.__SHOW = True
-        while self.__SHOW:
-            bytes += self.stream.read(1024)
-            a = bytes.find(b'\xff\xd8')
-            b = bytes.find(b'\xff\xd9')
-            if a != - 1 and b != -1:
-                jpg = bytes[a:b + 2]
-                bytes = bytes[b + 2:]
-                self.image = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8), 1)
-                if self.__Show_Flag:
-                    cv2.imshow("Camera",self.image)
-                    cv2.waitKey(1)
+        --------------
+        * ai：AiYolo类
+            - thinkland_rpi_ai_yolov3模块中的AiYolo类
 
-    def open_window(self):
         """
-        *function:show_window
-        功能：进行图片显示
-        ________
-        Parameters
-        * None
-        ————
-        Returns
-        -------
-        * None
-        """
-        self.__Show_Flag = True
-
-    def close_window(self):
-        """
-        *function:show_window
-        功能：关闭窗口
-        ________
-        Parameters
-        * None
-        ————
-        Returns
-        -------
-        * None
-        """
-        self.__Show_Flag = False
-
-    def start_receive_image_server(self):
-        """
-        *function:start_receive_image_server
-        功能：开启接受图片的线程
-       例如: receiveImg = Camera();receiveImg.connect_http("172.16.10.227");receiveImg.start_receive_image_server()
-        ________
-        Parameters
-        * None
-        ————
-        Returns
-        -------
-        * None
-        """
-
-        self.showThread = threading.Thread(target=self.http_get_image_thread)
-        self.showThread.start()
-        time.sleep(1) #等待图像送达
-
-    def show_image(self, mat , window_name = "rpi"):
-        """
-        *function:show_image
-        功能：打开一个窗口进行图片显示
-        例如：        import cv2
-                      img = cv2.imread("c://test.jpg")
-                      camera = Camera()
-                      camera.show_image(img)
-        ________
-        Parameters
-        *mat：图像数据，插入一张图片数据
-        ————
-        Return
-        *None
-         """
-        cv2.imshow(window_name, mat)
-        cv2.waitKey(1)
-
-    def set_ai(self , ai):
-        """
-        *function:set_ai
-        功能：引入yolo类
-        ________
-         Parameters
-        *ai：thinkland_rpi_ai_yolov3模块中的AiYolo类
-        """
-        self.Ai = ai
-
-    def close_receive_image_server(self):
-        """
-        *function:close_receive_image_server
-        功能：关闭视频流服务线程
-        ________
-        Parameters
-        * None
-        ————
-        Returns
-        -------
-        * None
-        """
-        self.SHOW = False
+        self.ai = ai_yolo
 
     def take_picture(self):
-        """
-        *function:takePicture
-        功能：从视频流中获取一张图片
-        ________
+        """控制摄像机拍照
+
         Parameters
+        -----------
         * None
-        ————
+
         Returns
         -------
+        * numpy array
+        返回一张图片
+        """
+
+        while not self._image.size:
+            time.sleep(1)
+        return self._image
+
+    @staticmethod
+    def save_picture(mat, path):
+        """从视频流中获取一张图片
+
+        Parameters
+        * mat: numpy array
+            - 图像数据
+        * path: str
+            - 图像保存地址
+        -----------------
+        Returns
+        -----------------
         * Mat
         返回一张图片
         """
-        return self.image
-
-    def save_picture(self , mat, path):
-        """
-        *function:takePicture
-        功能：从视频流中获取一张图片
-        ________
-        Parameters
-        * None
-        ————
-        Returns
-        -------
-        * Mat
-        返回一张图片
-        """
-        cv2.imwrite(path,mat)
+        cv2.imwrite(path, mat)
 
     @staticmethod
-    def demo_collect_picture_windowsOrlinux():
-        """
-        启动这个例子之前需要在树莓派上启动服务 python thinkland_rpi_sever.py
-        在windows/linux上使用此例子
-        如果不open_window，Ios系统也可以按照这个方式调用。IOS在系统图像显示的时候会出现卡死的问题
+    def demo_play_camera_video():
+        """播放小车摄像头视频
         """
         camera = Camera()
-        camera.connect_http("172.16.10.227") ##Ip 需要根据实际进行修改（树莓派的Ip）
-        camera.start_receive_image_server()
-        camera.open_window()
+        camera.connect_server("172.16.10.227")
+        camera.start_receive()
+        camera.play()
 
     @staticmethod
-    def demo_only_take_picture():
-        """
-        不实时显示图像，截取当前图片，并保存
+    def demo_take_picture():
+        """控制摄像机拍照，并保存
         """
         camera = Camera()
-        camera.connect_http("172.16.10.227") ##Ip 需要根据实际进行修改（树莓派的Ip）
-        camera.start_receive_image_server()
-
-        picture = camera.take_picture()
-        camera.save_picture(picture,'./test.jpg')
-
-
-    @staticmethod
-    def demo_collect_picture_windowsOrlinux_save_one_picture():
-        """
-        启动服务，并截取一张张片，并保存
-        """
-        camera = Camera()
-        camera.connect_http("172.16.10.227") ##Ip 需要根据实际进行修改（树莓派的Ip）
-        camera.start_receive_image_server()
-        camera.open_window()
-
-        picture = camera.take_picture()
-        camera.save_picture(picture,'./test.jpg')
+        camera.connect_server("172.16.10.227")
+        camera.start_receive()
+        image = camera.take_picture()
+        camera.save_picture(image, './phone.jpg')  # 保存到当前目录下test.jpg文件
 
 
-    @staticmethod
-    def demo_show_picture_ios():
-        """
-        在IOS上实时显示树莓派上的图像流
-        """
-        global ios_camera
+def main():
+    demo_index = int(input("请选择演示demo(0:显示摄像头视频，1：显示并保存一张图到本地):"))
 
-        mainThread = threading.Thread(target=window)
-        mainThread.start()
-        ios_camera = Camera()
-        ios_camera.connect_http("172.16.10.227")
-        ios_camera.http_get_image_thread()
-
-
-
-def window():
-    global ios_camera
-    while True:
-        input("Press Enter to open camera")
-        ios_camera.open_window()
-        input("Press Enter again to close it")
-        ios_camera.close_window()
-
-"""
-@@@@例子：
-#获取图片
-"""
-
-camera_learning_status = 0  #相机学习等级 0 :在客服端实时显示图像的例子
-                            #相机学习等级 1 :在客服端实时显示图像，并从中截取一张图片用来显示
-                            #相机学习等级 2 ：不现实图像，并截取一张图像
-                            #相机学习等级 3： IOS系统实时显示
+    if demo_index == 0:
+        print(" 按下ECS键可关停止播放")
+        Camera.demo_play_camera_video()
+    elif demo_index == 1:
+        Camera.demo_take_picture()
 
 
 if __name__ == "__main__":
-    """
-    从树莓派中获取视频流，为了排除干扰，最好把电脑上的杀毒软件等关掉
-    """
-
-    camera_learning_status = int(input("输入相机学习等级(0:图像显示，1：显示并保存一张图到本地，2：不显示，只保存图像，3：Ios图像显示):"))
-    print(camera_learning_status)
-    if camera_learning_status == 0:
-        Camera.demo_collect_picture_windowsOrlinux()
-    elif camera_learning_status == 1:
-        Camera.demo_collect_picture_windowsOrlinux_save_one_picture()
-    elif  camera_learning_status == 2:
-        Camera.demo_only_take_picture()
-    elif  camera_learning_status == 3:
-        Camera.demo_show_picture_ios()
-
-
-
-
+    main()

@@ -5,91 +5,70 @@ import time
 import threading
 from aiLib.thinkland_rpi_speaker import Speaker
 
-
-class aiCamera():
+def demo_ai_camera(ip):
     """
-    现在只是针对windows llinux
-    制作智能相机，识别视野中的物体
+    智能相机的构建，实时识别相机中的物体
+
+    Parameter
+    ----
+    *ip：string
+        -树莓派的Ip
     """
-    def __init__(self ,ip = "172.16.10.227"):
-        """
-        初始化，区别coco.names;yolov3.cfg;yolov3.weights文件放在aiLib文件夹中;
-        启动相机服务
+    camera = Camera()
+    camera.connect_server(ip)
+    camera.start_receive()
 
+    ai = Ai(classes="./aiLib/coco/coco.names", config="./aiLib/coco/yolov3.cfg",
+            weight="./aiLib/coco/yolov3.weights")
 
-        Parameter
-        --------
-             --ip string类型，default "172.16.10.227" ，
-        """
-        print("init camera")
-        self.camera = Camera()
+    while True:
+        pic = camera.take_picture()
+        ret, names, box = ai.find_object(pic)
+        cv2.imshow("ai", ret)
+        cv2.waitKey(1)
 
-        self.camera.connect_http(ip)
-        self.camera.start_receive_image_server()
-        self.ai = Ai(classes="./aiLib/coco.names",config ="./aiLib/yolov3.cfg",weight = "./aiLib/yolov3.weights")
-        self.speaker = Speaker()
+def demo_ai_camera_speaker(ip):
+    """
+    智能相机的构建，实时识别相机中的物体
+    间隔一段时间，把识别的物体朗读出来
 
-    def ai_show(self):
-        """
-        获取相机，实时检测，图像显示
-        """
-        while True:
-            pic     = self.camera.take_picture()
-            ret,names,_ = self.ai.find_object(pic)
-            cv2.imshow("ai",ret)
-            cv2.waitKey(1)
+    Parameter
+    --------
+    *ip:string
+       -树莓派的IP
+    """
+    camera = Camera()
+    camera.connect_server(ip)
+    camera.start_receive()
 
-    def ai_show_speaker(self):
-        """
-        获取相机，实时检测，图像显示, 语音朗读
-        """
-        interval = 50  #间隔多少次，朗读一次
-        times    = 0
+    ai = Ai(classes="./aiLib/coco/coco.names", config="./aiLib/coco/yolov3.cfg",
+            weight="./aiLib/coco/yolov3.weights")
+    speaker = Speaker()
 
-        while True:
-            pic     = self.camera.take_picture()
-            ret,names,_ = self.ai.find_object(pic)
-            cv2.imshow("ai",ret)
-            cv2.waitKey(1)
+    interval = 20
+    times    = 0
+    while True:
+        pic = camera.take_picture()
+        ret,names,box= ai.find_object(pic)
 
-            times = times + 1
-            if times > interval:
-                times = 0
-                if len(names) > 0:
-                    self.speaker.say('i find')
-                for item in names:
-                    self.speaker.say(item)
-                if len(names) > 0:
-                    self.speaker.say('in the picture')
+        cv2.imshow("ai", ret)
+        cv2.waitKey(1)
 
-    def start_thread_ai_camera(self):
-        """
-        启动线程
-        """
-        self.mainThread = threading.Thread(target=self.ai_show)
-        self.mainThread.start()
-
-    def start_thread_ai_camera_speaker(self):
-        """
-        启动线程
-        """
-        self.mainThread = threading.Thread(target=self.ai_show_speaker())
-        self.mainThread.start()
-
-    @staticmethod
-    def demo():
-        """
-        制作智能相机
-        """
-        camera = aiCamera("172.16.10.227")
-        time.sleep(1)
-        camera.start_thread_ai_camera()
+        times = times + 1
+        if times > interval:
+            times = 0
+            if len(names) > 0:
+                speaker.say('i find')
+            for item in names:
+                speaker.say(item)
+            if len(names) > 0:
+                speaker.say('in the picture')
 
 def main():
     """
     例子
     """
-    aiCamera.demo()
+    demo_ai_camera("172.16.10.227")
 
 if __name__ == "__main__":
     main()
