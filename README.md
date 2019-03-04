@@ -3,7 +3,7 @@
 
 ## 关于包得说明
 包分为两部分，Server需要部署到树莓派上；Client需要部署到linux或windows上。
-### Server:包含thinkland_rpi_car和thinkland_rpi_sever两大模块。
+### Server:包含thinkland_rpi_car_server
 ### Client:包含thinkland_rpi_car_client和thinkland_rpi_camera_client,thinkland_rpi_ai,thinkland_rpi_algorithm,thinkland_rpi_figure等模块
 
 
@@ -23,7 +23,7 @@ pip install zerorpc; pip install opencv-python>=3.4.5;pip install numpy; pip ins
 ## 操作流程
     1、配置树莓派网络，确保树莓派和客服端在同一个网关之中；
 	2、获取树莓派的Ip （ifconfig命令）；
-	3、启动thinkland_rpi_car_sever.py(python3 thinkland_rpi_server.py)；
+	3、启动thinkland_rpi_car_sever.py(python3 thinkland_rpi_car_server.py)；
 	4、在客服端实现各种功能；
 
 	 
