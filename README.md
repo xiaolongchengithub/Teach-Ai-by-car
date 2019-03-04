@@ -21,8 +21,8 @@ RPI.GPIO
 python: >=3.5      
 opencv      
 numpy
-zerorpc
-
+zerorpc        
+pynput
 
 ## 服务端功能
 - 1.RaspberryPi控制机器车轮 
