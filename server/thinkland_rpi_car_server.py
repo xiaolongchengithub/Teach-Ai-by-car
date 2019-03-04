@@ -551,15 +551,19 @@ class Car:
         # 90 degrees:  duty cycle =  7.5% of 20ms
         # 180 degrees: duty cycle = 12.5% of 20ms
         if dir == 'center':
-            degree = 90
+            print('center')
+            degree = 25
         elif dir == 'right':
             degree = 0
         elif dir == 'left':
             degree = 180
 
-        for i in range(10):  # do this for multiple times just to make sure
+        for i in range(Car.SERVO_TOTAL_STEP):
             self.__pwm_front_servo_pos.ChangeDutyCycle(2.5 + 10 * degree / 180)
+            time.sleep(0.02)
+
         self.__pwm_front_servo_pos.ChangeDutyCycle(0)
+        time.sleep(0.02)
 
 
     def obstacle_status_from_ultrasound(self, dir='center'):

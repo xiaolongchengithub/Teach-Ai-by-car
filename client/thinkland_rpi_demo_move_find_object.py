@@ -22,7 +22,7 @@ def Cruising(car,speed=4):
         while True:
             if CRUSING_FLOG == False:
                 car.stop_all_wheels()
-                print('gave over .............................................')
+                print('Cruising over .............................................')
                 break
             obstacle_status_from_infrared = car.obstacle_status_from_infrared()
             should_turn = True
@@ -51,7 +51,7 @@ def Cruising(car,speed=4):
 
 def find_object(camera,ai,object):
     global CRUSING_FLOG
-
+    times = 0
     while True:
         pic = camera.take_picture()
         ret, names, _ = ai.find_object(pic)
@@ -59,8 +59,10 @@ def find_object(camera,ai,object):
         print(names)
         for item in names:
             if item == object:
-                CRUSING_FLOG = False
-                return
+                times = 1 + times
+                if times > 2:#防止错误检查
+                    CRUSING_FLOG = False
+                    return
 
 def demo_move_find_object(ip,object,vAngle =30,hAngle = 90):
     """
@@ -116,7 +118,7 @@ def demo_step_find_object(ip,speed=20,dis = 1,object='cup',vAngle =30,hAngle = 9
     """
     #初始化
     car = Car(ip)
-    相机初始化
+    #相机初始化
     camera = Camera()
     camera.connect_server(ip)
     camera.start_receive()
@@ -137,9 +139,58 @@ def demo_step_find_object(ip,speed=20,dis = 1,object='cup',vAngle =30,hAngle = 9
         if status == 'status_move':
             car.run_forward(speed,dis)
         if status == 'status_turn_right':
-            car.spin_right(10,0.2)
+            car.spin_right(10,0.4)
+        if status == 'status_turn_left':
+            car.spin_left(10,0.4)
+        if status == 'status_stop':
+            return
+
+def demo_move_step_find_object(ip,speed=20,dis = 1,object='cup',vAngle =40,hAngle = 80):
+    """
+    连续移动寻找物体
+
+     Parameter
+     -------
+     *ip:string
+         -树莓派的Ip
+     *object:string
+         -要寻找的物体
+     *vAngle:int
+         -垂直方向的角度
+     *hAngle:int
+         -水平方向的角度
+    """
+    car = Car(ip)
+
+    camera = Camera()
+    camera.connect_server(ip)
+    camera.start_receive()
+    camera.thread_play()
+
+    ai = Ai(classes="./aiLib/coco/coco.names", config="./aiLib/coco/yolov3.cfg",
+                 weight="./aiLib/coco/yolov3.weights")
+
+    car.turn_servo_camera_vertical(vAngle)
+    car.turn_servo_camera_horizental(hAngle)
+
+    mainThread_ = threading.Thread(target=find_object,args=(camera,ai,object,))
+    mainThread_.start()
+
+    Cruising(car,4)  #以4的速度进行漫游
+
+    car.turn_servo_camera_vertical(vAngle)
+    car.turn_servo_camera_horizental(hAngle)
+
+    while True:
+        status=get_status_with_camera(car,camera,ai,object)
+        car.turn_servo_camera_horizental(90)
+        print(status)
+        if status == 'status_move':
+            car.run_forward(speed,dis)
         if status == 'status_turn_right':
-            car.spin_right(10,0.2)
+            car.spin_right(10,0.4)
+        if status == 'status_turn_left':
+            car.spin_left(10,0.4)
         if status == 'status_stop':
             return
 
@@ -185,7 +236,206 @@ def get_status_with_camera(car,camera,ai,object):
                             return 'status_turn_left'
     return 'status_move'
 
+def demo_object(ip,speed=20,dis = 1,object='cup',vAngle =30,hAngle = 90):
+    """
+    移动，一步一步的寻找物体
 
+     Parameter
+     -------
+     *ip:string
+         -树莓派的
+     *object:string
+         -要寻找的物体
+     *vAngle:int
+         -垂直方向的角度
+     *hAngle:int
+         -水平方向的角度
+     *speed:int
+         -移动的速度
+     *dis:float
+         -时间间隔
+    """
+    #初始化
+    car = Car(ip)
+    #相机初始化
+    camera = Camera()
+    camera.connect_server(ip)
+    camera.start_receive()
+    camera.thread_play()
+
+    speaker = Speaker()
+
+    ai = Ai(classes="./aiLib/coco/coco.names", config="./aiLib/coco/yolov3.cfg",
+                 weight="./aiLib/coco/yolov3.weights")
+
+    car.turn_servo_camera_vertical(vAngle)
+    car.turn_servo_camera_horizental(hAngle)
+
+    while True:
+        status=get_status_with_camera(car,camera,ai,object)
+        car.turn_servo_camera_horizental(90)
+        print(status)
+        if status == 'status_move':
+            car.run_forward(speed,dis)
+        if status == 'status_turn_right':
+            car.spin_right(10,0.4)
+            car.run_forward(speed,dis*0.5)
+        if status == 'status_turn_left':
+            car.spin_left(10,0.4)
+            car.run_forward(speed,dis*0.5)
+        if status == 'status_stop':
+            return
+
+def camera_calibration(ip,speed=20,dis = 1,object='cup',vAngle =40,hAngle = 90):
+    """
+    移动，一步一步的寻找物体
+
+     Parameter
+     -------
+     *ip:string
+         -树莓派的
+     *object:string
+         -要寻找的物体
+     *vAngle:int
+         -垂直方向的角度
+     *hAngle:int
+         -水平方向的角度
+     *speed:int
+         -移动的速度
+     *dis:float
+         -时间间隔
+    """
+    #初始化
+    car = Car(ip)
+    #相机初始化
+    camera = Camera()
+    camera.connect_server(ip)
+    camera.start_receive()
+    camera.thread_play()
+
+
+    ai = Ai(classes="./aiLib/coco/coco.names", config="./aiLib/coco/yolov3.cfg",
+                 weight="./aiLib/coco/yolov3.weights")
+
+    car.turn_servo_camera_vertical(vAngle)
+    car.turn_servo_camera_horizental(hAngle)
+    while True:
+        pic = camera.take_picture()
+        y  = []
+        x  = []
+        x1 = 320
+        y1 = 0
+        for i in range(1):
+            ret, names, box = ai.find_object(pic)
+            for item in names:
+                if item == object:
+                    id = names.index(item)
+                    print(box[id])
+                    y.append(box[id][1])
+                    x.append(box[id][0])
+        ysum = 0
+        for d in y:
+            ysum = ysum+d
+        if len(y) > 0:
+            y1 = ysum/len(y)
+            print(y1)
+
+        xsum = 0
+        for d in x:
+            xsum = xsum+d
+        if len(x) > 0:
+            x1 = xsum/len(x)
+            print(x1)
+        if x1 > 360:
+            print('turn right')
+            car.turn_right(4,0.1)
+
+        if x1 < 200:
+            print('turn left')
+            car.turn_left(4,0.1)
+
+        if 200 < x1 <360:
+            car.run_forward(4,0.2)
+            if y1 > 400:
+                return
+
+
+def demo_move_step_find_object1(ip,speed=20,dis = 1,object='cup',vAngle =40,hAngle = 80):
+    """
+    连续移动寻找物体
+
+     Parameter
+     -------
+     *ip:string
+         -树莓派的Ip
+     *object:string
+         -要寻找的物体
+     *vAngle:int
+         -垂直方向的角度
+     *hAngle:int
+         -水平方向的角度
+    """
+    car = Car(ip)
+
+    camera = Camera()
+    camera.connect_server(ip)
+    camera.start_receive()
+    camera.thread_play()
+
+    ai = Ai(classes="./aiLib/coco/coco.names", config="./aiLib/coco/yolov3.cfg",
+                 weight="./aiLib/coco/yolov3.weights")
+
+    car.turn_servo_camera_vertical(vAngle)
+    car.turn_servo_camera_horizental(hAngle)
+
+    mainThread_ = threading.Thread(target=find_object,args=(camera,ai,object,))
+    mainThread_.start()
+
+    Cruising(car,4)  #以4的速度进行漫游
+
+    car.turn_servo_camera_vertical(vAngle)
+    car.turn_servo_camera_horizental(hAngle)
+
+
+    while True:
+        pic = camera.take_picture()
+        y  = []
+        x  = []
+        x1 = 320
+        y1 = 0
+        for i in range(1):
+            ret, names, box = ai.find_object(pic)
+            for item in names:
+                if item == object:
+                    id = names.index(item)
+                    print(box[id])
+                    y.append(box[id][1])
+                    x.append(box[id][0])
+        ysum = 0
+        for d in y:
+            ysum = ysum+d
+        if len(y) > 0:
+            y1 = ysum/len(y)
+            print(y1)
+
+        xsum = 0
+        for d in x:
+            xsum = xsum+d
+        if len(x) > 0:
+            x1 = xsum/len(x)
+            print(x1)
+        if x1 > 360:
+            print('turn right')
+            car.turn_right(4,0.1)
+
+        if x1 < 200:
+            print('turn left')
+            car.turn_left(4,0.1)
+
+        if 200 < x1 <360:
+            car.run_forward(4,0.2)
+            if y1 > 400:
+                return
 
 if __name__ == "__main__":
-    demo_step_find_object("172.16.10.227") #
+    demo_move_step_find_object1("172.16.10.227") #
