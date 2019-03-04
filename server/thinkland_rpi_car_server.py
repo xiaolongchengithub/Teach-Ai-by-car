@@ -254,6 +254,7 @@ class Car:
             else:
                 GPIO.output(Car.PIN_LED_B, Car.OPEN)
 
+
     def turn_off_led(self, led):
         """关闭LED灯光
 
@@ -278,11 +279,10 @@ class Car:
 
         self.__set_motion(GPIO.LOW, GPIO.LOW, GPIO.LOW, GPIO.LOW, 0, 0)
 
-    def stop_completely(self, delay=0):
+    def stop_completely(self):
         """
         Completely stop the Car
         """
-        time.time(delay)
 
         self.__pwm_left_speed.stop()
         self.__pwm_right_speed.stop()
