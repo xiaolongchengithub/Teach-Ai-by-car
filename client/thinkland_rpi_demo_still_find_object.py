@@ -56,7 +56,7 @@ def demo_shaking_camera_find_object(ip ,object):
     camera.thread_play()
 
     car = Car(ip)
-    ai = Ai(classes="./aiLib/coco/coco.names", config="./aiLib/coco/yolov3.cfg", weight="./aiLib/coco/yolov3.weights")
+    ai = Ai()
 
     speaker = Speaker()
 
@@ -99,7 +99,7 @@ def demo_shaking_camera_find_object1(ip ,object):
     camera.thread_play()
 
     car = Car(ip)
-    ai = Ai(classes="./aiLib/coco/coco.names", config="./aiLib/coco/yolov3.cfg", weight="./aiLib/coco/yolov3.weights")
+    ai = Ai()
 
     speaker = Speaker()
 

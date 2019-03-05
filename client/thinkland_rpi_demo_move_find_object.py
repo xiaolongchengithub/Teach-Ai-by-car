@@ -130,8 +130,7 @@ def demo_move_find_object(ip,object,vAngle =30,hAngle = 90):
     camera.start_receive()
     camera.thread_play()
 
-    ai = Ai(classes="./aiLib/coco/coco.names", config="./aiLib/coco/yolov3.cfg",
-                 weight="./aiLib/coco/yolov3.weights")
+    ai = Ai()
 
     car.turn_servo_camera_vertical(vAngle)
     car.turn_servo_camera_horizental(hAngle)
@@ -170,8 +169,7 @@ def demo_step_find_object(ip,speed=20,dis = 1,object='cup',vAngle =30,hAngle = 9
 
     speaker = Speaker()
 
-    ai = Ai(classes="./aiLib/coco/coco.names", config="./aiLib/coco/yolov3.cfg",
-                 weight="./aiLib/coco/yolov3.weights")
+    ai = Ai()
 
     car.turn_servo_camera_vertical(vAngle)
     car.turn_servo_camera_horizental(hAngle)
@@ -217,8 +215,7 @@ def demo_move_step_find_object(ip,speed=20,dis = 1,object='cup',vAngle =40,hAngl
     camera.start_receive()
     camera.thread_play()
 
-    ai = Ai(classes="./aiLib/coco/coco.names", config="./aiLib/coco/yolov3.cfg",
-                 weight="./aiLib/coco/yolov3.weights")
+    ai = Ai()
 
     car.turn_servo_camera_vertical(vAngle)
     car.turn_servo_camera_horizental(hAngle)
@@ -377,8 +374,7 @@ def demo_move_step_find_object1(ip,speed=20,dis = 1,object='cup',vAngle =40,hAng
     camera.start_receive()
 
 
-    ai = Ai(classes="./aiLib/coco/coco.names", config="./aiLib/coco/yolov3.cfg",
-                 weight="./aiLib/coco/yolov3.weights")
+    ai = Ai()
 
 
 

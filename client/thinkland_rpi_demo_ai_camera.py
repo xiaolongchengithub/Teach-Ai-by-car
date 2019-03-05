@@ -18,8 +18,7 @@ def demo_ai_camera(ip):
     camera.connect_server(ip)
     camera.start_receive()
 
-    ai = Ai(classes="./aiLib/coco/coco.names", config="./aiLib/coco/yolov3.cfg",
-            weight="./aiLib/coco/yolov3.weights")
+    ai = Ai()
 
     while True:
         pic = camera.take_picture()
@@ -44,8 +43,7 @@ def demo_ai_camera_speaker(ip):
     camera.connect_server(ip)
     camera.start_receive()
 
-    ai = Ai(classes="./aiLib/coco/coco.names", config="./aiLib/coco/yolov3.cfg",
-            weight="./aiLib/coco/yolov3.weights")
+    ai = Ai()
     speaker = Speaker()
 
     interval = 20
