@@ -7,11 +7,12 @@ import time
 import random
 import zerorpc
 from pynput import keyboard
+from pynput.keyboard import Key
 import threading
 import platform
 
 
-__authors__ = 'xiao long & xu lao shi'
+__authors__ = 'xiao long & xu lao shi & gao qiang'
 __version__ = 'version 0.02'
 __license__ = 'Copyright...'
 
@@ -26,12 +27,13 @@ class KeyboardMixin:
 
     def on_press(self, key):
         try:
-            print('alphanumeric key {0} pressed'.format(
-                key.char))
+            common = ('alphanumeric key  {0} pressed'.format(key.char))
         except AttributeError:
-            print('stop demo'.format(
-                key))
-            self.STOP_DEMO = True  # 遇到特殊按钮，则停止demo演示
+            if key == Key.space:
+                print('stop demo'.format(
+                    key))
+                print('stop')
+                self.STOP_DEMO = True  # 遇到特殊按钮，则停止demo演示
 
     def keyboard_listener(self):
         with keyboard.Listener(
