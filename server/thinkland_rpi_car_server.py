@@ -7,6 +7,7 @@ import time
 import RPi.GPIO as GPIO
 import random
 import zerorpc
+import gevent
 
 __authors__ = 'xiao long & xu lao shi'
 __version__ = 'version 0.01'
@@ -186,7 +187,8 @@ class Car:
         self.__pwm_left_speed.ChangeDutyCycle(speed_left)
         self.__pwm_right_speed.ChangeDutyCycle(speed_right)
         if duration > 0.0:
-            time.sleep(duration)
+            gevent.sleep(duration)
+
             self.__pwm_left_speed.ChangeDutyCycle(0)
             self.__pwm_right_speed.ChangeDutyCycle(0)
 
@@ -275,7 +277,7 @@ class Car:
         """
         Stop wheel movement
         """
-        time.sleep(delay)
+        gevent.sleep(delay)
 
         self.__set_motion(GPIO.LOW, GPIO.LOW, GPIO.LOW, GPIO.LOW, 0, 0)
 
@@ -287,7 +289,6 @@ class Car:
         self.__pwm_left_speed.stop()
         self.__pwm_right_speed.stop()
         self.__pwm_servo_ultrasonic.stop()
-        GPIO.cleanup()
 
     def run_forward(self, speed=50, duration=0.0):
         """
@@ -569,7 +570,7 @@ class Car:
         for i in range(10):  # do this for multiple times just to make sure
             self.__pwm_front_servo_pos.ChangeDutyCycle(2.5 + 10 * degree / 180)
         self.__pwm_front_servo_pos.ChangeDutyCycle(0)
-        time.sleep(0.02)  # give enough time to settle
+        gevent.sleep(0.02)  # give enough time to settle
 
     def obstacle_status_from_ultrasound(self, dir='center'):
         """
@@ -619,7 +620,7 @@ class Car:
             -Low   : 无障碍
         """
         have_obstacle = GPIO.input(Car.PIN_AVOID_LEFT_SENSOR)
-        time.sleep(delay)
+        gevent.sleep(delay)
         if have_obstacle:
             return str(Car.NO_OBSTACLE)
         else:
@@ -641,7 +642,7 @@ class Car:
             -Low   : 无障碍
         """
         have_obstacle = GPIO.input(Car.PIN_AVOID_RIGHT_SENSOR)
-        time.sleep(delay)
+        gevent.sleep(delay)
 
         if have_obstacle:
             return str(Car.NO_OBSTACLE)
@@ -662,10 +663,10 @@ class Car:
         """
         for i in range(Car.SERVO_TOTAL_STEP):
             self.__pwm_front_servo_pos.ChangeDutyCycle(2.5 + 10 * pos / 180)
-            time.sleep(0.02)
+            gevent.sleep(0.02)
 
         self.__pwm_front_servo_pos.ChangeDutyCycle(0)
-        time.sleep(0.02)
+        gevent.sleep(0.02)
 
     def servo_camera_rotate(self, degree):
         """调整控制相机的舵机进行旋转
@@ -682,10 +683,10 @@ class Car:
         """
         for i in range(Car.SERVO_TOTAL_STEP):
             self.__pwm_left_right_servo_pos.ChangeDutyCycle(2.5 + 10 * degree / 180)
-            time.sleep(0.02)
+            gevent.sleep(0.02)
 
         self.__pwm_left_right_servo_pos.ChangeDutyCycle(0)
-        time.sleep(0.02)
+        gevent.sleep(0.02)
 
     def servo_camera_rise_fall(self, pos):
         """舵机让相机上升和下降
@@ -702,10 +703,10 @@ class Car:
         """
         for i in range(Car.SERVO_TOTAL_STEP):
             self.__pwm_up_down_servo_pos.ChangeDutyCycle(2.5 + 10 * pos / 180)
-            time.sleep(0.02)
+            gevent.sleep(0.02)
 
         self.__pwm_up_down_servo_pos.ChangeDutyCycle(0)
-        time.sleep(0.02)
+        gevent.sleep(0.02)
 
 
 def main():

@@ -27,14 +27,14 @@ class Ai:
         self.nmsThreshold = 0.6  # Non-maximum suppression threshold
         self.inpWidth = 188  # Width of network's input image
         self.inpHeight = 188  # Height of n
-        self.classesFile = classes;
+        self.classesFile = classes
         self.classes = None
 
         with open(self.classesFile, 'rt') as f:
             self.classes = f.read().rstrip('\n').split('\n')
 
-        self.modelConfiguration = config;
-        self.modelWeights = weight;
+        self.modelConfiguration = config
+        self.modelWeights = weight
 
         self.net = cv.dnn.readNetFromDarknet(self.modelConfiguration, self.modelWeights)
         self.net.setPreferableBackend(cv.dnn.DNN_BACKEND_OPENCV)
@@ -57,19 +57,22 @@ class Ai:
         ________
         """
         # Draw a bounding box.
-        cv.rectangle(frame, (left, top), (right, bottom), (0, 0, 255))
+        try:
+            cv.rectangle(frame, (left, top), (right, bottom), (0, 0, 255))
 
-        label = '%.2f' % conf
+            label = '%.2f' % conf
 
-        # Get the label for the class name and its confidence
-        if self.classes:
-            assert (classId < len(self.classes))
-            label = '%s:%s' % (self.classes[classId], label)
+            # Get the label for the class name and its confidence
+            if self.classes:
+                assert (classId < len(self.classes))
+                label = '%s:%s' % (self.classes[classId], label)
 
-        # Display the label at the top of the bounding box
-        labelSize, baseLine = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-        top = max(top, labelSize[1])
-        cv.putText(frame, label, (left, top), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
+            # Display the label at the top of the bounding box
+            labelSize, baseLine = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+            top = max(top, labelSize[1])
+            cv.putText(frame, label, (left, top), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
+        except:
+            print(left, top, right, bottom)
 
     def postprocess(self,frame):
         """
@@ -108,17 +111,21 @@ class Ai:
         # lower confidences.
         retbox = []
         retIds = []
-        indices = cv.dnn.NMSBoxes(boxes, confidences, self.confThreshold, self.nmsThreshold)
-        for i in indices:
-            i = i[0]
-            box = boxes[i]
-            left = box[0]
-            top = box[1]
-            width = box[2]
-            height = box[3]
-            self.drawPred(frame,classIds[i], confidences[i], left, top, left + width, top + height)
-            retbox.append([(left+width/2),(top+height/2)])
-            retIds.append(self.classes[classIds[i]])
+        try:
+            indices = cv.dnn.NMSBoxes(boxes, confidences, self.confThreshold, self.nmsThreshold)
+            for i in indices:
+                i = i[0]
+                box = boxes[i]
+                left = box[0]
+                top = box[1]
+                width = box[2]
+                height = box[3]
+                self.drawPred(frame,classIds[i], confidences[i], left, top, left + width, top + height)
+                retbox.append([(left+width/2),(top+height/2)])
+                retIds.append(self.classes[classIds[i]])
+        except:
+            pass
+
         return retbox,retIds
 
     def read_image(self , path):
