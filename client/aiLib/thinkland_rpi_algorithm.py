@@ -8,6 +8,9 @@ class Algrithm():
         print("init")
         self.__DEBUG = False
 
+    def set_debug(self):
+        self.__DEBUG = True
+
     def switch_debug(self , status = True):
         self.__DEBUG = True
 
@@ -90,12 +93,10 @@ class Algrithm():
 #测试
 """
 if __name__ == "__main__":
-    mat  = cv.imread('D://22.jpg')
-    gray = cv.cvtColor(mat, cv.COLOR_RGB2GRAY)
-    binary = cv.adaptiveThreshold(gray, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 25, 10)
-    cv.imwrite('D:/222.jpg',binary)
-    cv.imshow('binary',binary)
-    cv.waitKey(0)
+    mat  = cv.imread('./line/line.jpg')
+    ob   = Algrithm()
+    ob.set_debug()
+    ob.line(mat)
     # test = Figure()
     # while True:
     #     test.train() #训练

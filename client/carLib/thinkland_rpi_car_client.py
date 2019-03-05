@@ -12,7 +12,7 @@ import threading
 import platform
 
 
-__authors__ = 'xiao long & xu lao shi & gao qiang'
+__authors__ = 'xiao long & xu lao shi'
 __version__ = 'version 0.02'
 __license__ = 'Copyright...'
 
@@ -121,11 +121,13 @@ class DemoMixin:
     def demo_led_switch(self):
         """控制灯demo
         """
-        self.turn_on_led(Car.LED_B)
-        time.sleep(2)
-        self.turn_on_led(Car.LED_G)
-        time.sleep(2)
-        self.turn_on_led(Car.LED_R)
+        while True:
+            self.turn_on_led(Car.LED_B)
+            print(self.STOP_DEMO)
+            if self.STOP_DEMO:
+                self.STOP_DEMO = False
+                return
+
 
     def demo_car_moving(self):
         """小车的移动demo
@@ -199,6 +201,7 @@ class DemoMixin:
             demo_index = int(input("请选择演示demo（0：灯光、1：运动、2：传感器、3：漫游、4:巡线）："))
             if demo_index == 0:
                 self.demo_led_switch()  # 灯光操作例子
+                print('test led over')
             elif demo_index == 1:
                 self.demo_car_moving()  # 小车运动操作例子
             elif demo_index == 2:
@@ -321,9 +324,7 @@ class Car(KeyboardMixin, DemoMixin):
         -------
         * None
         """
-        self.led_status = True
-        while self.led_status:
-            self.rpc.turn_on_led(led)
+        self.rpc.turn_on_led(led)
 
     def turn_off_led(self, led):
         """关闭LED灯

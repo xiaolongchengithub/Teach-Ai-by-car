@@ -1,8 +1,6 @@
 import pyttsx3
-import pyaudio
 import time
 import threading
-import wave
 
 """
 实现功能把文本转换为语音的功能，现在只能在windows上调用

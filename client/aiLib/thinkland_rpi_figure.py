@@ -271,7 +271,7 @@ class Figure():
         test = Figure()
         # test.train()
         test.load_model("model/model.ckpt")
-        img = test.read_image("./6.jpg")
+        img = test.read_image("./2.jpg")
         # img.show()
         num = test.find_figure(img)
         print(num)

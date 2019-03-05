@@ -25,7 +25,10 @@ def demo_ai_camera(ip):
         pic = camera.take_picture()
         ret, names, box = ai.find_object(pic)
         cv2.imshow("ai", ret)
-        cv2.waitKey(1)
+        k = cv2.waitKey(1)
+        if k == 27:  # wait for ESC key to exit
+            cv2.destroyAllWindows()
+            break
 
 def demo_ai_camera_speaker(ip):
     """
@@ -68,7 +71,8 @@ def main():
     """
     例子
     """
-    demo_ai_camera("172.16.10.227")
+    str = input('输入树莓派的IP:')
+    demo_ai_camera(str)
 
 if __name__ == "__main__":
     main()

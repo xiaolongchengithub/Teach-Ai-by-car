@@ -6,6 +6,37 @@ import time
 import threading
 from aiLib.thinkland_rpi_algorithm import Algrithm
 
+from pynput import keyboard
+from pynput.keyboard import Key
+import threading
+"""
+停止按钮
+"""
+STOP_FLAGE = False  # 遇到特殊按钮，则停止demo演示
+
+
+def on_press(key):
+    global STOP_FLAGE
+    try:
+        common = ('alphanumeric key  {0} pressed'.format(key.char))
+    except AttributeError:
+        if key == Key.space:
+            print('stop demo'.format(
+                key))
+            print('stop')
+            STOP_FLAGE = True  # 遇到特殊按钮，则停止demo演示
+
+
+
+def listenser():
+    with keyboard.Listener(
+            on_press= on_press) as listener:
+        listener.join()
+
+def start_listenser_thread():
+    threadId = threading.Thread(target= listenser)
+    threadId.start()
+
 def demo_line_algrithm(ip,speed,dis):
     """
     利用图像传统知识进行巡线,对图像进行二值化，选取组最大的轮廓的中心点。图像的长640，宽480。
@@ -30,6 +61,7 @@ def demo_line_algrithm(ip,speed,dis):
     #小车初始化
     car = Car(ip)
 
+    global STOP_FLAGE
     while True:
         pic = camera.take_picture()
         pt = algithm.line(pic)
@@ -43,6 +75,8 @@ def demo_line_algrithm(ip,speed,dis):
         elif x > 380:
             print("spin right")
             car.turn_right(speed * 0.6, dis)#右转
+        if STOP_FLAGE:
+            return
 
 ######################################################################################
 
@@ -69,6 +103,7 @@ def demo_line_ai(ip, speed, dis):
     #Ai初始化，自己训练的结果
     ai = Ai(classes="./aiLib/line/line.names", config="./aiLib/line/line.cfg", weight="./aiLib/line/line.weights")
 
+    global STOP_FLAGE
     while True:
         pic = camera.take_picture()#cv2.imread("./aiLib/line/line.jpg")#
         ret,name,box = ai.find_object(pic)
@@ -76,13 +111,14 @@ def demo_line_ai(ip, speed, dis):
         cv2.waitKey(1)
         # continue
         x = 0
-        if len(name) == 0:
+        if len(name) == 0: #没有检测到线
             continue
+
         for item in name:
             if item == 'line':
                 x = box[0][0]
                 print(x, type(x))
-        print(x)
+
         if 250 < x < 380:
             car.run_forward(speed, dis) #直行
         elif x < 250:
@@ -92,11 +128,16 @@ def demo_line_ai(ip, speed, dis):
             print("spin left")
             car.turn_right(speed * 0.6, dis)#右转
 
+        if STOP_FLAGE:
+            return
+
 def main():
     """
     例子
     """
-    demo_line_algrithm("172.16.10.227",15,0.05)
+    str = input('输入树莓派的IP')
+    demo_line_algrithm(str,15,0.05)
 
 if __name__ == "__main__":
+    start_listenser_thread()
     main()
