@@ -445,7 +445,7 @@ class Car:
         t2 = time.time()
         distance = ((t2 - t1) * 340 / 2) * 100
         print(distance)
-        return str(distance)
+        return distance
 
     def line_tracking_turn_type(self, num=4):
         """
