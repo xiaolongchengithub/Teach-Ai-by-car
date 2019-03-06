@@ -7,10 +7,10 @@ import time
 import random
 import zerorpc
 from pynput import keyboard
+
 from pynput.keyboard import Key
 import threading
 import platform
-
 
 __authors__ = 'xiao long & xu lao shi'
 __version__ = 'version 0.02'
@@ -29,7 +29,7 @@ class KeyboardMixin:
         try:
             common = ('alphanumeric key  {0} pressed'.format(key.char))
         except AttributeError:
-            if key == Key.space:
+            if key == Key.shift:
                 print('stop demo'.format(
                     key))
                 print('stop')
@@ -121,13 +121,12 @@ class DemoMixin:
     def demo_led_switch(self):
         """控制灯demo
         """
-        while True:
-            self.turn_on_led(Car.LED_B)
-            print(self.STOP_DEMO)
-            if self.STOP_DEMO:
-                self.STOP_DEMO = False
-                return
 
+        self.turn_on_led(Car.LED_B)
+        time.sleep(2)
+        self.turn_on_led(Car.LED_G)
+        time.sleep(2)
+        self.turn_on_led(Car.LED_R)
 
     def demo_car_moving(self):
         """小车的移动demo
@@ -201,7 +200,6 @@ class DemoMixin:
             demo_index = int(input("请选择演示demo（0：灯光、1：运动、2：传感器、3：漫游、4:巡线）："))
             if demo_index == 0:
                 self.demo_led_switch()  # 灯光操作例子
-                print('test led over')
             elif demo_index == 1:
                 self.demo_car_moving()  # 小车运动操作例子
             elif demo_index == 2:
@@ -277,7 +275,6 @@ class Car(KeyboardMixin, DemoMixin):
         -------
         * None
         """
-
         self.rpc.turn_servo_camera_horizental(degree)
 
     def turn_servo_camera_vertical(self, degree=90):
@@ -295,22 +292,6 @@ class Car(KeyboardMixin, DemoMixin):
         """
 
         self.rpc.turn_servo_camera_vertical(degree)
-
-    def turn_servo_ultrasonic(self, degree=90):
-        """控制超声波的舵机进行水平方向旋转
-
-        Parameters
-        ----------
-        * degree：int 类型. 舵机的旋转角度
-            - degree角度范围: 0-180度，90对应舵机正中间
-            - 提示：angle设置角度太小，可能观察不到舵机移动
-
-        Returns
-        -------
-        * None
-        """
-
-        self.rpc.servo_front_rotate(degree)
 
     def turn_on_led(self, led):
         """开启LED灯
@@ -333,7 +314,6 @@ class Car(KeyboardMixin, DemoMixin):
         --------------
         * led : int
             - LED_R  LED_G  LED_B 三个可选项
-
         Returns
         -------
         * None

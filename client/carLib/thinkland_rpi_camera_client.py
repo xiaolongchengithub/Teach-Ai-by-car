@@ -188,7 +188,6 @@ class Camera(HttpMixin):
         image = camera.take_picture()
         camera.save_picture(image, './phone.jpg')  # 保存到当前目录下test.jpg文件
 
-
 def main():
     demo_index = int(input("请选择演示demo(0:显示摄像头视频，1：显示并保存一张图到本地):"))
 
@@ -197,7 +196,6 @@ def main():
         Camera.demo_play_camera_video()
     elif demo_index == 1:
         Camera.demo_take_picture()
-
 
 if __name__ == "__main__":
     main()

@@ -2,11 +2,14 @@
     小车服务端类，该类提供了供远程控制小车的所有api
     直接运行本文件就会启动rpc服务
 """
+from gevent import monkey
+monkey.patch_all()
 
 import time
 import RPi.GPIO as GPIO
 import random
 import zerorpc
+import gevent
 
 __authors__ = 'xiao long & xu lao shi'
 __version__ = 'version 0.01'
@@ -35,9 +38,9 @@ class Car:
     PIN_LED_B = 24
 
     # 伺服电机引脚定义
-    PIN_FRONT_SERVO = 23
-    PIN_UP_DOWN_SERVO = 9
-    PIN_LEFT_RIGHT_SERVO = 11
+    PIN_FRONT_SERVER = 23
+    PIN_UP_DOWN_SERVER = 9
+    PIN_LEFT_RIGHT_SERVER = 11
 
     # 避障脚定义
     PIN_AVOID_LEFT_SENSOR = 12
@@ -115,9 +118,9 @@ class Car:
         GPIO.setup(Car.PIN_LED_B, GPIO.OUT)
 
         # 舵机设置为输出模式
-        GPIO.setup(Car.PIN_FRONT_SERVO, GPIO.OUT)
-        GPIO.setup(Car.PIN_UP_DOWN_SERVO, GPIO.OUT)
-        GPIO.setup(Car.PIN_LEFT_RIGHT_SERVO, GPIO.OUT)
+        GPIO.setup(Car.PIN_FRONT_SERVER, GPIO.OUT)
+        GPIO.setup(Car.PIN_UP_DOWN_SERVER, GPIO.OUT)
+        GPIO.setup(Car.PIN_LEFT_RIGHT_SERVER, GPIO.OUT)
 
         # 避障传感器设置为输入模式
         GPIO.setup(Car.PIN_AVOID_LEFT_SENSOR, GPIO.IN)
@@ -145,9 +148,9 @@ class Car:
         self.__pwm_right_speed.start(0)
 
         # 设置舵机的频率和起始占空比
-        self.__pwm_front_servo_pos = GPIO.PWM(Car.PIN_FRONT_SERVO, 50)
-        self.__pwm_up_down_servo_pos = GPIO.PWM(Car.PIN_UP_DOWN_SERVO, 50)
-        self.__pwm_left_right_servo_pos = GPIO.PWM(Car.PIN_LEFT_RIGHT_SERVO, 50)
+        self.__pwm_front_servo_pos = GPIO.PWM(Car.PIN_FRONT_SERVER, 50)
+        self.__pwm_up_down_servo_pos = GPIO.PWM(Car.PIN_UP_DOWN_SERVER, 50)
+        self.__pwm_left_right_servo_pos = GPIO.PWM(Car.PIN_LEFT_RIGHT_SERVER, 50)
 
         self.__pwm_front_servo_pos.start(0)
         self.__pwm_up_down_servo_pos.start(0)
@@ -183,7 +186,7 @@ class Car:
         self.__pwm_left_speed.ChangeDutyCycle(speed_left)
         self.__pwm_right_speed.ChangeDutyCycle(speed_right)
         if duration > 0.0:
-            time.sleep(duration)
+            gevent.sleep(duration)
             self.__pwm_left_speed.ChangeDutyCycle(0)
             self.__pwm_right_speed.ChangeDutyCycle(0)
 
@@ -554,16 +557,16 @@ class Car:
             print('center')
             degree = 90
         elif dir == 'right':
-            degree = 0
+            degree = 20
         elif dir == 'left':
-            degree = 180
+            degree = 160
 
         for i in range(Car.SERVO_TOTAL_STEP):
             self.__pwm_front_servo_pos.ChangeDutyCycle(2.5 + 10 * degree / 180)
-            time.sleep(0.02)
+            gevent.sleep(0.02)
 
         self.__pwm_front_servo_pos.ChangeDutyCycle(0)
-        time.sleep(0.02)
+        gevent.sleep(0.02)
 
 
     def obstacle_status_from_ultrasound(self, dir='center'):
@@ -614,7 +617,7 @@ class Car:
             -Low   : 无障碍
         """
         have_obstacle = GPIO.input(Car.PIN_AVOID_LEFT_SENSOR)
-        time.sleep(delay)
+        gevent.sleep(delay)
         if have_obstacle:
             return str(Car.NO_OBSTACLE)
         else:
@@ -636,7 +639,7 @@ class Car:
             -Low   : 无障碍
         """
         have_obstacle = GPIO.input(Car.PIN_AVOID_RIGHT_SENSOR)
-        time.sleep(delay)
+        gevent.sleep(delay)
 
         if have_obstacle:
             return str(Car.NO_OBSTACLE)
@@ -657,11 +660,11 @@ class Car:
         """
         for i in range(Car.SERVO_TOTAL_STEP):
             self.__pwm_front_servo_pos.ChangeDutyCycle(2.5 + 10 * pos / 180)
-            time.sleep(0.02)
+            gevent.sleep(0.02)
 
         self.__pwm_front_servo_pos.ChangeDutyCycle(0)
-        time.sleep(0.02)
-
+        gevent.sleep(0.02)
+      
     def turn_servo_camera_horizental(self, degree):
         """调整控制相机的舵机进行旋转
         原理：舵机：SG90 脉冲周期为20ms,脉宽0.5ms-2.5ms对应的角度-90到+90，对应的占空比为2.5%-12.5%
@@ -677,10 +680,10 @@ class Car:
         """
         for i in range(Car.SERVO_TOTAL_STEP):
             self.__pwm_left_right_servo_pos.ChangeDutyCycle(2.5 + 10 * degree / 180)
-            time.sleep(0.02)
+            gevent.sleep(0.02)
 
         self.__pwm_left_right_servo_pos.ChangeDutyCycle(0)
-        time.sleep(0.02)
+        gevent.sleep(0.02)
 
     def turn_servo_camera_vertical(self, pos):
         """舵机让相机上升和下降
@@ -697,7 +700,7 @@ class Car:
         """
         for i in range(Car.SERVO_TOTAL_STEP):
             self.__pwm_up_down_servo_pos.ChangeDutyCycle(2.5 + 10 * pos / 180)
-            time.sleep(0.02)
+            gevent.sleep(0.02)
 
         self.__pwm_up_down_servo_pos.ChangeDutyCycle(0)
 
@@ -746,7 +749,7 @@ class Car:
         """
         Demonstrates the line tracking mode using the line tracking sensor
         """
-        time.sleep(2)
+        gevent.sleep(2)
         car = Car()
 
         try:
@@ -785,7 +788,6 @@ def main():
     rpc_car_server = zerorpc.Server(Car())
     rpc_car_server.bind("tcp://0.0.0.0:12347")
     rpc_car_server.run()
-
 
 if __name__ == "__main__":
     main()
