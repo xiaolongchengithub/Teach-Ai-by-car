@@ -101,7 +101,7 @@ def demo_line_ai(ip, speed, dis):
     #车初始化
     car = Car(ip)
     #Ai初始化，自己训练的结果
-    ai = Ai(classes="./aiLib/line/line.names", config="./aiLib/line/line.cfg", weight="./aiLib/line/line.weights")
+    ai = Ai()
 
     global STOP_FLAGE
     while True:

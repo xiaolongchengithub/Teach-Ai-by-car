@@ -35,9 +35,9 @@ class Car:
     PIN_LED_B = 24
 
     # 伺服电机引脚定义
-    PIN_FRONT_SERVER = 23
-    PIN_UP_DOWN_SERVER = 11
-    PIN_LEFT_RIGHT_SERVER = 9
+    PIN_FRONT_SERVO = 23
+    PIN_UP_DOWN_SERVO = 9
+    PIN_LEFT_RIGHT_SERVO = 11
 
     # 避障脚定义
     PIN_AVOID_LEFT_SENSOR = 12
@@ -115,9 +115,9 @@ class Car:
         GPIO.setup(Car.PIN_LED_B, GPIO.OUT)
 
         # 舵机设置为输出模式
-        GPIO.setup(Car.PIN_FRONT_SERVER, GPIO.OUT)
-        GPIO.setup(Car.PIN_UP_DOWN_SERVER, GPIO.OUT)
-        GPIO.setup(Car.PIN_LEFT_RIGHT_SERVER, GPIO.OUT)
+        GPIO.setup(Car.PIN_FRONT_SERVO, GPIO.OUT)
+        GPIO.setup(Car.PIN_UP_DOWN_SERVO, GPIO.OUT)
+        GPIO.setup(Car.PIN_LEFT_RIGHT_SERVO, GPIO.OUT)
 
         # 避障传感器设置为输入模式
         GPIO.setup(Car.PIN_AVOID_LEFT_SENSOR, GPIO.IN)
@@ -145,9 +145,9 @@ class Car:
         self.__pwm_right_speed.start(0)
 
         # 设置舵机的频率和起始占空比
-        self.__pwm_front_servo_pos = GPIO.PWM(Car.PIN_FRONT_SERVER, 50)
-        self.__pwm_up_down_servo_pos = GPIO.PWM(Car.PIN_UP_DOWN_SERVER, 50)
-        self.__pwm_left_right_servo_pos = GPIO.PWM(Car.PIN_LEFT_RIGHT_SERVER, 50)
+        self.__pwm_front_servo_pos = GPIO.PWM(Car.PIN_FRONT_SERVO, 50)
+        self.__pwm_up_down_servo_pos = GPIO.PWM(Car.PIN_UP_DOWN_SERVO, 50)
+        self.__pwm_left_right_servo_pos = GPIO.PWM(Car.PIN_LEFT_RIGHT_SERVO, 50)
 
         self.__pwm_front_servo_pos.start(0)
         self.__pwm_up_down_servo_pos.start(0)
@@ -187,7 +187,7 @@ class Car:
             self.__pwm_left_speed.ChangeDutyCycle(0)
             self.__pwm_right_speed.ChangeDutyCycle(0)
 
-    def __led_light(r, g, b):
+    def __led_light(self, r, g, b):
         """
          __led_light
 
@@ -552,7 +552,7 @@ class Car:
         # 180 degrees: duty cycle = 12.5% of 20ms
         if dir == 'center':
             print('center')
-            degree = 25
+            degree = 90
         elif dir == 'right':
             degree = 0
         elif dir == 'left':
@@ -713,7 +713,7 @@ class Car:
         car = Car()
         try:
             while True:
-                obstacle_status_from_infrared = car.obstacle_status_from_infrared().decode()
+                obstacle_status_from_infrared = car.obstacle_status_from_infrared()
                 should_turn = True
                 if obstacle_status_from_infrared == 'clear':
                     should_turn = False

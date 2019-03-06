@@ -69,7 +69,7 @@ class cameraFigure():
         self.camera.connect_server(ip)
         self.camera.start_receive()
 
-        self.ai = Ai(classes="./aiLib/coco/coco.names",config ="./aiLib/coco/yolov3.cfg",weight = "./aiLib/coco/yolov3.weights")
+        self.ai = Ai()
         self.speaker = Speaker()
 
 
