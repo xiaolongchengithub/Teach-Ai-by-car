@@ -1,8 +1,6 @@
-import win32com.client
-import pyaudio
+import pyttsx3
 import time
 import threading
-import wave
 
 """
 实现功能把文本转换为语音的功能，现在只能在windows上调用
@@ -18,7 +16,7 @@ class Speaker():
         功能：初始化类型,初始化（现在的初始化只是针对windows）
         ________
         """
-        self.speaker = win32com.client.Dispatch("SAPI.SpVoice")
+        self.speaker = pyttsx3.init()
 
     def say(self , word):
         """
@@ -33,7 +31,8 @@ class Speaker():
         -------
         * None
         """
-        self.speaker.Speak(word)
+        self.speaker.say(word)
+        self.speaker.runAndWait()
 
     def demo_say():
         """
@@ -42,7 +41,8 @@ class Speaker():
         """
         test = Speaker()
         test.say("hello")
-
+        test.say("hello")
+        test.say("hello")
 
 """
 @@@@例子：

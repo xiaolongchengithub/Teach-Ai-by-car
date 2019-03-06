@@ -2,10 +2,9 @@ import socket
 import cv2
 import threading
 import struct
-import numpy
 import cv2 as cv
 import numpy as np
-
+import os
 
 class Ai:
     """
@@ -15,15 +14,28 @@ class Ai:
     *drawPred 对Rect进行绘制
     *read_image 读取图片
     *wait_key 等待
-
     """
-    def __init__(self,classes ="./coco.names",config ="./yolov3.cfg",weight = "./yolov3.weights"):
+    def __init__(self, classes=None, config=None, weights=None):
         """
-        *function:__init__
-        功能：初始化注意需要把coco.names,yolove.cfg,yolov3.weights文件拷贝到当前目录.如果没有在当前目录，需要指定路径
+        *function:__init_
+        Parameters
+        ----------
+        classes: path to the file containing classification names.
+        config: path to the file containing yolov3 configuration.
+        weights: path to the file containing yolov3 model weights
+
+        Defaults refer to coco.names, yolov3.cfg, yolov3.weights all installed in the package containing this module
+
+        功能：初始化注意需要把coco.names,yolov3.cfg,yolov3.weights文件拷贝到当前目录.如果没有在当前目录，需要指定路径
         ________
         """
-        self.confThreshold = 0.6  # Confidence threshold
+        if classes is None:
+            classes = os.path.join(os.path.dirname(__file__), "./coco.names")
+        if config is None:
+            config  = os.path.join(os.path.dirname(__file__), "./yolov3.cfg")
+        if weights is None:
+            weights  = os.path.join(os.path.dirname(__file__), "./yolov3.weights")
+        self.confThreshold = 0.1  # Confidence threshold
         self.nmsThreshold = 0.6  # Non-maximum suppression threshold
         self.inpWidth = 188  # Width of network's input image
         self.inpHeight = 188  # Height of n
@@ -262,7 +274,6 @@ class Ai:
     def demo_find_dog():
         """
         读取一张图片，并识别图片中的物体
-        :return:
         """
         test = Ai()
         # 加载图片

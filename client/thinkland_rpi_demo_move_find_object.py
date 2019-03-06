@@ -1,10 +1,11 @@
-from client.carLib.thinkland_rpi_camera_client import Camera
-from client.carLib.thinkland_rpi_car_client import Car
-from client.aiLib.thinkland_rpi_ai import  Ai
+from carLib.thinkland_rpi_camera_client import Camera
+from carLib.thinkland_rpi_car_client import Car
+from aiLib.thinkland_rpi_ai import  Ai
 import random
+import threading
 import time
 import cv2
-
+from aiLib.thinkland_rpi_speaker import Speaker
 
 from pynput import keyboard
 from pynput.keyboard import Key
@@ -21,14 +22,11 @@ def on_press(key):
     try:
         common = ('alphanumeric key  {0} pressed'.format(key.char))
     except AttributeError:
-        print("key", key)
-        if key == Key.caps_lock:
+        if key == Key.space:
             print('stop demo'.format(
                 key))
             print('stop')
             STOP_FLAGE = True  # 遇到特殊按钮，则停止demo演示
-
-
 
 def listenser():
     with keyboard.Listener(
@@ -50,8 +48,7 @@ def Cruising(car,speed=4):
     """
     global CRUSING_FLOG
     global STOP_FLAGE
-    h_angle = [30,45,60,75,90,105,115,135]  #角度越多越平滑
-    i = 0
+
     try:
         while True:
             if STOP_FLAGE == True:
@@ -60,14 +57,10 @@ def Cruising(car,speed=4):
                 break
 
             if CRUSING_FLOG == False:
-
                 car.stop_all_wheels()
                 print('Cruising over .............................................')
                 break
-            car.turn_servo_camera_horizental(h_angle[i])
-            i += 1
-            if i == 8:
-                i = 0
+
             obstacle_status_from_infrared = car.obstacle_status_from_infrared()
             should_turn = True
             print(obstacle_status_from_infrared)
@@ -84,73 +77,41 @@ def Cruising(car,speed=4):
             if should_turn:
                 car.run_reverse(speed,duration=0.1)
                 if obstacle_status_from_infrared == 'only_right_blocked':
-                    car.spin_left(2*speed,duration=random.uniform(0.25, 1.5))
+                    car.spin_left(2*speed,duration=random.uniform(0.25, 1.0))
                 elif obstacle_status_from_infrared == 'only_left_blocked':
-                    car.spin_right(2*speed,duration=random.uniform(0.25, 1.5))
+                    car.spin_right(2*speed,duration=random.uniform(0.25, 1.0))
                 else:
-                    car.spin_right(2*speed,duration=random.uniform(0.25, 1.5))
+                    car.spin_right(2*speed,duration=random.uniform(0.25, 1.0))
     except KeyboardInterrupt:
          print('KeyboardInterrupt')
          car.stop_all_wheels()
 
-def find_object(camera,ai,object):
+def find_object(ip,camera,ai,object):
     global CRUSING_FLOG
     global STOP_FLAGE
-    times = 0
-    while True:
-        pic = camera.take_picture()
-        ret, names, _ = ai.find_object(pic)
-
-        if STOP_FLAGE == True:
-            print('find object over .............................................')
-            break
-
-        print(names)
-        if 'cup' in names:
-            # times += 1
-            # if times > 1:
-            #     times = 0
-            CRUSING_FLOG = False
-        # for item in names:
-        #     if item == object:
-        #         times = 1 + times
-        #         if times > 2:#防止错误检查
-        #             times = 0
-        #             CRUSING_FLOG = False
-
-
-def demo_move_find_object(ip,object,vAngle =30,hAngle = 90):
-    """
-    连续移动寻找物体
-
-     Parameter
-     -------
-     *ip:string
-         -树莓派的Ip
-     *object:string
-         -要寻找的物体
-     *vAngle:int
-         -垂直方向的角度
-     *hAngle:int
-         -水平方向的角度
-    """
     car = Car(ip)
+    car.turn_servo_camera_vertical(30)
+    angle = [40,70,100,130,160]
 
-    camera = Camera()
-    camera.connect_server(ip)
-    camera.start_receive()
-    camera.thread_play()
+    while True:
+        for ita in angle:
+            car.turn_servo_camera_horizental(ita)
+            time.sleep(0.2)
+            pic = camera.take_picture()
+            cv2.imshow('pic',pic)
+            cv2.waitKey(1)
+            ret, names, _ = ai.find_object(pic)
 
-    ai = Ai(classes="./aiLib/coco/coco.names", config="./aiLib/coco/yolov3.cfg",
-                 weight="./aiLib/coco/yolov3.weights")
+            if STOP_FLAGE == True:
+                print('find object over .............................................')
+                return
 
-    car.turn_servo_camera_vertical(vAngle)
-    car.turn_servo_camera_horizental(hAngle)
+            print(names)
+            for item in names:
+                if item == object:
+                    CRUSING_FLOG = False
+                    return
 
-    mainThread_ = threading.Thread(target=find_object,args=(camera,ai,object,))
-    mainThread_.start()
-
-    Cruising(car,6)  #以4的速度进行漫游
 
 def demo_step_find_object(ip,speed=20,dis = 1,object='cup',vAngle =30,hAngle = 90):
     """
@@ -179,8 +140,8 @@ def demo_step_find_object(ip,speed=20,dis = 1,object='cup',vAngle =30,hAngle = 9
     camera.start_receive()
     camera.thread_play()
 
-    ai = Ai(classes="./aiLib/coco/coco.names", config="./aiLib/coco/yolov3.cfg",
-                 weight="./aiLib/coco/yolov3.weights")
+
+    ai = Ai()
 
     car.turn_servo_camera_vertical(vAngle)
     car.turn_servo_camera_horizental(hAngle)
@@ -226,8 +187,7 @@ def demo_move_step_find_object(ip,speed=20,dis = 1,object='cup',vAngle =40,hAngl
     camera.start_receive()
     camera.thread_play()
 
-    ai = Ai(classes="./aiLib/coco/coco.names", config="./aiLib/coco/yolov3.cfg",
-                 weight="./aiLib/coco/yolov3.weights")
+    ai = Ai()
 
     car.turn_servo_camera_vertical(vAngle)
     car.turn_servo_camera_horizental(hAngle)
@@ -259,8 +219,6 @@ def demo_move_step_find_object(ip,speed=20,dis = 1,object='cup',vAngle =40,hAngl
             car.spin_left(10,0.4)
         if status == 'status_stop':
             return
-
-
 
 def get_status_with_camera(car,camera,ai,object):
     """
@@ -308,38 +266,38 @@ def get_status_with_camera(car,camera,ai,object):
                         else:
                             return 'status_turn_left'
     return 'status_move'
+def check_object(car,camera,ai,object):
+    print('find')
+    for item in range(20):
+        car.spin_right(4,0.4)
+        time.sleep(0.5)
+        pic = camera.take_picture()
+        ret, names, box = ai.find_object(pic)
+        for item in names:
+            if item == object:
+                return True
+    return False
 
-def move_step_find_object1_thread(ip,camera,ai,object,vAngle,hAngle):
+
+def move_step_find_object_thread(ip,camera,ai,object,vAngle,hAngle):
     car = Car(ip)
     car.turn_servo_camera_vertical(vAngle)
     car.turn_servo_camera_horizental(hAngle)
-
-    # Cruising(car, 7)  # 以4的速度进行漫游
-    #
-    # car.turn_servo_camera_vertical(vAngle)
-    # car.turn_servo_camera_horizental(hAngle)
-    # global CRUSING_FLOG
-    # CRUSING_FLOG = True
-
-
-    global CRUSING_FLOG
-    CRUSING_FLOG = True
-    while CRUSING_FLOG:
-        Cruising(car, 7)                    # 以7的速度进行漫游
-        CRUSING_FLOG = True                 # 重置cup检测标志，为了进一步精确定位
-        start_time = time.time()
-        while CRUSING_FLOG:
-            car.turn_left(1, 0)             # 转动小车寻找cup
-            end_time = time.time()
-            if start_time - end_time > 15:  # 如果超过15秒没有发现cup，则继续巡游
-                break
-
-
-
-    car.turn_servo_camera_vertical(vAngle)
-    car.turn_servo_camera_horizental(hAngle)
-
     global STOP_FLAGE
+
+    while True:
+        Cruising(car, 2)  # 以4的速度进行漫游
+        if STOP_FLAGE == True:
+            car.stop_all_wheels()
+            print('find over .............................................')
+        car.turn_servo_camera_vertical(vAngle)
+        car.turn_servo_camera_horizental(hAngle)
+        ret = check_object(car,camera,ai,object)
+        if ret:
+            break
+        mainThread_ = threading.Thread(target=find_object, args=(ip, camera, ai, object,))
+        mainThread_.start()
+
     while True:
         if STOP_FLAGE == True:
             car.stop_all_wheels()
@@ -379,14 +337,16 @@ def move_step_find_object1_thread(ip,camera,ai,object,vAngle,hAngle):
         if x1 < 200:
             print('turn left')
             car.turn_left(4, 0.1)
-        distance_to_obstacle = car.distance_from_obstacle()
-        print("distance_to_obstacle",distance_to_obstacle)
-        if 200 < x1 < 360 :
+
+        if 200 < x1 < 360:
             car.run_forward(4, 0.2)
-            if  0< distance_to_obstacle < 20:
-                print("find cup")
+            if y1 > 400:
                 return
-def demo_move_step_find_object1(ip,speed=20,dis = 1,object='cup',vAngle =40,hAngle = 80):
+        dis =  float(car.distance_from_obstacle())
+        if 0 < dis < 20:
+            return
+
+def demo_move_step_find_object1(ip,speed=20,dis = 1,object='cup',vAngle =45,hAngle = 80):
     """
     连续移动寻找物体
 
@@ -401,27 +361,24 @@ def demo_move_step_find_object1(ip,speed=20,dis = 1,object='cup',vAngle =40,hAng
      *hAngle:int
          -水平方向的角度
     """
-    # car = Car(ip)
+    car = Car(ip)
 
     camera = Camera()
     camera.connect_server(ip)
     camera.start_receive()
 
+    ai = Ai()
 
-    ai = Ai(classes="./aiLib/coco/coco.names", config="./aiLib/coco/yolov3.cfg",
-                 weight="./aiLib/coco/yolov3.weights")
-
-    mainThread_ = threading.Thread(target=find_object,args=(camera,ai,object,))
+    mainThread_ = threading.Thread(target=find_object,args=(ip,camera,ai,object,))
     mainThread_.start()
 
-    moveThread_ = threading.Thread(target=move_step_find_object1_thread,args=(ip, camera, ai, object, vAngle, hAngle,))
+    moveThread_ = threading.Thread(target=move_step_find_object_thread,args=(ip, camera, ai, object, vAngle, hAngle,))
     moveThread_.start()
 
     camera.play()
 
 
-
 if __name__ == "__main__":
     start_listenser_thread()
-    ip = input('输入树莓派的IP:')
-    demo_move_step_find_object1(ip)
+    str = input('输入树莓派的IP:')
+    demo_move_step_find_object1(str) #

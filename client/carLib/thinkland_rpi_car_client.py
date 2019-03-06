@@ -7,7 +7,10 @@ import time
 import random
 import zerorpc
 from pynput import keyboard
+
+from pynput.keyboard import Key
 import threading
+import platform
 
 __authors__ = 'xiao long & xu lao shi'
 __version__ = 'version 0.02'
@@ -24,12 +27,13 @@ class KeyboardMixin:
 
     def on_press(self, key):
         try:
-            print('alphanumeric key {0} pressed'.format(
-                key.char))
+            common = ('alphanumeric key  {0} pressed'.format(key.char))
         except AttributeError:
-            print('stop demo'.format(
-                key))
-            self.STOP_DEMO = True  # 遇到特殊按钮，则停止demo演示
+            if key == Key.shift:
+                print('stop demo'.format(
+                    key))
+                print('stop')
+                self.STOP_DEMO = True  # 遇到特殊按钮，则停止demo演示
 
     def keyboard_listener(self):
         with keyboard.Listener(
@@ -117,6 +121,7 @@ class DemoMixin:
     def demo_led_switch(self):
         """控制灯demo
         """
+
         self.turn_on_led(Car.LED_B)
         time.sleep(2)
         self.turn_on_led(Car.LED_G)
@@ -270,8 +275,7 @@ class Car(KeyboardMixin, DemoMixin):
         -------
         * None
         """
-
-        self.rpc.servo_camera_rotate(degree)
+        self.rpc.turn_servo_camera_horizental(degree)
 
     def turn_servo_camera_vertical(self, degree=90):
         """控制摄像头舵机进行垂直方向旋转
@@ -287,23 +291,7 @@ class Car(KeyboardMixin, DemoMixin):
         * None
         """
 
-        self.rpc.servo_camera_rise_fall(degree)
-
-    # def turn_servo_ultrasonic(self, degree=90):
-    #     """控制超声波的舵机进行水平方向旋转
-    #
-    #     Parameters
-    #     ----------
-    #     * degree：int 类型. 舵机的旋转角度
-    #         - degree角度范围: 0-180度，90对应舵机正中间
-    #         - 提示：angle设置角度太小，可能观察不到舵机移动
-    #
-    #     Returns
-    #     -------
-    #     * None
-    #     """
-    #
-    #     self.rpc.servo_front_rotate(degree)
+        self.rpc.turn_servo_camera_vertical(degree)
 
     def turn_on_led(self, led):
         """开启LED灯
@@ -317,9 +305,7 @@ class Car(KeyboardMixin, DemoMixin):
         -------
         * None
         """
-        self.led_status = True
-        while self.led_status:
-            self.rpc.turn_on_led(led)
+        self.rpc.turn_on_led(led)
 
     def turn_off_led(self, led):
         """关闭LED灯
@@ -328,7 +314,6 @@ class Car(KeyboardMixin, DemoMixin):
         --------------
         * led : int
             - LED_R  LED_G  LED_B 三个可选项
-
         Returns
         -------
         * None
@@ -342,7 +327,7 @@ class Car(KeyboardMixin, DemoMixin):
         self.turn_off_led(Car.LED_G)
         self.turn_off_led(Car.LED_B)
 
-    def stop_all_wheels(self, delay=0):
+    def stop_all_wheels(self):
         """停止小车移动
 
         Parameters
@@ -355,7 +340,7 @@ class Car(KeyboardMixin, DemoMixin):
         * None
         """
 
-        self.rpc.stop_all_wheels(delay)
+        self.rpc.stop_all_wheels()
 
     def stop_completely(self):
         """完全停止小车
