@@ -2,6 +2,8 @@
     小车服务端类，该类提供了供远程控制小车的所有api
     直接运行本文件就会启动rpc服务
 """
+from gevent import monkey
+monkey.patch_all()
 
 import time
 import RPi.GPIO as GPIO
