@@ -37,8 +37,8 @@ class Car:
 
     # 伺服电机引脚定义
     PIN_FRONT_SERVER = 23
-    PIN_UP_DOWN_SERVER = 11
-    PIN_LEFT_RIGHT_SERVER = 9
+    PIN_UP_DOWN_SERVER = 9
+    PIN_LEFT_RIGHT_SERVER = 11
 
     # 避障脚定义
     PIN_AVOID_LEFT_SENSOR = 12
@@ -84,10 +84,7 @@ class Car:
         self.__init_pwm()  # 初始化 pwm
 
         Car.Car_Init = True
-        self.LED_FLAG = {}
-        self.LED_FLAG[Car.LED_R] = True
-        self.LED_FLAG[Car.LED_G] = True
-        self.LED_FLAG[Car.LED_B] = True
+
 
     def __init_level(self):
         """初始化小车各部分引脚电平
@@ -188,12 +185,10 @@ class Car:
         self.__pwm_right_speed.ChangeDutyCycle(speed_right)
         if duration > 0.0:
             gevent.sleep(duration)
-
             self.__pwm_left_speed.ChangeDutyCycle(0)
             self.__pwm_right_speed.ChangeDutyCycle(0)
 
-    @staticmethod
-    def __led_light(r, g, b):
+    def __led_light(self, r, g, b):
         """
          __led_light
 
@@ -247,15 +242,12 @@ class Car:
              - LED_R  LED_G  LED_B三个选一个
          """
         print('open led')
-        self.LED_FLAG[led] = True
-        while self.LED_FLAG[led]:
-            if led == Car.LED_R:
-                GPIO.output(Car.PIN_LED_R, Car.OPEN)
-            elif led == Car.LED_G:
-                GPIO.output(Car.PIN_LED_G, Car.OPEN)
-            else:
-                GPIO.output(Car.PIN_LED_B, Car.OPEN)
-
+        if led == Car.LED_R:
+            GPIO.output(Car.PIN_LED_R, Car.OPEN)
+        elif led == Car.LED_G:
+            GPIO.output(Car.PIN_LED_G, Car.OPEN)
+        else:
+            GPIO.output(Car.PIN_LED_B, Car.OPEN)
 
     def turn_off_led(self, led):
         """关闭LED灯光
@@ -265,7 +257,6 @@ class Car:
          * led : int
              - LED_R  LED_G  LED_B三个选一个
          """
-        self.LED_FLAG[led] = False
         if led == Car.LED_R:
             GPIO.output(Car.PIN_LED_R, Car.CLOSE)
         elif led == Car.LED_G:
@@ -273,11 +264,11 @@ class Car:
         else:
             GPIO.output(Car.PIN_LED_B, Car.CLOSE)
 
-    def stop_all_wheels(self, delay=0):
+    def stop_all_wheels(self):
         """
         Stop wheel movement
         """
-        gevent.sleep(delay)
+
 
         self.__set_motion(GPIO.LOW, GPIO.LOW, GPIO.LOW, GPIO.LOW, 0, 0)
 
@@ -288,7 +279,7 @@ class Car:
 
         self.__pwm_left_speed.stop()
         self.__pwm_right_speed.stop()
-        self.__pwm_servo_ultrasonic.stop()
+
 
     def run_forward(self, speed=50, duration=0.0):
         """
@@ -322,6 +313,8 @@ class Car:
         """
         self.__set_motion(GPIO.LOW, GPIO.HIGH, GPIO.LOW, GPIO.HIGH,
                           speed, speed, duration)
+
+
 
     def turn_left(self, speed=10, duration=0.0):
         """
@@ -561,16 +554,20 @@ class Car:
         # 90 degrees:  duty cycle =  7.5% of 20ms
         # 180 degrees: duty cycle = 12.5% of 20ms
         if dir == 'center':
+            print('center')
             degree = 90
         elif dir == 'right':
-            degree = 0
+            degree = 20
         elif dir == 'left':
-            degree = 180
+            degree = 160
 
-        for i in range(10):  # do this for multiple times just to make sure
+        for i in range(Car.SERVO_TOTAL_STEP):
             self.__pwm_front_servo_pos.ChangeDutyCycle(2.5 + 10 * degree / 180)
+            gevent.sleep(0.02)
+
         self.__pwm_front_servo_pos.ChangeDutyCycle(0)
-        gevent.sleep(0.02)  # give enough time to settle
+        gevent.sleep(0.02)
+
 
     def obstacle_status_from_ultrasound(self, dir='center'):
         """
@@ -649,7 +646,7 @@ class Car:
         else:
             return str(Car.HAVE_OBSTACLE)
 
-    def servo_front_rotate(self, pos):
+    def turn_servo_front_ultrasonic(self, pos):
         """控制超声波的舵机进行旋转
         舵机：SG90 脉冲周期为20ms,脉宽0.5ms-2.5ms对应的角度-90到+90，对应的占空比为2.5%-12.5%
         Parameters
@@ -668,7 +665,7 @@ class Car:
         self.__pwm_front_servo_pos.ChangeDutyCycle(0)
         gevent.sleep(0.02)
 
-    def servo_camera_rotate(self, degree):
+    def turn_servo_camera_horizental(self, degree):
         """调整控制相机的舵机进行旋转
         原理：舵机：SG90 脉冲周期为20ms,脉宽0.5ms-2.5ms对应的角度-90到+90，对应的占空比为2.5%-12.5%
 
@@ -688,7 +685,7 @@ class Car:
         self.__pwm_left_right_servo_pos.ChangeDutyCycle(0)
         gevent.sleep(0.02)
 
-    def servo_camera_rise_fall(self, pos):
+    def turn_servo_camera_vertical(self, pos):
         """舵机让相机上升和下降
         舵机：SG90 脉冲周期为20ms,脉宽0.5ms-2.5ms对应的角度-90到+90，对应的占空比为2.5%-12.5%
 
@@ -706,14 +703,91 @@ class Car:
             gevent.sleep(0.02)
 
         self.__pwm_up_down_servo_pos.ChangeDutyCycle(0)
-        gevent.sleep(0.02)
+
+
+    @staticmethod  # 自动巡游功能
+    def demo_cruising():
+        """
+        Demonstrates a cruising car that avoids obstacles in a room
+
+        * Use infrared sensors and ultrasonic sensor to gauge obstacles
+        * Use LED lights to indicate running/turning decisions
+        """
+        car = Car()
+        try:
+            while True:
+                obstacle_status_from_infrared = car.obstacle_status_from_infrared().decode()
+                should_turn = True
+                if obstacle_status_from_infrared == 'clear':
+                    should_turn = False
+                    obstacle_status_from_ultrasound = \
+                        car.obstacle_status_from_ultrasound()
+                    if obstacle_status_from_ultrasound == 'clear':
+                        car.led_light('green')
+                        car.run_forward(speed=10)
+                    elif obstacle_status_from_ultrasound == 'approaching_obstacle':
+                        car.led_light('yellow')
+                        car.run_forward(speed=5)
+                    else:
+                        should_turn = True
+                if should_turn:
+                    car.run_reverse(duration=0.02)
+                    if obstacle_status_from_infrared == 'only_right_blocked':
+                        car.led_light('purple')
+                        car.spin_left(duration=random.uniform(0.25, 1.0))
+                    elif obstacle_status_from_infrared == 'only_left_blocked':
+                        car.led_light('cyan')
+                        car.spin_right(duration=random.uniform(0.25, 1.0))
+                    else:
+                        car.led_light('red')
+                        car.spin_right(duration=random.uniform(0.25, 1.0))
+        except KeyboardInterrupt:
+            car.stop_completely()
+
+    @staticmethod  # 自动巡线功能
+    def demo_line_tracking(speed=50):
+        """
+        Demonstrates the line tracking mode using the line tracking sensor
+        """
+        gevent.sleep(2)
+        car = Car()
+
+        try:
+            while True:
+                turn = car.line_tracking_turn_type()
+                if turn == 'straight':
+                    car.run_forward(speed=speed)
+                elif turn == 'smooth_left':
+                    car.turn_left(speed=speed * 0.75)
+                elif turn == 'smooth_right':
+                    car.turn_right(speed=speed * 0.75)
+                elif turn == 'regular_left_turn':
+                    car.spin_left(speed=speed * 0.75)
+                elif turn == 'regular_right_turn':
+                    car.spin_right(speed=speed * 0.75)
+                elif turn == 'sharp_left_turn':
+                    car.spin_left(speed=speed)
+                elif turn == 'sharp_right_turn':
+                    car.spin_right(speed=speed)
+        except KeyboardInterrupt:
+            car.stop_completely()
+
+    @staticmethod  # 输出电平，控制小车的灯的颜色
+    def demo_light():
+        """
+        控制灯
+        - one of ['red', 'green', 'blue',
+          'yellow', 'cyan', 'purple'
+          'white', 'off']
+        """
+        car = Car()
+        car.led_light('red')
 
 
 def main():
     rpc_car_server = zerorpc.Server(Car())
     rpc_car_server.bind("tcp://0.0.0.0:12347")
     rpc_car_server.run()
-
 
 if __name__ == "__main__":
     main()
