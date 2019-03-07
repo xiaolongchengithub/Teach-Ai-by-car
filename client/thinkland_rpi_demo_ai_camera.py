@@ -1,5 +1,5 @@
-from carLib.thinkland_rpi_camera_client import Camera
-from aiLib.thinkland_rpi_ai import  Ai
+from client.carLib.thinkland_rpi_camera_client import Camera
+from client.aiLib.thinkland_rpi_ai import  Ai
 import cv2
 import time
 import threading
@@ -74,5 +74,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
