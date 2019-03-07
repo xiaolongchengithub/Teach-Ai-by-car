@@ -7,7 +7,10 @@ import time
 import random
 import zerorpc
 from pynput import keyboard
+
+from pynput.keyboard import Key
 import threading
+import platform
 
 __authors__ = 'xiao long & xu lao shi'
 __version__ = 'version 0.02'
@@ -24,12 +27,13 @@ class KeyboardMixin:
 
     def on_press(self, key):
         try:
-            print('alphanumeric key {0} pressed'.format(
-                key.char))
+            common = ('alphanumeric key  {0} pressed'.format(key.char))
         except AttributeError:
-            print('stop demo'.format(
-                key))
-            self.STOP_DEMO = True  # 遇到特殊按钮，则停止demo演示
+            if key == Key.shift:
+                print('stop demo'.format(
+                    key))
+                print('stop')
+                self.STOP_DEMO = True  # 遇到特殊按钮，则停止demo演示
 
     def keyboard_listener(self):
         with keyboard.Listener(
@@ -116,6 +120,7 @@ class DemoMixin:
     def demo_led_switch(self):
         """控制灯demo
         """
+
         self.turn_on_led(Car.LED_B)
         time.sleep(2)
         self.turn_on_led(Car.LED_G)
@@ -304,7 +309,7 @@ class Car(KeyboardMixin, DemoMixin):
     #     """
     #
     #     self.rpc.servo_front_rotate(degree)
-
+    
     def turn_on_led(self, led):
         """开启LED灯
 
@@ -317,9 +322,7 @@ class Car(KeyboardMixin, DemoMixin):
         -------
         * None
         """
-        self.led_status = True
-        while self.led_status:
-            self.rpc.turn_on_led(led)
+        self.rpc.turn_on_led(led)
 
     def turn_off_led(self, led):
         """关闭LED灯
@@ -328,7 +331,6 @@ class Car(KeyboardMixin, DemoMixin):
         --------------
         * led : int
             - LED_R  LED_G  LED_B 三个可选项
-
         Returns
         -------
         * None

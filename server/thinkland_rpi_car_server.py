@@ -281,7 +281,7 @@ class Car:
 
         self.__pwm_left_speed.stop()
         self.__pwm_right_speed.stop()
-
+        GPIO.cleanup()
 
     def run_forward(self, speed=50, duration=0.0):
         """
@@ -315,8 +315,6 @@ class Car:
         """
         self.__set_motion(GPIO.LOW, GPIO.HIGH, GPIO.LOW, GPIO.HIGH,
                           speed, speed, duration)
-
-
 
     def turn_left(self, speed=10, duration=0.0):
         """
@@ -666,7 +664,7 @@ class Car:
 
         self.__pwm_front_servo_pos.ChangeDutyCycle(0)
         gevent.sleep(0.02)
-
+      
     def turn_servo_camera_horizental(self, degree):
         """调整控制相机的舵机进行旋转
         原理：舵机：SG90 脉冲周期为20ms,脉宽0.5ms-2.5ms对应的角度-90到+90，对应的占空比为2.5%-12.5%
@@ -718,7 +716,7 @@ class Car:
         car = Car()
         try:
             while True:
-                obstacle_status_from_infrared = car.obstacle_status_from_infrared().decode()
+                obstacle_status_from_infrared = car.obstacle_status_from_infrared()
                 should_turn = True
                 if obstacle_status_from_infrared == 'clear':
                     should_turn = False

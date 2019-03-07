@@ -1,0 +1,377 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module thinkland_rpi_car_client</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>thinkland_rpi_car_client</strong></big></big> (version version 0.02)</font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:c%3A%5Cpython%5Ccar%5Cclient%5Ccarlib%5Cthinkland_rpi_car_client.py">c:\python\car\client\carlib\thinkland_rpi_car_client.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="random.html">random</a><br>
+</td><td width="25%" valign=top><a href="socket.html">socket</a><br>
+</td><td width="25%" valign=top><a href="time.html">time</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="thinkland_rpi_car_client.html#Car">Car</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Car">class <strong>Car</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>*在客服端对小车的运动进行了封装&nbsp;包含一下函数：<br>
+*connect&nbsp;网络连接<br>
+*__send_order&nbsp;&nbsp;发送数据流<br>
+*servo_camera_rotate&nbsp;控制相机的舵机进行旋转<br>
+*servo_camera_rise_fall&nbsp;控制相机的舵机上升和下降<br>
+*servo_front_rotate&nbsp;&nbsp;控制超声波的舵机进行旋转<br>
+*turn_on_led&nbsp;打开灯<br>
+*turn_off_led&nbsp;关灯<br>
+*close_all_led&nbsp;关闭所有的灯<br>
+*stop_all_wheels&nbsp;停止运动<br>
+*stop_completely&nbsp;停止运动&nbsp;并关闭使能<br>
+*run_forward&nbsp;车向前进<br>
+*run_reverse&nbsp;车倒转<br>
+*turn_left&nbsp;车左转<br>
+*turn_right&nbsp;车右转<br>
+*spin_left&nbsp;车左拐弯<br>
+*spin_right&nbsp;车右拐弯<br>
+*distance_from_obstacle&nbsp;超声波测距<br>
+*check_left_obstacle_with_sensor&nbsp;左红外对管检测障碍物是否存在<br>
+*check_right_obstacle_with_sensor&nbsp;&nbsp;右红外对管检测障碍物是否存在<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Car-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="Car-check_left_obstacle_with_sensor"><strong>check_left_obstacle_with_sensor</strong></a>(self)</dt><dd><tt>function:check_left_obstacle_with_sensor<br>
+检测小车的左侧是否存在障碍物<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+*&nbsp;none<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+*&nbsp;bool<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;High&nbsp;:&nbsp;有障碍<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-Low&nbsp;&nbsp;&nbsp;:&nbsp;无障碍</tt></dd></dl>
+
+<dl><dt><a name="Car-check_right_obstacle_with_sensor"><strong>check_right_obstacle_with_sensor</strong></a>(self)</dt><dd><tt>function:check_right_obstacle_with_sensor<br>
+检测小车的右侧是否存在障碍物<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+*&nbsp;none<br>
+Returns<br>
+-------<br>
+*&nbsp;bool<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;High&nbsp;:&nbsp;有障碍<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-Low&nbsp;&nbsp;&nbsp;:&nbsp;无障碍</tt></dd></dl>
+
+<dl><dt><a name="Car-close_all_led"><strong>close_all_led</strong></a>(self)</dt><dd><tt>*function:close_led<br>
+功能：关闭所有的灯<br>
+________<br>
+Parameters<br>
+*&nbsp;Noe<br>
+————<br>
+Returns<br>
+-------<br>
+*&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="Car-connect"><strong>connect</strong></a>(self, port)</dt></dl>
+
+<dl><dt><a name="Car-distance_from_obstacle"><strong>distance_from_obstacle</strong></a>(self, val=0)</dt><dd><tt>Measure&nbsp;the&nbsp;distance&nbsp;between&nbsp;ultrasonic&nbsp;sensor&nbsp;and&nbsp;the&nbsp;obstacle<br>
+that&nbsp;it&nbsp;faces.<br>
+&nbsp;<br>
+The&nbsp;obstacle&nbsp;should&nbsp;have&nbsp;a&nbsp;relatively&nbsp;smooth&nbsp;surface&nbsp;for&nbsp;this<br>
+to&nbsp;be&nbsp;effective.&nbsp;Distance&nbsp;to&nbsp;fabric&nbsp;or&nbsp;other&nbsp;sound-absorbing<br>
+surfaces&nbsp;is&nbsp;difficult&nbsp;to&nbsp;measure.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+*&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Measured&nbsp;in&nbsp;centimeters:&nbsp;valid&nbsp;range&nbsp;is&nbsp;2cm&nbsp;to&nbsp;400cm</tt></dd></dl>
+
+<dl><dt><a name="Car-line_tracking_turn_type"><strong>line_tracking_turn_type</strong></a>(self, num=4)</dt><dd><tt>Indicates&nbsp;the&nbsp;type&nbsp;of&nbsp;turn&nbsp;required&nbsp;given&nbsp;current&nbsp;sensor&nbsp;values<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+*&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;one&nbsp;of&nbsp;['sharp_left_turn',&nbsp;'sharp_right_turn',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'regular_left_turn',&nbsp;'regular_right_turn',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'smooth_left',&nbsp;'smooth_right',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'straight',&nbsp;'no_line']</tt></dd></dl>
+
+<dl><dt><a name="Car-obstacle_status_from_infrared"><strong>obstacle_status_from_infrared</strong></a>(self, num=0)</dt><dd><tt>Return&nbsp;obstacle&nbsp;status&nbsp;obtained&nbsp;by&nbsp;infrared&nbsp;sensors&nbsp;that<br>
+are&nbsp;situated&nbsp;at&nbsp;the&nbsp;left&nbsp;front&nbsp;and&nbsp;right&nbsp;front&nbsp;of&nbsp;the&nbsp;<a href="#Car">Car</a>.<br>
+The&nbsp;infrared&nbsp;sensors&nbsp;are&nbsp;located&nbsp;on&nbsp;the&nbsp;lower&nbsp;deck,&nbsp;so&nbsp;they<br>
+have&nbsp;a&nbsp;lower&nbsp;view&nbsp;than&nbsp;the&nbsp;ultrasonic&nbsp;sensor.<br>
+&nbsp;<br>
+Indicates&nbsp;blockage&nbsp;by&nbsp;obstacle&nbsp;&lt;&nbsp;20cm&nbsp;away.<br>
+Depending&nbsp;on&nbsp;sensitivity&nbsp;of&nbsp;sensors,&nbsp;the&nbsp;distance&nbsp;of&nbsp;obstacles<br>
+sometimes&nbsp;needs&nbsp;to&nbsp;be&nbsp;as&nbsp;short&nbsp;as&nbsp;15cm&nbsp;for&nbsp;effective&nbsp;detection<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+*&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;one&nbsp;of&nbsp;['only_left_blocked',&nbsp;'only_right_blocked',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'blocked',&nbsp;'clear']</tt></dd></dl>
+
+<dl><dt><a name="Car-run_forward"><strong>run_forward</strong></a>(self, speed=50, duration=0.0)</dt><dd><tt>Run&nbsp;forward<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+*&nbsp;speed&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Speed&nbsp;of&nbsp;the&nbsp;motors.&nbsp;Valid&nbsp;range&nbsp;[0,&nbsp;100]<br>
+*&nbsp;duration&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Duration&nbsp;of&nbsp;the&nbsp;motion.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(default=0.0&nbsp;-&nbsp;continue&nbsp;indefinitely&nbsp;until&nbsp;other&nbsp;motions&nbsp;are&nbsp;set)</tt></dd></dl>
+
+<dl><dt><a name="Car-run_reverse"><strong>run_reverse</strong></a>(self, speed=10, duration=0.0)</dt><dd><tt>Run&nbsp;forward<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+*&nbsp;speed&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Speed&nbsp;of&nbsp;the&nbsp;motors.&nbsp;Valid&nbsp;range&nbsp;[0,&nbsp;100]<br>
+*&nbsp;duration&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Duration&nbsp;of&nbsp;the&nbsp;motion.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(default=0.0&nbsp;-&nbsp;continue&nbsp;indefinitely&nbsp;until&nbsp;other&nbsp;motions&nbsp;are&nbsp;set)<br>
+&nbsp;<br>
+Raises<br>
+------</tt></dd></dl>
+
+<dl><dt><a name="Car-servo_camera_rise_fall"><strong>servo_camera_rise_fall</strong></a>(self, angle)</dt><dd><tt>*function:servo_camera_rise_fall<br>
+功能：摄像头舵机进行抬升<br>
+________<br>
+Parameters<br>
+*&nbsp;angle：int&nbsp;类型<br>
+舵机的旋转角度，它的旋转角度对应0-180。其中90是舵机对应正中间<br>
+angle的范围【20-180】角度太小，不能移动<br>
+————<br>
+Returns<br>
+-------<br>
+*&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="Car-servo_camera_rotate"><strong>servo_camera_rotate</strong></a>(self, angle)</dt><dd><tt>*function:servo_camera_rotate<br>
+功能：摄像头的舵机进行旋转<br>
+________<br>
+Parameters<br>
+*&nbsp;angle：int&nbsp;类型<br>
+舵机的旋转角度，它的旋转角度对应0-180。其中90是舵机对应正中间<br>
+angle的范围【20-180】角度太小，不能移动<br>
+————<br>
+Returns<br>
+-------<br>
+*&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="Car-servo_front_rotate"><strong>servo_front_rotate</strong></a>(self, angle)</dt><dd><tt>*function:servo_front_rotate<br>
+功能：控制超声波的舵机进行旋转<br>
+________<br>
+Parameters<br>
+*&nbsp;angle：int&nbsp;类型<br>
+【0-180】，中间位置是90度，0度朝向车右边，180度朝向车左边<br>
+————<br>
+Returns<br>
+-------<br>
+*&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="Car-spin_left"><strong>spin_left</strong></a>(self, speed=10, duration=0.0)</dt><dd><tt>Spin&nbsp;to&nbsp;the&nbsp;left&nbsp;in&nbsp;place<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+*&nbsp;speed&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Speed&nbsp;of&nbsp;the&nbsp;motors.&nbsp;Valid&nbsp;range&nbsp;[0,&nbsp;100]<br>
+*&nbsp;duration&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Duration&nbsp;of&nbsp;the&nbsp;motion.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(default=0.0&nbsp;-&nbsp;continue&nbsp;indefinitely&nbsp;until&nbsp;other&nbsp;motions&nbsp;are&nbsp;set)<br>
+&nbsp;<br>
+Raises<br>
+------</tt></dd></dl>
+
+<dl><dt><a name="Car-spin_right"><strong>spin_right</strong></a>(self, speed=10, duration=0.0)</dt><dd><tt>Spin&nbsp;to&nbsp;the&nbsp;left&nbsp;in&nbsp;place<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+*&nbsp;speed&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Speed&nbsp;of&nbsp;the&nbsp;motors.&nbsp;Valid&nbsp;range&nbsp;[0,&nbsp;100]<br>
+*&nbsp;duration&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Duration&nbsp;of&nbsp;the&nbsp;motion.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(default=0.0&nbsp;-&nbsp;continue&nbsp;indefinitely&nbsp;until&nbsp;other&nbsp;motions&nbsp;are&nbsp;set)<br>
+&nbsp;<br>
+Raises<br>
+------</tt></dd></dl>
+
+<dl><dt><a name="Car-stop_all_wheels"><strong>stop_all_wheels</strong></a>(self, delay=0)</dt><dd><tt>Stop&nbsp;wheel&nbsp;movement</tt></dd></dl>
+
+<dl><dt><a name="Car-stop_completely"><strong>stop_completely</strong></a>(self, delay=0)</dt><dd><tt>Completely&nbsp;stop&nbsp;the&nbsp;<a href="#Car">Car</a></tt></dd></dl>
+
+<dl><dt><a name="Car-turn_left"><strong>turn_left</strong></a>(self, speed=10, duration=0.0)</dt><dd><tt>Turn&nbsp;left&nbsp;-&nbsp;only&nbsp;right-hand-side&nbsp;wheels&nbsp;run&nbsp;forward<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+*&nbsp;speed&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Speed&nbsp;of&nbsp;the&nbsp;motors.&nbsp;Valid&nbsp;range&nbsp;[0,&nbsp;100]<br>
+*&nbsp;duration&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Duration&nbsp;of&nbsp;the&nbsp;motion.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(default=0.0&nbsp;-&nbsp;continue&nbsp;indefinitely&nbsp;until&nbsp;other&nbsp;motions&nbsp;are&nbsp;set)<br>
+&nbsp;<br>
+Raises<br>
+------</tt></dd></dl>
+
+<dl><dt><a name="Car-turn_off_led"><strong>turn_off_led</strong></a>(self, led)</dt><dd><tt>*function:close_led<br>
+功能：控制LED灯的开关<br>
+________<br>
+Parameters<br>
+*&nbsp;led&nbsp;:&nbsp;int<br>
+-&nbsp;LED_R&nbsp;&nbsp;LED_G&nbsp;&nbsp;LED_B三个选一个<br>
+————<br>
+Returns<br>
+-------<br>
+*&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="Car-turn_on_led"><strong>turn_on_led</strong></a>(self, led)</dt><dd><tt>*function:open_led<br>
+功能：控制LED灯的开关<br>
+________<br>
+Parameters<br>
+*&nbsp;led&nbsp;:&nbsp;int<br>
+-&nbsp;LED_R&nbsp;&nbsp;LED_G&nbsp;&nbsp;LED_B三个选一个<br>
+————<br>
+Returns<br>
+-------<br>
+*&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="Car-turn_right"><strong>turn_right</strong></a>(self, speed=10, duration=0.0)</dt><dd><tt>Turn&nbsp;right&nbsp;-&nbsp;only&nbsp;left-hand-side&nbsp;wheels&nbsp;run&nbsp;forward<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+*&nbsp;speed&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Speed&nbsp;of&nbsp;the&nbsp;motors.&nbsp;Valid&nbsp;range&nbsp;[0,&nbsp;100]<br>
+*&nbsp;duration&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Duration&nbsp;of&nbsp;the&nbsp;motion.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(default=0.0&nbsp;-&nbsp;continue&nbsp;indefinitely&nbsp;until&nbsp;other&nbsp;motions&nbsp;are&nbsp;set)<br>
+&nbsp;<br>
+Raises<br>
+------</tt></dd></dl>
+
+<dl><dt><a name="Car-turn_servo_ultrasonic"><strong>turn_servo_ultrasonic</strong></a>(self, dir='degree', degree=90)</dt><dd><tt>Turn&nbsp;the&nbsp;servo&nbsp;for&nbsp;ultrasonic&nbsp;sensor<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+*&nbsp;dir&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;one&nbsp;of&nbsp;['left',&nbsp;'center',&nbsp;'right']<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;if&nbsp;dir&nbsp;==&nbsp;'degree',&nbsp;use&nbsp;degree&nbsp;parameter<br>
+*&nbsp;degree&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;the&nbsp;angle&nbsp;to&nbsp;turn,&nbsp;measured&nbsp;in&nbsp;degree&nbsp;[0,&nbsp;180]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;if&nbsp;dir&nbsp;is&nbsp;specified&nbsp;other&nbsp;than&nbsp;'degree',&nbsp;this&nbsp;is&nbsp;ignored</tt></dd></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="Car-demo_car_run"><strong>demo_car_run</strong></a>()</dt><dd><tt>运动类型：0&nbsp;：直线运动&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LINE_MOVE_TYPE&nbsp;=&nbsp;0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;：来回运动&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LINE_BACK_FORTH_MOVE_TYPE&nbsp;=&nbsp;1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;:&nbsp;转弯&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TURN_CORNER_MOVE_TYPE&nbsp;=&nbsp;2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3&nbsp;：拐弯&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SPRIN_MOVE_TYPE&nbsp;=&nbsp;3<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4&nbsp;：正方形&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RECT_MOVE_TYPE&nbsp;=&nbsp;4</tt></dd></dl>
+
+<dl><dt><a name="Car-demo_cruising"><strong>demo_cruising</strong></a>()</dt><dd><tt>Demonstrates&nbsp;a&nbsp;cruising&nbsp;car&nbsp;that&nbsp;avoids&nbsp;obstacles&nbsp;in&nbsp;a&nbsp;room<br>
+&nbsp;<br>
+*&nbsp;Use&nbsp;infrared&nbsp;sensors&nbsp;and&nbsp;ultrasonic&nbsp;sensor&nbsp;to&nbsp;gauge&nbsp;obstacles<br>
+*&nbsp;Use&nbsp;LED&nbsp;lights&nbsp;to&nbsp;indicate&nbsp;running/turning&nbsp;decisions</tt></dd></dl>
+
+<dl><dt><a name="Car-demo_light"><strong>demo_light</strong></a>()</dt><dd><tt>控制灯<br>
+-&nbsp;o<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;LED_R&nbsp;&nbsp;LED_G&nbsp;&nbsp;LED_B三个选一个</tt></dd></dl>
+
+<dl><dt><a name="Car-demo_line_tracking"><strong>demo_line_tracking</strong></a>(speed=50)</dt><dd><tt>Demonstrates&nbsp;the&nbsp;line&nbsp;tracking&nbsp;mode&nbsp;using&nbsp;the&nbsp;line&nbsp;tracking&nbsp;sensor</tt></dd></dl>
+
+<dl><dt><a name="Car-demo_sensor"><strong>demo_sensor</strong></a>()</dt><dd><tt>传感器类型：0&nbsp;：红外对管传感器的使用&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SENSOR_INFRARED_TYPE&nbsp;=&nbsp;0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;：黑白传感器的使用&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SENSOR_BLACK_WIGHT_TYPE&nbsp;=&nbsp;1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;:&nbsp;超声波传感器&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SENSOR_ULTRASONIC_TYPE&nbsp;=&nbsp;2</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>CLOSE</strong> = 1</dl>
+
+<dl><dt><strong>DERECT_CALL</strong> = 1</dl>
+
+<dl><dt><strong>HAVE_OBSTACLE</strong> = 0</dl>
+
+<dl><dt><strong>LED_B</strong> = 2</dl>
+
+<dl><dt><strong>LED_G</strong> = 1</dl>
+
+<dl><dt><strong>LED_R</strong> = 0</dl>
+
+<dl><dt><strong>LINE_BACK_FORTH_MOVE_TYPE</strong> = 1</dl>
+
+<dl><dt><strong>LINE_MOVE_TYPE</strong> = 0</dl>
+
+<dl><dt><strong>NO_OBSTACLE</strong> = 1</dl>
+
+<dl><dt><strong>OPEN</strong> = 1</dl>
+
+<dl><dt><strong>RECT_MOVE_TYPE</strong> = 4</dl>
+
+<dl><dt><strong>RETURN_CALL</strong> = 2</dl>
+
+<dl><dt><strong>SENSOR_BLACK_WIGHT_TYPE</strong> = 1</dl>
+
+<dl><dt><strong>SENSOR_INFRARED_TYPE</strong> = 0</dl>
+
+<dl><dt><strong>SENSOR_ULTRASONIC_TYPE</strong> = 2</dl>
+
+<dl><dt><strong>SPRIN_MOVE_TYPE</strong> = 3</dl>
+
+<dl><dt><strong>THREAD_CALL</strong> = 0</dl>
+
+<dl><dt><strong>TURN_CORNER_MOVE_TYPE</strong> = 2</dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-main"><strong>main</strong></a>()</dt></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>__authors__</strong> = 'xiao long &amp; xu lao shi'<br>
+<strong>__license__</strong> = 'Copyright...'<br>
+<strong>learning_level</strong> = 0</td></tr></table>
+</body></html>

@@ -25,6 +25,7 @@ class HttpMixin:
     """http功能Mixin
     """
     url_streamer = 'http://172.16.10.227:8080/?action=streamer'
+    SHOW_THREAD_FLAG = False
 
     def connect_server(self, ip, port=8080):
         """连接服务器
@@ -38,6 +39,17 @@ class HttpMixin:
         """
         receiveThread = threading.Thread(target=self.receive_data)
         receiveThread.start()
+
+    def thread_play(self):
+        """线程显示
+        """
+        HttpMixin.SHOW_THREAD_FLAG = True
+
+    def thread_shut_off_play(self):
+        """线程里面显示图像关闭
+        """
+        HttpMixin.SHOW_THREAD_FLAG = False
+
 
     def receive_data(self):
         """接收数据
@@ -53,6 +65,10 @@ class HttpMixin:
                 jpg = buffer[data_header:data_end + 2]
                 buffer = buffer[data_end + 2:]
                 image = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8), 1)
+                if HttpMixin.SHOW_THREAD_FLAG:
+                    cv2.imshow('ai',image)
+                    cv2.waitKey(1)
+
                 self.data_handler(image)
 
     def data_handler(self, data):
@@ -172,7 +188,6 @@ class Camera(HttpMixin):
         image = camera.take_picture()
         camera.save_picture(image, './phone.jpg')  # 保存到当前目录下test.jpg文件
 
-
 def main():
     demo_index = int(input("请选择演示demo(0:显示摄像头视频，1：显示并保存一张图到本地):"))
 
@@ -181,7 +196,6 @@ def main():
         Camera.demo_play_camera_video()
     elif demo_index == 1:
         Camera.demo_take_picture()
-
 
 if __name__ == "__main__":
     main()

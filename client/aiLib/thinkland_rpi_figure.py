@@ -28,7 +28,7 @@ def threshold_demo(image):
 class Figure():
     def __init__(self):
         print('figure init')
-        self.load_model()
+
 
     def weight_variable(self,shape):
         """
@@ -136,19 +136,20 @@ class Figure():
         return image
 
     def find_figure(self , im):
-        im = im.resize((28, 28), Image.ANTIALIAS)#转换为28*28像素
-        # plt.imshow(im)  #显示需要识别的图片
+        # im = Image.open('D:./6.jpg')
+        data = im.resize((28, 28), Image.ANTIALIAS)#转换为28*28像素
+        plt.imshow(im)  #显示需要识别的图片
         # plt.show()
-        im = im.convert('L')
-        tv = list(im.getdata())
+        data = data.convert('L')
+        tv = list(data.getdata())
         tva = [(255-x)*1.0/255.0 for x in tv]
         result = tva
         predint = self.prediction.eval(feed_dict={self.x: [result], self.keep_prob: 1.0}, session=self.sess)
         print('识别结果:')
-        print(predint[0])
+        print(predint)
         return predint[0]
 
-    def load_model(self):
+    def load_model(self,path = "model/model.ckpt"):
         """
         *function:imageprepare
         功能:对图片进行数字识别的模型和训练文件
@@ -186,24 +187,25 @@ class Figure():
         h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, self.W_fc1) + self.b_fc1)
 
         self.keep_prob = tf.placeholder("float")
-        h_fc1_drop = tf.nn.dropout(h_fc1, self.keep_prob)
+        self.h_fc1_drop = tf.nn.dropout(h_fc1, self.keep_prob)
 
         self.W_fc2 = self.weight_variable([1024, 10])
         self.b_fc2 = self.bias_variable([10])
 
-        self.y_conv = tf.nn.softmax(tf.matmul(h_fc1_drop, self.W_fc2) + self.b_fc2)
+        self.y_conv = tf.nn.softmax(tf.matmul(self.h_fc1_drop, self.W_fc2) + self.b_fc2)
 
         self.cross_entropy = -tf.reduce_sum(self.y_ * tf.log(self.y_conv))
         self.train_step = tf.train.AdamOptimizer(1e-4).minimize(self.cross_entropy)
         self.correct_prediction = tf.equal(tf.argmax(self.y_conv, 1), tf.argmax(self.y_, 1))
         self.accuracy = tf.reduce_mean(tf.cast(self.correct_prediction, "float"))
+        self.prediction = tf.argmax(self.y_conv, 1)
 
         self.saver = tf.train.Saver()
-
         self.sess =  tf.Session()
         self.sess.run(tf.global_variables_initializer())
-        self.saver.restore(self.sess, "model/model.ckpt")  # 使用模型，参数和之前的代码保持一致
-        self.prediction = tf.argmax(self.y_conv, 1)
+        self.saver.restore(self.sess, path)  # 使用模型，参数和之前的代码保持一致
+
+
 
     def train(self):
         mnist = input_data.read_data_sets('./MNIST_data', one_hot=True)  # MNIST数据集所在路径
@@ -250,7 +252,7 @@ class Figure():
 
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
-            for i in range(20000):
+            for i in range(4000):
                 batch = mnist.train.next_batch(50)
                 if i % 100 == 0:
                     train_accuracy = self.accuracy.eval(feed_dict={
@@ -260,15 +262,17 @@ class Figure():
             self.saver.save(sess, 'model/model.ckpt') #模型储存位置
 
 
+
     def demo_test_figure():
         """
         *function:demo_test_figure
         功能:加载数字并识别
         """
         test = Figure()
-        # # test.train()
-        test.load_model()
-        img = test.read_image("./8.jpg")
+        # test.train()
+        test.load_model("model/model.ckpt")
+        img = test.read_image("./2.jpg")
+        # img.show()
         num = test.find_figure(img)
         print(num)
 

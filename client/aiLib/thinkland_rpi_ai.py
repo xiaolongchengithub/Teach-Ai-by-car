@@ -7,21 +7,27 @@ class Ai:
     """
     利用Yolo对物体进行识别和初步定位
     """
-
-    def __init__(self, classes="./coco/coco.names", config="./coco/yolov3.cfg", weight="./coco/yolov3.weights"):
-        """初始化注意需要把coco.names,yolove.cfg,yolov3.weights文件拷贝到当前目录.如果没有在当前目录，需要指定路径
-
+    def __init__(self, classes=None, config=None, weights=None):
+        """
+        *function:__init_
         Parameters
-        -----------
-        * classes: str
-            - coco.names 路径
-        * config: str
-            - yolov3.cfg 路径
-        * weight: str
-            - yolov3.weights 路径
+        ----------
+        classes: path to the file containing classification names.
+        config: path to the file containing yolov3 configuration.
+        weights: path to the file containing yolov3 model weights
+
+        Defaults refer to coco.names, yolov3.cfg, yolov3.weights all installed in the package containing this module
+
+        功能：初始化注意需要把coco.names,yolov3.cfg,yolov3.weights文件拷贝到当前目录.如果没有在当前目录，需要指定路径
 
         """
-        self.confThreshold = 0.6  # Confidence threshold
+        if classes is None:
+            classes = os.path.join(os.path.dirname(__file__), "./coco.names")
+        if config is None:
+            config  = os.path.join(os.path.dirname(__file__), "./yolov3.cfg")
+        if weights is None:
+            weights  = os.path.join(os.path.dirname(__file__), "./yolov3.weights")
+        self.confThreshold = 0.1  # Confidence threshold
         self.nmsThreshold = 0.6  # Non-maximum suppression threshold
         self.inpWidth = 188  # Width of network's input image
         self.inpHeight = 188  # Height of n
@@ -277,6 +283,7 @@ class Ai:
     @staticmethod  #
     def demo_find_dog():
         """读取一张图片，并识别图片中的物体
+
         """
         test = Ai()
         # 加载图片
