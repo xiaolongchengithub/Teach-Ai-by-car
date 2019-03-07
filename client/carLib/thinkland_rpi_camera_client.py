@@ -30,7 +30,7 @@ class HttpMixin:
         """连接服务器
         """
         url = 'http://{}:{}/?action=streamer'.format(ip, port)
-        print("streamer_url", url)
+
         self.stream = urllib.request.urlopen(url)
 
     def start_receive(self):

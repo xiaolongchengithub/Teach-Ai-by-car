@@ -49,7 +49,6 @@ class DemoMixin:
     def demo_cruising(self):
         """
         Demonstrates a cruising car that avoids obstacles in a room
-
         * Use infrared sensors and ultrasonic sensor to gauge obstacles
         * Use LED lights to indicate running/turning decisions
         """
@@ -271,7 +270,8 @@ class Car(KeyboardMixin, DemoMixin):
         * None
         """
 
-        self.rpc.servo_camera_rotate(degree)
+        self.rpc.turn_servo_camera_horizental(degree)
+
 
     def turn_servo_camera_vertical(self, degree=90):
         """控制摄像头舵机进行垂直方向旋转
@@ -287,7 +287,7 @@ class Car(KeyboardMixin, DemoMixin):
         * None
         """
 
-        self.rpc.servo_camera_rise_fall(degree)
+        self.rpc.turn_servo_camera_vertical(degree)
 
     # def turn_servo_ultrasonic(self, degree=90):
     #     """控制超声波的舵机进行水平方向旋转
@@ -342,29 +342,25 @@ class Car(KeyboardMixin, DemoMixin):
         self.turn_off_led(Car.LED_G)
         self.turn_off_led(Car.LED_B)
 
-    def stop_all_wheels(self, delay=0):
+    def stop_all_wheels(self):
         """停止小车移动
-
         Parameters
         ------------
         * delay：int。
             - 延时长度
-
         Returns
         -------
         * None
         """
 
-        self.rpc.stop_all_wheels(delay)
+        self.rpc.stop_all_wheels()
 
     def stop_completely(self):
         """完全停止小车
-
         Parameters
         ----------
         * delay：int。
             - 延时长度
-
         Returns
         -------
         * None
@@ -375,7 +371,6 @@ class Car(KeyboardMixin, DemoMixin):
     def run_forward(self, speed=50, duration=0.0):
         """
          Run forward
-
          Parameters
          ----------
          * speed : int
@@ -390,7 +385,6 @@ class Car(KeyboardMixin, DemoMixin):
     def run_reverse(self, speed=10, duration=0.0):
         """
         Run forward
-
         Parameters
         ----------
         * speed : int
@@ -398,7 +392,6 @@ class Car(KeyboardMixin, DemoMixin):
         * duration : float
             - Duration of the motion.
             (default=0.0 - continue indefinitely until other motions are set)
-
         Raises
         ------
         """
@@ -408,7 +401,6 @@ class Car(KeyboardMixin, DemoMixin):
     def turn_left(self, speed=10, duration=0.0):
         """
         Turn left - only right-hand-side wheels run forward
-
         Parameters
         ----------
         * speed : int
@@ -416,7 +408,6 @@ class Car(KeyboardMixin, DemoMixin):
         * duration : float
             - Duration of the motion.
             (default=0.0 - continue indefinitely until other motions are set)
-
         Raises
         ------
         """
@@ -426,7 +417,6 @@ class Car(KeyboardMixin, DemoMixin):
     def turn_right(self, speed=10, duration=0.0):
         """
         Turn right - only left-hand-side wheels run forward
-
         Parameters
         ----------
         * speed : int
@@ -434,7 +424,6 @@ class Car(KeyboardMixin, DemoMixin):
         * duration : float
             - Duration of the motion.
             (default=0.0 - continue indefinitely until other motions are set)
-
         Raises
         ------
         """
@@ -444,15 +433,13 @@ class Car(KeyboardMixin, DemoMixin):
     def spin_left(self, speed=10, duration=0.0):
         """
         Spin to the left in place
-
         Parameters
         ----------
         * speed : int
             - Speed of the motors. Valid range [0, 100]
         * duration : float
             - Duration of the motion.
-            (default=0.0 - continue indefinitely until other motions are set)
-
+            (defa17ult=0.0 - continue indefinitely until other motions are set)
         Raises
         ------
         """
@@ -462,7 +449,6 @@ class Car(KeyboardMixin, DemoMixin):
     def spin_right(self, speed=10, duration=0.0):
         """
         Spin to the left in place
-
         Parameters
         ----------
         * speed : int
@@ -470,7 +456,6 @@ class Car(KeyboardMixin, DemoMixin):
         * duration : float
             - Duration of the motion.
             (default=0.0 - continue indefinitely until other motions are set)
-
         Raises
         ------
         """
@@ -480,22 +465,18 @@ class Car(KeyboardMixin, DemoMixin):
         """
         Measure the distance between ultrasonic sensor and the obstacle
         that it faces.
-
         The obstacle should have a relatively smooth surface for this
         to be effective. Distance to fabric or other sound-absorbing
         surfaces is difficult to measure.
-
         """
 
         return self.rpc.distance_from_obstacle()
 
     def check_left_obstacle_with_sensor(self):
         """通过传感器检测小车的左侧是否存在障碍物
-
         Parameters
         ----------
         * none
-
         Returns
         -------
         * int
@@ -507,11 +488,9 @@ class Car(KeyboardMixin, DemoMixin):
 
     def check_right_obstacle_with_sensor(self):
         """通过传感器检测小车的右侧是否存在障碍物
-
         Parameters
         ----------
         * none
-
         Returns
         -------
         * int
@@ -527,16 +506,15 @@ class Car(KeyboardMixin, DemoMixin):
         are situated at the left front and right front of the Car.
         The infrared sensors are located on the lower deck, so they
         have a lower view than the ultrasonic sensor.
-    
+
         Indicates blockage by obstacle < 20cm away.
         Depending on sensitivity of sensors, the distance of obstacles
         sometimes needs to be as short as 15cm for effective detection
-
         Parameters
         ------------
         * num: int
             -
-        
+
         Returns
         -------
         * str
@@ -548,10 +526,8 @@ class Car(KeyboardMixin, DemoMixin):
     def line_tracking_turn_type(self):
         """
             Indicates the type of turn required given current sensor values
-
             Parameters
             ------------
-
             Returns
             -------
             * str
@@ -566,7 +542,6 @@ class Car(KeyboardMixin, DemoMixin):
     def turn_servo_ultrasonic(self, dir='degree', degree=90):
         """
         Turn the servo for ultrasonic sensor
-
         Parameters
         ----------
         * dir : str
@@ -577,12 +552,11 @@ class Car(KeyboardMixin, DemoMixin):
             - if dir is specified other than 'degree', this is ignored
         """
 
-        self.rpc.turn_servo_ultrasonic(dir,degree)
+        self.rpc.turn_servo_ultrasonic(dir, degree)
 
     def led_light(self, color):
         """
         Shine LED light
-
         Parameters
         ----------
         * color : str
@@ -594,7 +568,6 @@ class Car(KeyboardMixin, DemoMixin):
         self.rpc.led_light(color)
 
     def obstacle_status_from_ultrasound(self):
-
         return self.rpc.obstacle_status_from_ultrasound()
 
 
