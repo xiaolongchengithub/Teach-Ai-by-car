@@ -77,5 +77,4 @@ thinkland_rpi_demon_figure 相机读取图像，左键移动框取数字，然�
 
 
 
-			 
-备注：https://pan.baidu.com/s/1O-Mhl-50gz1hUikYK-GAYA下载下来拷贝到aiLlib文件下，提取码：1z2u。并解压。
+	
