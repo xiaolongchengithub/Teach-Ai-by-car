@@ -75,24 +75,25 @@ class Ai:
         * bottom: float
             - 矩形框右下角y坐标
         """
-        left = int(round(left,2))
-        right = int(round(right,2))
-        top = int(round(top,2))
-        bottom = int(round(bottom,2))
-        if left < 0 or right < 0 or top < 0 or bottom < 0:
-            return
-        cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255))
+        try:
+            left = int(round(left, 2))
+            right = int(round(right, 2))
+            top = int(round(top, 2))
+            bottom = int(round(bottom, 2))
+            cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255))
 
-        label = '%.2f' % conf
-        # Get the label for the class name and its confidence
-        if self.classes:
-            assert (classId < len(self.classes))
-            label = '%s:%s' % (self.classes[classId], label)
+            label = '%.2f' % conf
+            # Get the label for the class name and its confidence
+            if self.classes:
+                assert (classId < len(self.classes))
+                label = '%s:%s' % (self.classes[classId], label)
 
-        # Display the label at the top of the bounding box
-        labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-        top = max(top, labelSize[1])
-        cv2.putText(frame, label, (left, top), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
+            # Display the label at the top of the bounding box
+            labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+            top = max(top, labelSize[1])
+            cv2.putText(frame, label, (left, top), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
+        except:
+            print("draw rect Eroor")
 
     def postprocess(self, frame):
         """搜素框
@@ -145,7 +146,7 @@ class Ai:
             top = box[1]
             width = box[2]
             height = box[3]
-            self.drawPred(frame, classIds[i], confidences[i], left, top, left + width, top + height)
+            # self.drawPred(frame, classIds[i], confidences[i], left, top, left + width, top + height)
             retbox.append([(left + width / 2), (top + height / 2)])
             retIds.append(self.classes[classIds[i]])
         return retbox, retIds
