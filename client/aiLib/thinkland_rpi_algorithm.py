@@ -100,4 +100,3 @@ if __name__ == "__main__":
     # test = Figure()
     # while True:
     #     test.train() #训练
-

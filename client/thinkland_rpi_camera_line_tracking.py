@@ -1,10 +1,8 @@
-from carLib.thinkland_rpi_camera_client import Camera
-from aiLib.thinkland_rpi_ai import  Ai
-from carLib.thinkland_rpi_car_client import Car
+from client.carLib.thinkland_rpi_camera_client import Camera
+from client.aiLib.thinkland_rpi_ai import  Ai
+from client.carLib.thinkland_rpi_car_client import Car
 import cv2
-import time
-import threading
-from aiLib.thinkland_rpi_algorithm import Algrithm
+from client.aiLib.thinkland_rpi_algorithm import Algrithm
 
 from pynput import keyboard
 from pynput.keyboard import Key
@@ -55,7 +53,7 @@ def demo_line_algrithm(ip,speed,dis):
     camera = Camera()
     camera.connect_server(ip)
     camera.start_receive()
-    camera.thread_play()
+    # camera.thread_play()
     #算法初始化
     algithm = Algrithm()
     #小车初始化
@@ -137,6 +135,7 @@ def main():
     """
     str = input('输入树莓派的IP')
     demo_line_algrithm(str,15,0.05)
+
 
 if __name__ == "__main__":
     start_listenser_thread()
