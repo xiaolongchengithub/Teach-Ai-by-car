@@ -3,14 +3,12 @@
     直接运行本文件就会启动rpc服务
 """
 from gevent import monkey
-
 monkey.patch_all()
 
 import time
 import RPi.GPIO as GPIO
 import random
 import zerorpc
-import gevent
 
 __authors__ = 'xiao long & xu lao shi'
 __version__ = 'version 0.01'
@@ -186,11 +184,11 @@ class Car:
         self.__pwm_left_speed.ChangeDutyCycle(speed_left)
         self.__pwm_right_speed.ChangeDutyCycle(speed_right)
         if duration > 0.0:
-            gevent.sleep(duration)
+            time.sleep(duration)
             self.__pwm_left_speed.ChangeDutyCycle(0)
             self.__pwm_right_speed.ChangeDutyCycle(0)
 
-    def __led_light(self, r, g, b):
+    def __led_light(r, g, b):
         """
          __led_light
 
@@ -280,7 +278,7 @@ class Car:
 
         self.__pwm_left_speed.stop()
         self.__pwm_right_speed.stop()
-        GPIO.cleanup()
+
 
     def run_forward(self, speed=50, duration=0.0):
         """
@@ -314,6 +312,8 @@ class Car:
         """
         self.__set_motion(GPIO.LOW, GPIO.HIGH, GPIO.LOW, GPIO.HIGH,
                           speed, speed, duration)
+
+
 
     def turn_left(self, speed=10, duration=0.0):
         """
@@ -387,20 +387,20 @@ class Car:
         self.__set_motion(GPIO.HIGH, GPIO.LOW, GPIO.LOW, GPIO.HIGH,
                           speed, speed, duration)
 
-    def distance_from_obstacle(self):
+    def ultrasonic(self):
         """
-        Measure the distance between ultrasonic sensor and the obstacle
-        that it faces.
+         Measure the distance between ultrasonic sensor and the obstacle
+         that it faces.
 
-        The obstacle should have a relatively smooth surface for this
-        to be effective. Distance to fabric or other sound-absorbing
-        surfaces is difficult to measure.
+         The obstacle should have a relatively smooth surface for this
+         to be effective. Distance to fabric or other sound-absorbing
+         surfaces is difficult to measure.
 
-        Returns
-        -------
-        * int
-            - Measured in centimeters: valid range is 2cm to 400cm
-        """
+         Returns
+         -------
+         * int
+             - Measured in centimeters: valid range is 2cm to 400cm
+         """
         # set HIGH at TRIG for 15us to trigger the ultrasonic ping
         print('check distance')
         # 产生一个10us的脉冲
@@ -437,6 +437,22 @@ class Car:
         t2 = time.time()
         distance = ((t2 - t1) * 340 / 2) * 100
         print(distance)
+        return distance
+
+    def distance_from_obstacle(self):
+        """
+         测距，判断检测数据不对，重新检测
+
+         Returns
+         -------
+         * int
+             - Measured in centimeters: valid range is 2cm to 400cm
+         """
+        distance = 0
+        for times in range(3):
+            ret = self.ultrasonic()
+            if ret >= 0:
+                return distance
         return distance
 
     def line_tracking_turn_type(self, num=4):
@@ -713,7 +729,7 @@ class Car:
         car = Car()
         try:
             while True:
-                obstacle_status_from_infrared = car.obstacle_status_from_infrared()
+                obstacle_status_from_infrared = car.obstacle_status_from_infrared().decode()
                 should_turn = True
                 if obstacle_status_from_infrared == 'clear':
                     should_turn = False
@@ -746,7 +762,7 @@ class Car:
         """
         Demonstrates the line tracking mode using the line tracking sensor
         """
-        gevent.sleep(2)
+        time.sleep(2)
         car = Car()
 
         try:

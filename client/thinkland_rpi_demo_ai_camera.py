@@ -1,9 +1,6 @@
 from carLib.thinkland_rpi_camera_client import Camera
 from aiLib.thinkland_rpi_ai import Ai
 import cv2
-import time
-import threading
-from aiLib.thinkland_rpi_speaker import Speaker
 
 
 def demo_ai_camera(ip):
