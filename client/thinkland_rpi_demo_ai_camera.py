@@ -1,17 +1,7 @@
-import platform
-
-type = platform.platform()
-print(type)
-if 'Mac' in type:
-    from client.carLib.thinkland_rpi_camera_client import Camera
-    from client.aiLib.thinkland_rpi_ai import  Ai
-    from client.aiLib.thinkland_rpi_speaker import Speaker
-else:
-    from carLib.thinkland_rpi_camera_client import Camera
-    from aiLib.thinkland_rpi_ai import  Ai
-    from aiLib.thinkland_rpi_speaker import Speaker
-
+from carLib.thinkland_rpi_camera_client import Camera
+from aiLib.thinkland_rpi_ai import Ai
 import cv2
+
 
 def demo_ai_camera(ip):
     """
@@ -79,6 +69,7 @@ def main():
     """
     str = input('输入树莓派的IP:')
     demo_ai_camera(str)
+
 
 if __name__ == "__main__":
     main()

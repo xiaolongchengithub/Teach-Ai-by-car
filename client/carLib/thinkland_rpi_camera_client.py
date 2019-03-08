@@ -170,32 +170,34 @@ class Camera(HttpMixin):
         cv2.imwrite(path, mat)
 
     @staticmethod
-    def demo_play_camera_video():
+    def demo_play_camera_video(ip):
         """播放小车摄像头视频
         """
         camera = Camera()
-        camera.connect_server("172.16.10.227")
+        camera.connect_server(ip)
         camera.start_receive()
         camera.play()
 
     @staticmethod
-    def demo_take_picture():
+    def demo_take_picture(ip):
         """控制摄像机拍照，并保存
         """
         camera = Camera()
-        camera.connect_server("172.16.10.227")
+        camera.connect_server(ip)
         camera.start_receive()
         image = camera.take_picture()
         camera.save_picture(image, './phone.jpg')  # 保存到当前目录下test.jpg文件
 
+
 def main():
     demo_index = int(input("请选择演示demo(0:显示摄像头视频，1：显示并保存一张图到本地):"))
-
+    ip = input("请输入树莓的IP:")
     if demo_index == 0:
         print(" 按下ECS键可关停止播放")
-        Camera.demo_play_camera_video()
+        Camera.demo_play_camera_video(ip)
     elif demo_index == 1:
-        Camera.demo_take_picture()
+        Camera.demo_take_picture(ip)
+
 
 if __name__ == "__main__":
     main()

@@ -1,15 +1,6 @@
-import platform
-type = platform.platform()
-print(type)
-if 'Mac' in type:
-    from client.carLib.thinkland_rpi_camera_client import Camera
-    from client.carLib.thinkland_rpi_car_client import Car
-    from client.aiLib.thinkland_rpi_ai import Ai
-else:
-    from carLib.thinkland_rpi_camera_client import Camera
-    from carLib.thinkland_rpi_car_client import Car
-    from aiLib.thinkland_rpi_ai import Ai
-
+from carLib.thinkland_rpi_camera_client import Camera
+from carLib.thinkland_rpi_car_client import Car
+from aiLib.thinkland_rpi_ai import Ai
 import random
 import time
 import cv2
@@ -58,7 +49,7 @@ def Cruising(car, speed=4):
     """
     global CRUSING_FLOG
     global STOP_FLAGE
-    h_angle = [20,  90,  160]  # 角度越多越平滑
+    h_angle = [20, 90, 160]  # 角度越多越平滑
     i = 0
     try:
         while True:
@@ -106,7 +97,8 @@ def Cruising(car, speed=4):
 def find_object(camera, ai, object):
     global CRUSING_FLOG
     global STOP_FLAGE
-    while True:
+    CRUSING_FLOG = True
+    while CRUSING_FLOG:
         pic = camera.take_picture()
         ret, names, _ = ai.find_object(pic)
 
@@ -114,7 +106,7 @@ def find_object(camera, ai, object):
             print('find object over .............................................')
             break
 
-        if 'cup' in names and CRUSING_FLOG is True:
+        if 'cup' in names:
             print("find a cup")
             CRUSING_FLOG = False
 
@@ -311,6 +303,20 @@ def get_status_with_camera(car, camera, ai, object):
     return 'status_move'
 
 
+def find_cup(camera, ai):
+    pic = camera.take_picture()
+    ret, names, box = ai.find_object(pic)
+    try:
+        if 'cup' in names:
+            print("find a cup", names)
+            names = []
+            return True
+        else:
+            return False
+    except:
+        print("find cup error", names)
+
+
 def move_step_find_object1_thread(ip, camera, ai, object, vAngle, hAngle):
     global CRUSING_FLOG
     global STOP_FLAGE
@@ -320,70 +326,60 @@ def move_step_find_object1_thread(ip, camera, ai, object, vAngle, hAngle):
 
     CRUSING_FLOG = True
     while CRUSING_FLOG and not STOP_FLAGE:
-        Cruising(car, 10)  # 以7的速度进行漫游
+        Cruising(car, 7)  # 以7的速度进行漫游
         car.turn_servo_camera_vertical(vAngle)
         car.turn_servo_camera_horizental(hAngle)
-        CRUSING_FLOG = True  # 重置cup检测标志，为了进一步精确定位
         start_time = time.time()
-        while CRUSING_FLOG and not STOP_FLAGE:
-            car.spin_left(1, 0.3)  # 转动小车寻找cup
+        while not STOP_FLAGE:
+            car.spin_left(0.5, 0.5)
+            if find_cup(camera, ai):
+                break
             end_time = time.time()
-            if start_time - end_time > 5:  # 如果超过15秒没有发现cup，则继续巡游
+            if start_time - end_time > 20:  # 如大概两圈的时间，则继续巡游
                 break
 
     car.spin_right(0.5, 0.5)  # 回转，减少误差
-
+    turn = 0
     while True:
         if STOP_FLAGE == True:
             car.stop_all_wheels()
             print('Cruising over .............................................')
             return
 
-        pic = camera.take_picture()
-        y = []
-        x = []
-        x1 = 320
-        y1 = 0
-        for i in range(1):
-            ret, names, box = ai.find_object(pic)
-            for item in names:
-                if item == object:
-                    id = names.index(item)
-                    print(box[id])
-                    y.append(box[id][1])
-                    x.append(box[id][0])
-        ysum = 0
-        for d in y:
-            ysum = ysum + d
-        if len(y) > 0:
-            y1 = ysum / len(y)
-            print(y1)
+        if find_cup(camera, ai):
+            car.run_forward(4, 0.2)
+            turn = 0
+        else:
+            turn += 0.1
+            car.stop_all_wheels()
+            car.spin_left(0.5, turn)
+            if find_cup(camera, ai):
+                car.run_forward(4, 0.2)
+                turn = 0
+            else:
+                car.spin_right(0.5, turn)
+                car.spin_right(0.5, turn)
+                if find_cup(camera, ai):
+                    car.run_forward(4, 0.2)
+                    turn = 0
+                else:
+                    car.spin_left(0.5, turn)
+                    #############################
+                    # 该处角度的大小设置很重要，根据实际情况而定
+                    ############################
+                    vAngle += 5
+                    if vAngle >= 95:
+                        vAngle = 65
+                    car.turn_servo_camera_vertical(vAngle)
+                    if find_cup(camera, ai):
+                        turn = 0
+                        car.run_forward(4, 0.2)
 
-        xsum = 0
-        for d in x:
-            xsum = xsum + d
-        if len(x) > 0:
-            x1 = xsum / len(x)
-            print(x1)
-        if x1 > 360:
-            print('turn right')
-            car.turn_right(4, 0.1)
-
-        if x1 < 200:
-            print('turn left')
-            car.turn_left(4, 0.1)
         distance_to_obstacle = car.distance_from_obstacle()
-
-        obstacle = car.obstacle_status_from_infrared()
-        print("obstacle status", distance_to_obstacle, obstacle)
-        # if 200 < x1 < 360:
-        car.run_forward(4, 0.2)
-        if( 0 < distance_to_obstacle and distance_to_obstacle < 20) or obstacle != "clear":
+        print("distance", distance_to_obstacle)
+        if 0 < distance_to_obstacle < 20:
             print("find cup")
             return
-
-
-
 
 
 def demo_move_step_find_object1(ip, speed=20, dis=1, object='cup', vAngle=65, hAngle=80):
@@ -410,7 +406,7 @@ def demo_move_step_find_object1(ip, speed=20, dis=1, object='cup', vAngle=65, hA
     mainThread_ = threading.Thread(target=find_object, args=(camera, ai, object,))
     mainThread_.start()
 
-    moveThread_ = threading.Thread(target=move_step_find_object1_thread,args=(ip, camera, ai, object, vAngle, hAngle,))
+    moveThread_ = threading.Thread(target=move_step_find_object1_thread, args=(ip, camera, ai, object, vAngle, hAngle,))
     moveThread_.start()
 
     camera.play()
@@ -419,4 +415,4 @@ def demo_move_step_find_object1(ip, speed=20, dis=1, object='cup', vAngle=65, hA
 if __name__ == "__main__":
     start_listenser_thread()
     ip = input('输入树莓派的IP:')
-    demo_move_step_find_object1("172.16.10.227")
+    demo_move_step_find_object1(ip)

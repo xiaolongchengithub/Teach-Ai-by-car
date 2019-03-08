@@ -2,6 +2,8 @@
     小车服务端类，该类提供了供远程控制小车的所有api
     直接运行本文件就会启动rpc服务
 """
+from gevent import monkey
+monkey.patch_all()
 
 import time
 import RPi.GPIO as GPIO
@@ -83,7 +85,6 @@ class Car:
         self.__init_pwm()  # 初始化 pwm
 
         Car.Car_Init = True
-
 
     def __init_level(self):
         """初始化小车各部分引脚电平
@@ -267,7 +268,6 @@ class Car:
         """
         Stop wheel movement
         """
-
 
         self.__set_motion(GPIO.LOW, GPIO.LOW, GPIO.LOW, GPIO.LOW, 0, 0)
 
@@ -578,11 +578,10 @@ class Car:
 
         for i in range(Car.SERVO_TOTAL_STEP):
             self.__pwm_front_servo_pos.ChangeDutyCycle(2.5 + 10 * degree / 180)
-            time.sleep(0.02)
+            gevent.sleep(0.02)
 
         self.__pwm_front_servo_pos.ChangeDutyCycle(0)
-        time.sleep(0.02)
-
+        gevent.sleep(0.02)
 
     def obstacle_status_from_ultrasound(self, dir='center'):
         """
@@ -632,7 +631,7 @@ class Car:
             -Low   : 无障碍
         """
         have_obstacle = GPIO.input(Car.PIN_AVOID_LEFT_SENSOR)
-        time.sleep(delay)
+        gevent.sleep(delay)
         if have_obstacle:
             return str(Car.NO_OBSTACLE)
         else:
@@ -654,7 +653,7 @@ class Car:
             -Low   : 无障碍
         """
         have_obstacle = GPIO.input(Car.PIN_AVOID_RIGHT_SENSOR)
-        time.sleep(delay)
+        gevent.sleep(delay)
 
         if have_obstacle:
             return str(Car.NO_OBSTACLE)
@@ -675,10 +674,10 @@ class Car:
         """
         for i in range(Car.SERVO_TOTAL_STEP):
             self.__pwm_front_servo_pos.ChangeDutyCycle(2.5 + 10 * pos / 180)
-            time.sleep(0.02)
+            gevent.sleep(0.02)
 
         self.__pwm_front_servo_pos.ChangeDutyCycle(0)
-        time.sleep(0.02)
+        gevent.sleep(0.02)
 
     def turn_servo_camera_horizental(self, degree):
         """调整控制相机的舵机进行旋转
@@ -695,10 +694,10 @@ class Car:
         """
         for i in range(Car.SERVO_TOTAL_STEP):
             self.__pwm_left_right_servo_pos.ChangeDutyCycle(2.5 + 10 * degree / 180)
-            time.sleep(0.02)
+            gevent.sleep(0.02)
 
         self.__pwm_left_right_servo_pos.ChangeDutyCycle(0)
-        time.sleep(0.02)
+        gevent.sleep(0.02)
 
     def turn_servo_camera_vertical(self, pos):
         """舵机让相机上升和下降
@@ -715,10 +714,9 @@ class Car:
         """
         for i in range(Car.SERVO_TOTAL_STEP):
             self.__pwm_up_down_servo_pos.ChangeDutyCycle(2.5 + 10 * pos / 180)
-            time.sleep(0.02)
+            gevent.sleep(0.02)
 
         self.__pwm_up_down_servo_pos.ChangeDutyCycle(0)
-
 
     @staticmethod  # 自动巡游功能
     def demo_cruising():
@@ -803,6 +801,7 @@ def main():
     rpc_car_server = zerorpc.Server(Car())
     rpc_car_server.bind("tcp://0.0.0.0:12347")
     rpc_car_server.run()
+
 
 if __name__ == "__main__":
     main()
