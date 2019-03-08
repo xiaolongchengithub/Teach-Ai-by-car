@@ -419,4 +419,4 @@ def demo_move_step_find_object1(ip, speed=20, dis=1, object='cup', vAngle=65, hA
 if __name__ == "__main__":
     start_listenser_thread()
     ip = input('输入树莓派的IP:')
-    demo_move_step_find_object1("172.16.10.227")
+    demo_move_step_find_object1(ip)

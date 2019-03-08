@@ -2,15 +2,15 @@ import platform
 type = platform.platform()
 print(type)
 if 'Mac' in type:
-    from carLib.thinkland_rpi_camera_client import Camera
-    from carLib.thinkland_rpi_car_client import Car
-    from aiLib.thinkland_rpi_ai import  Ai
-    from aiLib.thinkland_rpi_speaker import Speaker
-else:
     from client.carLib.thinkland_rpi_camera_client import Camera
     from client.carLib.thinkland_rpi_car_client import Car
     from client.aiLib.thinkland_rpi_ai import  Ai
     from client.aiLib.thinkland_rpi_speaker import Speaker
+else:
+    from carLib.thinkland_rpi_camera_client import Camera
+    from carLib.thinkland_rpi_car_client import Car
+    from aiLib.thinkland_rpi_ai import  Ai
+    from aiLib.thinkland_rpi_speaker import Speaker
 
 import time
 import cv2
