@@ -1,0 +1,6 @@
+numpy==1.14.1
+opencv-python==3.4.5.20
+pynput==1.4
+pyttsx3==2.7
+urllib3==1.22
+zerorpc==0.6.1

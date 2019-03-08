@@ -1,9 +1,10 @@
 from carLib.thinkland_rpi_camera_client import Camera
-from aiLib.thinkland_rpi_ai import  Ai
+from aiLib.thinkland_rpi_ai import Ai
 import cv2
 import time
 import threading
 from aiLib.thinkland_rpi_speaker import Speaker
+
 
 def demo_ai_camera(ip):
     """
@@ -71,6 +72,7 @@ def main():
     """
     str = input('输入树莓派的IP:')
     demo_ai_camera(str)
+
 
 if __name__ == "__main__":
     main()
