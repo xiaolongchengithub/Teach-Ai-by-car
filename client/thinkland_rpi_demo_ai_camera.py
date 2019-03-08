@@ -1,9 +1,17 @@
-from client.carLib.thinkland_rpi_camera_client import Camera
-from client.aiLib.thinkland_rpi_ai import  Ai
+import platform
+
+type = platform.platform()
+print(type)
+if 'Mac' in type:
+    from client.carLib.thinkland_rpi_camera_client import Camera
+    from client.aiLib.thinkland_rpi_ai import  Ai
+    from client.aiLib.thinkland_rpi_speaker import Speaker
+else:
+    from carLib.thinkland_rpi_camera_client import Camera
+    from aiLib.thinkland_rpi_ai import  Ai
+    from aiLib.thinkland_rpi_speaker import Speaker
+
 import cv2
-import time
-import threading
-from aiLib.thinkland_rpi_speaker import Speaker
 
 def demo_ai_camera(ip):
     """

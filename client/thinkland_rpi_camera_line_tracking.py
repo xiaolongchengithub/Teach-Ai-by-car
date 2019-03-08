@@ -1,9 +1,19 @@
-from client.carLib.thinkland_rpi_camera_client import Camera
-from client.aiLib.thinkland_rpi_ai import  Ai
-from client.carLib.thinkland_rpi_car_client import Car
-import cv2
-from client.aiLib.thinkland_rpi_algorithm import Algrithm
+import platform
 
+type = platform.platform()
+print(type)
+if 'Mac' in type:
+    from client.carLib.thinkland_rpi_camera_client import Camera
+    from client.aiLib.thinkland_rpi_ai import Ai
+    from client.carLib.thinkland_rpi_car_client import Car
+    from client.aiLib.thinkland_rpi_algorithm import Algrithm
+else:
+    from carLib.thinkland_rpi_camera_client import Camera
+    from aiLib.thinkland_rpi_ai import Ai
+    from carLib.thinkland_rpi_car_client import Car
+    from aiLib.thinkland_rpi_algorithm import Algrithm
+
+import cv2
 from pynput import keyboard
 from pynput.keyboard import Key
 import threading
@@ -62,7 +72,8 @@ def demo_line_algrithm(ip,speed,dis):
     global STOP_FLAGE
     while True:
         pic = camera.take_picture()
-        pt = algithm.line(pic)
+        pt = algithm.line(pic,40)
+        algithm.set_debug()
         x = pt[0]
         print(x)
         if 250 < x < 380:

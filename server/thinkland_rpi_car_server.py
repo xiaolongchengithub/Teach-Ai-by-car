@@ -2,14 +2,11 @@
     小车服务端类，该类提供了供远程控制小车的所有api
     直接运行本文件就会启动rpc服务
 """
-from gevent import monkey
-monkey.patch_all()
 
 import time
 import RPi.GPIO as GPIO
 import random
 import zerorpc
-import gevent
 
 __authors__ = 'xiao long & xu lao shi'
 __version__ = 'version 0.01'
@@ -186,11 +183,11 @@ class Car:
         self.__pwm_left_speed.ChangeDutyCycle(speed_left)
         self.__pwm_right_speed.ChangeDutyCycle(speed_right)
         if duration > 0.0:
-            gevent.sleep(duration)
+            time.sleep(duration)
             self.__pwm_left_speed.ChangeDutyCycle(0)
             self.__pwm_right_speed.ChangeDutyCycle(0)
 
-    def __led_light(self, r, g, b):
+    def __led_light(r, g, b):
         """
          __led_light
 
@@ -281,7 +278,7 @@ class Car:
 
         self.__pwm_left_speed.stop()
         self.__pwm_right_speed.stop()
-        GPIO.cleanup()
+
 
     def run_forward(self, speed=50, duration=0.0):
         """
@@ -315,6 +312,8 @@ class Car:
         """
         self.__set_motion(GPIO.LOW, GPIO.HIGH, GPIO.LOW, GPIO.HIGH,
                           speed, speed, duration)
+
+
 
     def turn_left(self, speed=10, duration=0.0):
         """
@@ -388,20 +387,20 @@ class Car:
         self.__set_motion(GPIO.HIGH, GPIO.LOW, GPIO.LOW, GPIO.HIGH,
                           speed, speed, duration)
 
-    def distance_from_obstacle(self, val=0):
+    def ultrasonic(self):
         """
-        Measure the distance between ultrasonic sensor and the obstacle
-        that it faces.
+         Measure the distance between ultrasonic sensor and the obstacle
+         that it faces.
 
-        The obstacle should have a relatively smooth surface for this
-        to be effective. Distance to fabric or other sound-absorbing
-        surfaces is difficult to measure.
+         The obstacle should have a relatively smooth surface for this
+         to be effective. Distance to fabric or other sound-absorbing
+         surfaces is difficult to measure.
 
-        Returns
-        -------
-        * int
-            - Measured in centimeters: valid range is 2cm to 400cm
-        """
+         Returns
+         -------
+         * int
+             - Measured in centimeters: valid range is 2cm to 400cm
+         """
         # set HIGH at TRIG for 15us to trigger the ultrasonic ping
         print('check distance')
         # 产生一个10us的脉冲
@@ -438,6 +437,21 @@ class Car:
         t2 = time.time()
         distance = ((t2 - t1) * 340 / 2) * 100
         print(distance)
+
+    def distance_from_obstacle(self):
+        """
+         测距，判断检测数据不对，重新检测
+
+         Returns
+         -------
+         * int
+             - Measured in centimeters: valid range is 2cm to 400cm
+         """
+        distance = 0
+        for times in range(3):
+            ret = self.ultrasonic()
+            if ret >= 0:
+                return distance
         return distance
 
     def line_tracking_turn_type(self, num=4):
@@ -563,10 +577,10 @@ class Car:
 
         for i in range(Car.SERVO_TOTAL_STEP):
             self.__pwm_front_servo_pos.ChangeDutyCycle(2.5 + 10 * degree / 180)
-            gevent.sleep(0.02)
+            time.sleep(0.02)
 
         self.__pwm_front_servo_pos.ChangeDutyCycle(0)
-        gevent.sleep(0.02)
+        time.sleep(0.02)
 
 
     def obstacle_status_from_ultrasound(self, dir='center'):
@@ -617,7 +631,7 @@ class Car:
             -Low   : 无障碍
         """
         have_obstacle = GPIO.input(Car.PIN_AVOID_LEFT_SENSOR)
-        gevent.sleep(delay)
+        time.sleep(delay)
         if have_obstacle:
             return str(Car.NO_OBSTACLE)
         else:
@@ -639,7 +653,7 @@ class Car:
             -Low   : 无障碍
         """
         have_obstacle = GPIO.input(Car.PIN_AVOID_RIGHT_SENSOR)
-        gevent.sleep(delay)
+        time.sleep(delay)
 
         if have_obstacle:
             return str(Car.NO_OBSTACLE)
@@ -660,11 +674,11 @@ class Car:
         """
         for i in range(Car.SERVO_TOTAL_STEP):
             self.__pwm_front_servo_pos.ChangeDutyCycle(2.5 + 10 * pos / 180)
-            gevent.sleep(0.02)
+            time.sleep(0.02)
 
         self.__pwm_front_servo_pos.ChangeDutyCycle(0)
-        gevent.sleep(0.02)
-      
+        time.sleep(0.02)
+
     def turn_servo_camera_horizental(self, degree):
         """调整控制相机的舵机进行旋转
         原理：舵机：SG90 脉冲周期为20ms,脉宽0.5ms-2.5ms对应的角度-90到+90，对应的占空比为2.5%-12.5%
@@ -680,10 +694,10 @@ class Car:
         """
         for i in range(Car.SERVO_TOTAL_STEP):
             self.__pwm_left_right_servo_pos.ChangeDutyCycle(2.5 + 10 * degree / 180)
-            gevent.sleep(0.02)
+            time.sleep(0.02)
 
         self.__pwm_left_right_servo_pos.ChangeDutyCycle(0)
-        gevent.sleep(0.02)
+        time.sleep(0.02)
 
     def turn_servo_camera_vertical(self, pos):
         """舵机让相机上升和下降
@@ -700,7 +714,7 @@ class Car:
         """
         for i in range(Car.SERVO_TOTAL_STEP):
             self.__pwm_up_down_servo_pos.ChangeDutyCycle(2.5 + 10 * pos / 180)
-            gevent.sleep(0.02)
+            time.sleep(0.02)
 
         self.__pwm_up_down_servo_pos.ChangeDutyCycle(0)
 
@@ -716,7 +730,7 @@ class Car:
         car = Car()
         try:
             while True:
-                obstacle_status_from_infrared = car.obstacle_status_from_infrared()
+                obstacle_status_from_infrared = car.obstacle_status_from_infrared().decode()
                 should_turn = True
                 if obstacle_status_from_infrared == 'clear':
                     should_turn = False
@@ -749,7 +763,7 @@ class Car:
         """
         Demonstrates the line tracking mode using the line tracking sensor
         """
-        gevent.sleep(2)
+        time.sleep(2)
         car = Car()
 
         try:

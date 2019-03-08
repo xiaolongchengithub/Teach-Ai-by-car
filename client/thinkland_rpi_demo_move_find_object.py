@@ -1,6 +1,15 @@
-from client.carLib.thinkland_rpi_camera_client import Camera
-from client.carLib.thinkland_rpi_car_client import Car
-from client.aiLib.thinkland_rpi_ai import Ai
+import platform
+type = platform.platform()
+print(type)
+if 'Mac' in type:
+    from client.carLib.thinkland_rpi_camera_client import Camera
+    from client.carLib.thinkland_rpi_car_client import Car
+    from client.aiLib.thinkland_rpi_ai import Ai
+else:
+    from carLib.thinkland_rpi_camera_client import Camera
+    from carLib.thinkland_rpi_car_client import Car
+    from aiLib.thinkland_rpi_ai import Ai
+
 import random
 import time
 import cv2
@@ -319,12 +328,10 @@ def move_step_find_object1_thread(ip, camera, ai, object, vAngle, hAngle):
         while CRUSING_FLOG and not STOP_FLAGE:
             car.spin_left(1, 0.3)  # 转动小车寻找cup
             end_time = time.time()
-            if start_time - end_time > 50:  # 如果超过15秒没有发现cup，则继续巡游
+            if start_time - end_time > 5:  # 如果超过15秒没有发现cup，则继续巡游
                 break
 
-
     car.spin_right(0.5, 0.5)  # 回转，减少误差
-
 
     while True:
         if STOP_FLAGE == True:
