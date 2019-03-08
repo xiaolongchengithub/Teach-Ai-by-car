@@ -327,7 +327,7 @@ def move_step_find_object1_thread(ip, camera, ai, object, vAngle, hAngle):
 
     CRUSING_FLOG = True
     while CRUSING_FLOG and not STOP_FLAGE:
-        Cruising(car, 10)  # 以7的速度进行漫游
+        Cruising(car, 7)  # 以7的速度进行漫游
         car.turn_servo_camera_vertical(vAngle)
         car.turn_servo_camera_horizental(hAngle)
         start_time = time.time()
@@ -336,11 +336,10 @@ def move_step_find_object1_thread(ip, camera, ai, object, vAngle, hAngle):
             if find_cup(camera, ai):
                 break
             end_time = time.time()
-            if start_time - end_time > 50:  # 如果超过15秒没有发现cup，则继续巡游
+            if start_time - end_time > 20:  # 如大概两圈的时间，则继续巡游
                 break
 
     car.spin_right(0.5, 0.5)  # 回转，减少误差
-    CRUSING_FLOG = True  # 关闭图像检测
     turn = 0
     while True:
         if STOP_FLAGE == True:
@@ -367,7 +366,7 @@ def move_step_find_object1_thread(ip, camera, ai, object, vAngle, hAngle):
                 else:
                     car.spin_left(0.5, turn)
                     #############################
-                    # 该处角度的大小设置很重要，更具实际情况而定
+                    # 该处角度的大小设置很重要，根据实际情况而定
                     ############################
                     vAngle += 5
                     if vAngle >= 95:

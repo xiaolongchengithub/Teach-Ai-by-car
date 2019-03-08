@@ -146,7 +146,7 @@ class Ai:
             top = box[1]
             width = box[2]
             height = box[3]
-            # self.drawPred(frame, classIds[i], confidences[i], left, top, left + width, top + height)
+            self.drawPred(frame, classIds[i], confidences[i], left, top, left + width, top + height)
             retbox.append([(left + width / 2), (top + height / 2)])
             retIds.append(self.classes[classIds[i]])
         return retbox, retIds
