@@ -1,6 +1,6 @@
-from client.carLib.thinkland_rpi_camera_client import Camera
-from client.carLib.thinkland_rpi_car_client import Car
-from client.aiLib.thinkland_rpi_ai import Ai
+from carLib.thinkland_rpi_camera_client import Camera
+from carLib.thinkland_rpi_car_client import Car
+from aiLib.thinkland_rpi_ai import Ai
 import random
 import time
 import cv2

@@ -3,6 +3,7 @@
     直接运行本文件就会启动rpc服务
 """
 from gevent import monkey
+
 monkey.patch_all()
 
 import time
@@ -86,7 +87,6 @@ class Car:
         self.__init_pwm()  # 初始化 pwm
 
         Car.Car_Init = True
-
 
     def __init_level(self):
         """初始化小车各部分引脚电平
@@ -271,7 +271,6 @@ class Car:
         Stop wheel movement
         """
 
-
         self.__set_motion(GPIO.LOW, GPIO.LOW, GPIO.LOW, GPIO.LOW, 0, 0)
 
     def stop_completely(self):
@@ -388,7 +387,7 @@ class Car:
         self.__set_motion(GPIO.HIGH, GPIO.LOW, GPIO.LOW, GPIO.HIGH,
                           speed, speed, duration)
 
-    def distance_from_obstacle(self, val=0):
+    def distance_from_obstacle(self):
         """
         Measure the distance between ultrasonic sensor and the obstacle
         that it faces.
@@ -568,7 +567,6 @@ class Car:
         self.__pwm_front_servo_pos.ChangeDutyCycle(0)
         gevent.sleep(0.02)
 
-
     def obstacle_status_from_ultrasound(self, dir='center'):
         """
         Return obstacle status obtained by ultrasonic sensor that is
@@ -664,7 +662,7 @@ class Car:
 
         self.__pwm_front_servo_pos.ChangeDutyCycle(0)
         gevent.sleep(0.02)
-      
+
     def turn_servo_camera_horizental(self, degree):
         """调整控制相机的舵机进行旋转
         原理：舵机：SG90 脉冲周期为20ms,脉宽0.5ms-2.5ms对应的角度-90到+90，对应的占空比为2.5%-12.5%
@@ -703,7 +701,6 @@ class Car:
             gevent.sleep(0.02)
 
         self.__pwm_up_down_servo_pos.ChangeDutyCycle(0)
-
 
     @staticmethod  # 自动巡游功能
     def demo_cruising():
@@ -788,6 +785,7 @@ def main():
     rpc_car_server = zerorpc.Server(Car())
     rpc_car_server.bind("tcp://0.0.0.0:12347")
     rpc_car_server.run()
+
 
 if __name__ == "__main__":
     main()
