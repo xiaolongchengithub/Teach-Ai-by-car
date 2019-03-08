@@ -437,6 +437,7 @@ class Car:
         t2 = time.time()
         distance = ((t2 - t1) * 340 / 2) * 100
         print(distance)
+        return distance
 
     def distance_from_obstacle(self):
         """
