@@ -313,6 +313,23 @@ def get_status_with_camera(car, camera, ai, object):
     return 'status_move'
 
 def check_object(ai,pic,object):
+    """
+    在图片中确认是否存在有目标存在
+
+     Parameter
+     -------
+     *ai:class
+         -图像检测
+     *pic：mat
+         -图像
+     *object:string
+         -目标名字
+     *object:string
+
+     Return
+     ---------
+     返回‘find’和‘nothing’两种结果
+    """
     ret, names, box = ai.find_object(pic)
     for item in names:
         if item == object:
@@ -320,6 +337,24 @@ def check_object(ai,pic,object):
     return 'nothing'
 
 def check_object_step(camera,car,ai,object):
+    """
+    在图片中确认是否存在有目标存在
+
+     Parameter
+     -------
+     *camera:class
+         -相机
+     *car：class
+         -运动
+     *ai:class
+         -智能检测
+     *object:string
+         -目标名
+
+     Return
+     ---------
+     返回‘find’和‘nothing’两种结果
+    """
     start_time = time.time()
     time.sleep(2)
 
@@ -337,21 +372,41 @@ def check_object_step(camera,car,ai,object):
     return 'nothing'
 
 def move_step_find_object1_thread(ip, camera, ai, object, vAngle, hAngle):
+    """
+    小车移动寻找目标
+     Parameter
+     -------
+     *ip:string
+         -树莓派的地址
+     *camera：class
+         -相机控制
+     *ai:class
+         -人工智能类
+     *object:string
+         --目标名
+     *vAngle:int
+         --相机垂直角度
+     *hAngle:int
+         --相机水平角度
+     Return
+     ---------
+     None
+    """
     global CRUSING_FLOG
     global STOP_FLAGE
     global CAMERA_FLAGE
     car = Car(ip)
     car.turn_servo_camera_vertical(vAngle)
-    car.turn_servo_camera_horizental(hAngle)
+    car.turn_servo_camera_horizental(hAngle)#运动到相机指定方向
 
     while  not STOP_FLAGE:
         Cruising(car, 5)  # 以7的速度进行漫游
-        car.turn_servo_camera_vertical(vAngle-5)
+        car.turn_servo_camera_vertical(vAngle-2)#抬起相机查看
         car.turn_servo_camera_horizental(hAngle)
-        ret = check_object_step(camera,car,ai,object)
+        ret = check_object_step(camera,car,ai,object)#旋转小车确认
         if ret == 'find':
             break
-        if ret == 'nothing':
+        if ret == 'nothing':#没有找到，从新找
             mainThread_ = threading.Thread(target=find_object, args=(camera, ai, object,))
             mainThread_.start()
             CRUSING_FLOG = True
@@ -372,7 +427,7 @@ def move_step_find_object1_thread(ip, camera, ai, object, vAngle, hAngle):
         x1 = 320
         y1 = 0
 
-        for i in range(1):
+        for i in range(1):#多张图寻找
             ret, names, box = ai.find_object(pic)
             for item in names:
                 if item == object:
@@ -380,6 +435,8 @@ def move_step_find_object1_thread(ip, camera, ai, object, vAngle, hAngle):
                     print(box[id])
                     y.append(box[id][1])
                     x.append(box[id][0])
+
+        #多张图求平均
         ysum = 0
         for d in y:
             ysum = ysum + d
@@ -387,6 +444,7 @@ def move_step_find_object1_thread(ip, camera, ai, object, vAngle, hAngle):
             y1 = ysum / len(y)
             print(y1)
 
+        #多张图，求取x平均
         xsum = 0
         for d in x:
             xsum = xsum + d
@@ -395,37 +453,36 @@ def move_step_find_object1_thread(ip, camera, ai, object, vAngle, hAngle):
             print(x1)
 
 
-        if x1 > 360:
+        if x1 > 360:#右转
             print('turn right')
             car.turn_right(4, 0.1)
-        elif x1 < 200:
+        elif x1 < 200:#左转
             print('turn left')
             car.turn_left(4, 0.1)
-        else:
+        else:#直行
             car.run_forward(4, 0.2)
-        if y1 > 300:
+        if y1 > 300:#说明车子靠近目标，启动超声波，相机向下移动一点
             start_sensor_check = True
             car.turn_servo_camera_vertical(vAngle + 2)
 
-
-        dis1 = 0
-        dis2 = 0
+        #超声波检查
+        dis1 = 1000
+        dis2 = 1000
         if start_sensor_check:
-            car.turn_servo_ultrasonic_angle(50)
+            car.turn_servo_ultrasonic_angle(50) #左
             time.sleep(0.2)
             dis1 = car.distance_from_obstacle()
-            car.turn_servo_ultrasonic_angle(130)
+            car.turn_servo_ultrasonic_angle(130) #右
             time.sleep(0.2)
             dis2 = car.distance_from_obstacle()
-            car.turn_servo_ultrasonic_angle(90)
+            car.turn_servo_ultrasonic_angle(90)#中
             time.sleep(0.2)
 
-
         dis = car.distance_from_obstacle()
-        distance_to_obstacle = min(min(dis1,dis2),dis)
+        distance_to_obstacle = min(min(dis1,dis2),dis)#选区最小值
 
         print("distance",distance_to_obstacle)
-        if( 0 < distance_to_obstacle and distance_to_obstacle < 30):
+        if( 0 < distance_to_obstacle and distance_to_obstacle < 30):#检查范围，满足条件说明，车找到杯子了
             print("find cup")
             return
 
@@ -458,16 +515,16 @@ def demo_move_step_find_object1(ip, speed=20, dis=1, object='cup', vAngle=65, hA
     ai = Ai()
 
     mainThread_ = threading.Thread(target=find_object, args=(camera, ai, object,))
-    mainThread_.start()
+    mainThread_.start()#启动相机查看功能
 
     moveThread_ = threading.Thread(target=move_step_find_object1_thread,args=(ip, camera, ai, object, vAngle, hAngle,))
-    moveThread_.start()
+    moveThread_.start()#启动寻物
 
-    camera.play()
+    camera.play()#图像显示
 
-
+#########################################################################################
+#注意运动类Car,在那个线程启动，就只能在那个线程调用
 if __name__ == "__main__":
     start_listenser_thread()
     ip = input('输入树莓派的IP:')
-
     demo_move_step_find_object1(ip)
