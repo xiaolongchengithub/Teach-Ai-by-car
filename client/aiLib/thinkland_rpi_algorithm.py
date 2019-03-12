@@ -29,7 +29,6 @@ class Algrithm():
         """
         gray = cv.cvtColor(image, cv.COLOR_RGB2GRAY)
         ret, binary = cv.threshold(gray, thre, 250, cv.THRESH_BINARY_INV)
-        print("threshold value %s"%ret)
         if self.__DEBUG:
             cv.imshow('binary',binary)
             cv.waitKey(0)
@@ -76,15 +75,21 @@ class Algrithm():
 
         for contour in contours:
             area = cv.contourArea(contour)
-            print(area)
             if area > areaLimit:
+                areaLimit = area
                 contourList.append(contour)
                 M = cv.moments(contour)
-                print(M)
                 cx = int(M['m10'] / M['m00'])
                 cy = int(M['m01'] / M['m00'])
-                print('cx:%d' % cx)
-                print('cy:%d' % cy)
+
+        print('线的中心点:(%d，%d)'%(cx,cy))
+
+        if cx > 0:
+            cv.namedWindow("camera_object", cv.WINDOW_NORMAL)
+            colorImg = cv.cvtColor(binary, cv.COLOR_GRAY2RGB)
+            cv.circle(colorImg,(cx,cy),20,(0,0,255),20)
+            cv.imshow('camera_object', colorImg)
+            cv.waitKey(1)
         return np.array([cx,cy])
 
 

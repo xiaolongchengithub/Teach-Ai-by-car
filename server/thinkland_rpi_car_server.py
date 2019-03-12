@@ -450,8 +450,8 @@ class Car:
          """
         distance = 0
         for times in range(3):
-            ret = self.ultrasonic()
-            if ret >= 0:
+            distance = self.ultrasonic()
+            if distance >= 0:
                 return distance
         return distance
 
@@ -521,7 +521,7 @@ class Car:
         print('Turn type = {}'.format(turn))
         return turn
 
-    def obstacle_status_from_infrared(self, num=0):
+    def obstacle_status_from_infrared(self):
         """
         Return obstacle status obtained by infrared sensors that
         are situated at the left front and right front of the Car.
@@ -661,7 +661,7 @@ class Car:
         else:
             return str(Car.HAVE_OBSTACLE)
 
-    def turn_servo_front_ultrasonic(self, pos):
+    def turn_servo_ultrasonic_angle(self, pos):
         """控制超声波的舵机进行旋转
         舵机：SG90 脉冲周期为20ms,脉宽0.5ms-2.5ms对应的角度-90到+90，对应的占空比为2.5%-12.5%
         Parameters
@@ -731,7 +731,7 @@ class Car:
         car = Car()
         try:
             while True:
-                obstacle_status_from_infrared = car.obstacle_status_from_infrared().decode()
+                obstacle_status_from_infrared = car.obstacle_status_from_infrared()
                 should_turn = True
                 if obstacle_status_from_infrared == 'clear':
                     should_turn = False

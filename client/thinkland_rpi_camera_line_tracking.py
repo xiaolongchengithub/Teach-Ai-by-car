@@ -63,7 +63,7 @@ def demo_line_algrithm(ip,speed,dis):
     camera = Camera()
     camera.connect_server(ip)
     camera.start_receive()
-    # camera.thread_play()
+    camera.thread_play()
     #算法初始化
     algithm = Algrithm()
     #小车初始化
@@ -72,10 +72,10 @@ def demo_line_algrithm(ip,speed,dis):
     global STOP_FLAGE
     while True:
         pic = camera.take_picture()
-        pt = algithm.line(pic,40)
-        algithm.set_debug()
+        pt = algithm.line(pic,60)
+        # algithm.set_debug()
         x = pt[0]
-        print(x)
+        print('%d和320比较'%x)
         if 250 < x < 380:
             car.run_forward(speed, dis) #直行
         elif x < 250:
