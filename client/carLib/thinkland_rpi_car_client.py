@@ -140,21 +140,21 @@ class DemoMixin:
             self.run_reverse(5, 2)
         elif run_type == Car.TURN_CORNER_MOVE_TYPE:  # 转弯
             self.run_forward(5, 2)
-            self.turn_left(3, 4)
+            self.turn_left(3, 3)
             self.run_forward(5, 2)
         elif run_type == Car.SPRIN_MOVE_TYPE:  # 拐弯
             self.run_forward(5, 2)
             self.spin_left(3, 2)
             self.run_forward(5, 2)
         elif run_type == Car.RECT_MOVE_TYPE:  # 按正方形路线行驶
-            self.run_forward(10, 5)
-            self.turn_left(4, 1)
-            self.run_forward(10, 5)
-            self.turn_left(4, 1)
-            self.run_forward(10, 5)
-            self.turn_left(4, 1)
-            self.run_forward(10, 5)
-            self.turn_left(4, 1)
+            self.run_forward(5, 5)
+            self.turn_left(3, 3.01)
+            self.run_forward(5, 5)
+            self.turn_left(3, 3.01)
+            self.run_forward(5, 5)
+            self.turn_left(3, 3.01)
+            self.run_forward(5, 5)
+            self.turn_left(3, 3.01)
 
     def demo_sensor(self):
         """传感器控制demo
